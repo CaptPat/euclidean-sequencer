@@ -119,6 +119,7 @@ const P={'Four on floor E(4,8)':[[4,8,0],[2,16,4],[8,16,1],[4,16,2],[0,16,0]],
 'Bembe bell E(7,12)':[[4,12,0],[2,12,3],[6,12,1],[0,12,0],[7,12,0]],
 'Electronic':[[4,16,0],[2,16,4],[8,16,1],[12,16,15],[0,16,0]]};
 function applyP(p){p.forEach((v,i)=>tracks[i].set(...v));}
+for(const k in P)$('#pre').add(new Option(k,k));
 $('#pre').onchange=e=>{if(P[e.target.value])applyP(P[e.target.value]);};
 $('#play').onclick=toggle;$('#bpm').oninput=e=>$('#bv').textContent=e.target.value;
 document.onkeydown=e=>{if(e.code==='Space'&&e.target.tagName!=='INPUT'){e.preventDefault();toggle();}};
