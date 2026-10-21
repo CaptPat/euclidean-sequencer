@@ -2,34 +2,39 @@
 <style>
 :root{--c:#ff6b4a}
 body{margin:0;background:#0a0908;color:#ddd;font-family:"Helvetica Neue",Arial,sans-serif}
-header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:14px 18px;background:linear-gradient(#1c1917,#141210);border-bottom:1px solid #2a2522}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:8px 16px;background:linear-gradient(#1c1917,#141210);border-bottom:1px solid #2a2522}
 h1{font-size:18px;margin:0 12px 0 0;letter-spacing:3px;color:var(--c);text-shadow:0 0 10px rgba(255,107,74,.5)}
 button,select{background:linear-gradient(#2a2623,#1c1a18);color:#ddd;border:1px solid #3a3430;border-radius:8px;padding:7px 12px;cursor:pointer}
 button.on,#play.on{background:var(--c);color:#1a0d08;box-shadow:0 0 12px rgba(255,107,74,.6)}
-#tracks{display:grid;grid-template-columns:repeat(auto-fill,minmax(600px,1fr));gap:20px;padding:20px}
-@media(max-width:640px){#tracks{grid-template-columns:1fr}}
-.tr{background:linear-gradient(180deg,#26211e 0%,#1a1715 35%,#141210 100%);border-radius:18px;padding:14px 18px 18px;border:1px solid #2e2825;box-shadow:0 12px 30px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06);position:relative;overflow:hidden}
+#tracks{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:12px;padding:12px}
+@media(min-width:1200px){#tracks{grid-template-columns:repeat(3,1fr)}}@media(max-width:440px){#tracks{grid-template-columns:1fr}}
+.tr{background:linear-gradient(180deg,#26211e 0%,#1a1715 35%,#141210 100%);border-radius:16px;padding:10px 14px 12px;border:1px solid #2e2825;box-shadow:0 12px 30px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06);position:relative;overflow:hidden}
 .tr:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.012) 0 1px,transparent 1px 3px);pointer-events:none}
-.hd{display:flex;align-items:center;gap:12px;padding-bottom:10px;margin-bottom:14px;border-bottom:1px solid #2c2623}
+.hd{display:flex;align-items:center;gap:12px;padding-bottom:7px;margin-bottom:9px;border-bottom:1px solid #2c2623}
 .led{width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px #2a1a15,0 0 0 4.5px #6b3a2c,0 0 12px var(--c)}
-.hd .t{font-weight:800;font-size:19px;letter-spacing:1.5px;color:#fff}
+.hd .t{font-weight:800;font-size:15px;letter-spacing:1.5px;color:#fff}
 .hd input{background:none;border:0;color:#8a7f78;width:90px;font-size:12px}
-.hd .e{margin-left:auto;color:var(--c);font-family:"Courier New",monospace;font-size:19px;letter-spacing:1px;text-shadow:0 0 8px rgba(255,107,74,.4)}
-.bd{display:flex;gap:18px;flex-wrap:wrap;position:relative}.viz{width:240px;height:240px}
-.rt{flex:1;min-width:280px;display:flex;flex-direction:column;gap:12px}
-.knobs{display:flex;justify-content:space-around}.kn{text-align:center;user-select:none;color:#bdb5ae;font-size:13px;font-weight:700;letter-spacing:1px}
-.kn.act{color:var(--c)}.kn canvas{width:100px;height:100px;cursor:ns-resize;touch-action:none;display:block;margin:4px auto 2px}
-.kn b{display:block;font-size:24px;color:#fff;font-weight:800}
-.steps{display:flex;gap:6px;padding:7px;background:#0c0b0a;border-radius:8px;box-shadow:inset 0 2px 6px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.05);position:relative;border:1px solid #2a2522}
-.st{flex:1 1 0;min-width:6px;height:26px;border-radius:5px;background:linear-gradient(#3a3532,#2a2624);cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 1px 2px #000}
+.hd .e{margin-left:auto;color:var(--c);font-family:"Courier New",monospace;font-size:15px;letter-spacing:1px;text-shadow:0 0 8px rgba(255,107,74,.4)}
+.bd{display:flex;gap:12px;align-items:center;position:relative}.viz{width:175px;height:175px;flex:none}
+.rt{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.knobs{display:flex;justify-content:space-around}.kn{text-align:center;user-select:none;color:#bdb5ae;font-size:10px;font-weight:700;letter-spacing:1px}
+.kn.act{color:var(--c)}.kn canvas{width:70px;height:70px;cursor:ns-resize;touch-action:none;display:block;margin:4px auto 2px}
+.kn b{display:block;font-size:17px;color:#fff;font-weight:800}
+.steps{display:flex;gap:3px;padding:5px;background:#0c0b0a;border-radius:8px;box-shadow:inset 0 2px 6px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.05);position:relative;border:1px solid #2a2522}
+.st{flex:1 1 0;min-width:3px;height:24px;border-radius:5px;background:linear-gradient(#3a3532,#2a2624);cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 1px 2px #000}
 .st.h{background:linear-gradient(#ff8a6a,#e8553a);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 0 10px rgba(255,107,74,.55)}
-.ph{position:absolute;top:2px;bottom:2px;width:3px;margin-left:-4.5px;background:var(--c);border-radius:2px;box-shadow:0 0 8px var(--c),0 0 16px var(--c);display:none;pointer-events:none}
-.ctl{display:flex;gap:6px;align-items:center;font-size:12px;flex-wrap:wrap;color:#8a7f78}input[type=range]{accent-color:var(--c)}
+.ph{position:absolute;top:2px;bottom:2px;width:3px;margin-left:-3px;background:var(--c);border-radius:2px;box-shadow:0 0 8px var(--c),0 0 16px var(--c);display:none;pointer-events:none}
+.ctl select,.ctl button{padding:3px 8px;font-size:11px}.ctl input[type=range]{flex:1;min-width:40px}.ctl{display:flex;gap:6px;align-items:center;font-size:12px;flex-wrap:wrap;color:#8a7f78}input[type=range]{accent-color:var(--c)}
+:root{color-scheme:dark}
+select{appearance:none;-webkit-appearance:none;background:#1a1614 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23ff6b4a'/%3E%3C/svg%3E") no-repeat right 9px center;color:#e8e2dc;border:1px solid #3a3430;padding-right:26px!important}
+select option{background:#1a1614;color:#e8e2dc}
+select:focus,button:focus-visible,input:focus-visible{outline:none;border-color:#ff6b4a;box-shadow:0 0 0 2px rgba(255,107,74,.35)}
+.hd input{color-scheme:dark}
 </style></head><body>
 <header><h1>EUCLID</h1><button id="play">▶ Play</button>
 <label>BPM <input id="bpm" type="range" min="60" max="200" value="110"> <span id="bv">110</span></label>
 <select id="pre"><option value="">Presets…</option></select>
-<button id="add">+ Track</button><button id="addb">+ Bass</button></header>
+</header>
 <div id="tracks"></div>
 <script>
 function bjorklund(k,n){n=Math.max(1,n|0);k=Math.max(0,Math.min(n,k|0));if(k===0)return Array(n).fill(0);
@@ -59,7 +64,7 @@ gstep++;nextT+=stepDur();}}
 function toggle(){ctx();if(ac.state==='suspended')ac.resume();playing=!playing;$('#play').classList.toggle('on',playing);$('#play').textContent=playing?'■ Stop':'▶ Play';
 if(playing){gstep=0;nextT=ac.currentTime+.05;timer=setInterval(sched,25);}else{clearInterval(timer);tracks.forEach(t=>{t.cur=-1;t.draw();});}}
 const DPR=window.devicePixelRatio||1;
-function fit(c,w,h){if(c.width!==w*DPR){c.width=w*DPR;c.height=h*DPR;}const x=c.getContext('2d');x.setTransform(DPR,0,0,DPR,0,0);x.clearRect(0,0,w,h);return x;}
+function fit(c,w,h){const cw=c.clientWidth||w,k=cw/w,W=Math.round(cw*DPR);if(c.width!==W){c.width=W;c.height=Math.round(h*k*DPR);}const x=c.getContext('2d');x.setTransform(DPR*k,0,0,DPR*k,0,0);x.clearRect(0,0,w,h);return x;}
 function knob(el,label,min,max,get,set){const w=document.createElement('div');w.className='kn';const c=document.createElement('canvas');const b=document.createElement('b');w.append(label,c,b);el.append(w);
 let hov=false,drag=false;const draw=()=>{const x=fit(c,100,100),v=get(),f=(v-min)/Math.max(1,max()-min),act=hov||drag;w.classList.toggle('act',act);
 const A0=.75*Math.PI,A1=A0+1.5*Math.PI*f,C=50;
@@ -75,12 +80,12 @@ c.onpointerenter=()=>{hov=true;draw();};c.onpointerleave=()=>{hov=false;draw();}
 let sy=null,sv=0;c.onpointerdown=e=>{sy=e.clientY;sv=get();drag=true;c.setPointerCapture(e.pointerId);};c.onpointermove=e=>{if(sy===null)return;set(Math.round(Math.max(min,Math.min(max(),sv+(sy-e.clientY)/6))));};
 c.onpointerup=()=>{sy=null;drag=false;draw();};c.onwheel=e=>{e.preventDefault();set(Math.max(min,Math.min(max(),get()+(e.deltaY<0?1:-1))));};return draw;}
 function addTrack(o){o=Object.assign({name:'Track',sound:'kick',hits:4,steps:16,rot:0,vol:.8},o);const tr={...o,mute:false,cur:-1,flash:{}};
-const el=document.createElement('div');el.className='tr';el.innerHTML=`<div class="hd"><span class="led"></span><span class="t">EUCLIDEAN</span><input value="${o.name}" style="background:none;border:0;color:#aaa;width:80px"><span class="e"></span></div><div class="bd"><canvas class="viz"></canvas><div class="rt"><div class="knobs"></div><div class="steps"></div><div class="ctl"><select>${SOUNDS.map(s=>`<option${s===o.sound?' selected':''}>${s}</option>`).join('')}</select><button class="m">Mute</button>Vol<input type="range" min="0" max="1" step=".01" value="${o.vol}"><button class="x">✕</button></div></div></div>`;
+const el=document.createElement('div');el.className='tr';el.innerHTML=`<div class="hd"><span class="led"></span><span class="t">EUCLIDEAN</span><input value="${o.name}" style="background:none;border:0;color:#aaa;width:80px"><span class="e"></span></div><div class="bd"><canvas class="viz"></canvas><div class="rt"><div class="knobs"></div><div class="steps"></div><div class="ctl"><select>${SOUNDS.map(s=>`<option${s===o.sound?' selected':''}>${s}</option>`).join('')}</select><button class="m">Mute</button>Vol<input type="range" min="0" max="1" step=".01" value="${o.vol}"></div></div></div>`;
 $('#tracks').append(el);const cv=el.querySelector('canvas.viz'),stEl=el.querySelector('.steps'),kn=el.querySelector('.knobs');
 const regen=()=>{tr.hits=Math.min(tr.hits,tr.steps);tr.rot=Math.min(tr.rot,tr.steps-1);tr.pat=rot(bjorklund(tr.hits,tr.steps),tr.rot);tr.draw();};
 const ks=[knob(kn,'HITS',0,()=>tr.steps,()=>tr.hits,v=>{tr.hits=v;regen();}),knob(kn,'STEPS',1,()=>32,()=>tr.steps,v=>{tr.steps=v;regen();}),knob(kn,'ROTATE',0,()=>Math.max(0,tr.steps-1),()=>tr.rot,v=>{tr.rot=v;regen();})];
 el.querySelector('select').onchange=e=>tr.sound=e.target.value;el.querySelector('input[type=range]').oninput=e=>tr.vol=+e.target.value;
-el.querySelector('.m').onclick=e=>{tr.mute=!tr.mute;e.target.classList.toggle('on',tr.mute);};el.querySelector('.x').onclick=()=>{el.remove();tracks=tracks.filter(t=>t!==tr);};
+el.querySelector('.m').onclick=e=>{tr.mute=!tr.mute;e.target.classList.toggle('on',tr.mute);}
 tr.draw=()=>{ks.forEach(k=>k());const n=tr.pat.length;el.querySelector('.e').textContent=`E(${tr.pat.reduce((a,b)=>a+b,0)},${n})`;
 if(stEl.querySelectorAll('.st').length!==n){stEl.innerHTML='';for(let i=0;i<n;i++){const s=document.createElement('div');s.className='st';s.onclick=()=>{tr.pat[i]^=1;tr.draw();};stEl.append(s);}}
 [...stEl.querySelectorAll('.st')].forEach((s,i)=>s.classList.toggle('h',!!tr.pat[i]));
@@ -101,17 +106,22 @@ const ex=C+Math.cos(ang-.08)*ar,ey=C+Math.sin(ang-.08)*ar,tx=-Math.sin(ang),ty=M
 x.fillStyle='#ff6b4a';x.beginPath();x.arc(C,C,4.5,0,7);x.fill();
 for(let i=0;i<n;i++){if(!tr.pat[i])continue;const[px,py]=pt(i);const fl=Math.max(0,1-(now-(tr.flash[i]||0))/300),r=7.5+5*fl;x.save();x.shadowColor='#ff6b4a';x.shadowBlur=12+30*fl;
 const rg=x.createRadialGradient(px-r*.35,py-r*.35,1,px,py,r);rg.addColorStop(0,fl>0?'#fff':'#ffb19c');rg.addColorStop(.5,'#ff6b4a');rg.addColorStop(1,'#d9472c');x.fillStyle=rg;x.beginPath();x.arc(px,py,r,0,7);x.fill();x.restore();}};
-tracks.push(tr);regen();return tr;}
+tr.set=(h,st,r)=>{tr.steps=st;tr.hits=h;tr.rot=r||0;regen();};tracks.push(tr);regen();return tr;}
 (function loop(){if(playing)tracks.forEach(t=>t.draw());requestAnimationFrame(loop);})();
-const P={'Four on floor E(4,8)':[{name:'Kick',sound:'kick',hits:4,steps:8}],'Tresillo E(3,8)':[{name:'Kick',sound:'kick',hits:3,steps:8}],
-'Dembow':[{name:'Kick',sound:'kick',hits:4,steps:8},{name:'Snare',sound:'snare',hits:3,steps:8}],'Cinquillo E(5,8)':[{name:'Clave',sound:'clave',hits:5,steps:8}],
-'Bossa clave E(5,16)':[{name:'Clave',sound:'clave',hits:5,steps:16}],'Bembe bell E(7,12)':[{name:'Bell',sound:'clave',hits:7,steps:12}],
-'Electronic':[{name:'Kick',sound:'kick',hits:4,steps:16},{name:'Bass',sound:'bass',hits:12,steps:16,rot:15},{name:'Hat',sound:'hat',hits:8,steps:16,rot:1}]};
-for(const k in P)$('#pre').add(new Option(k,k));
-$('#pre').onchange=e=>{if(!P[e.target.value])return;$('#tracks').innerHTML='';tracks=[];P[e.target.value].forEach(addTrack);};
+const ORDER=[['Kick','kick'],['Snare','snare'],['Hat','hat'],['Bass','bass'],['Bell','clave']];
+// [hits,steps,rot] for kick,snare,hat,bass,bell
+const DEF=[[4,16,0],[2,16,4],[8,16,1],[5,16,2],[0,16,0]];
+const P={'Four on floor E(4,8)':[[4,8,0],[2,16,4],[8,16,1],[4,16,2],[0,16,0]],
+'Tresillo E(3,8)':[[3,8,0],[2,16,4],[4,8,1],[3,8,0],[0,16,0]],
+'Dembow':[[4,8,0],[3,8,0],[8,16,1],[3,8,0],[0,16,0]],
+'Cinquillo E(5,8)':[[4,16,0],[0,16,0],[8,16,1],[3,8,0],[5,8,0]],
+'Bossa clave E(5,16)':[[4,16,0],[0,16,0],[8,16,1],[4,16,3],[5,16,0]],
+'Bembe bell E(7,12)':[[4,12,0],[2,12,3],[6,12,1],[0,12,0],[7,12,0]],
+'Electronic':[[4,16,0],[2,16,4],[8,16,1],[12,16,15],[0,16,0]]};
+function applyP(p){p.forEach((v,i)=>tracks[i].set(...v));}
+$('#pre').onchange=e=>{if(P[e.target.value])applyP(P[e.target.value]);};
 $('#play').onclick=toggle;$('#bpm').oninput=e=>$('#bv').textContent=e.target.value;
 document.onkeydown=e=>{if(e.code==='Space'&&e.target.tagName!=='INPUT'){e.preventDefault();toggle();}};
-$('#add').onclick=()=>addTrack({name:'Track',sound:'hat',hits:5,steps:16});$('#addb').onclick=()=>addTrack({name:'Bass',sound:'bass',hits:5,steps:16});
-addTrack({name:'Kick',sound:'kick',hits:4,steps:16});addTrack({name:'Snare',sound:'snare',hits:3,steps:8,rot:2});addTrack({name:'Hat',sound:'hat',hits:7,steps:12});
+ORDER.forEach(([n,so],i)=>addTrack({name:n,sound:so,hits:DEF[i][0],steps:DEF[i][1],rot:DEF[i][2]}));
 }
 </script></body></html>
