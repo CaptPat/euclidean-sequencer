@@ -18,6 +18,18 @@ A multi-track Euclidean rhythm sequencer **and synth workstation** in a single, 
 - **VARY** copies the selected section with small mutations (rotate, +/-1 hit, riff note or octave tweak) as a new section.
 - **Song repeats**: every section has a x N badge (click / scroll / arrow keys; Shift- or right-click = fewer). **LOOP FROM** marks where the song loops back to, **OUTRO** marks the section(s) that play once at the end, and **END** (song mode) finishes the current pass, plays the outro once and stops. Without END the song runs to the end of the body and returns to the loop marker (or the start). The DEMO is Intro x1, Main x2 (loop), Chorus, Break, Main, Outro.
 
+## Rage / trap / Yeat-style toolkit (v10)
+
+- **Presets** (top of the Presets menu): *Rage loop* (150 BPM, F# minor), *Dark bell* (140, C# minor), *Heavy 808 bounce* (140, F minor) and *Trap 140* (140, A minor). Each sets BPM, key, minor scale, Euclidean patterns for all 8 tracks including Clave, sounds, riff / power-chord modes, hat rolls, drive and ducking in one click.
+- **Sounds**: the dock has a SOUND menu and engine select per synth. Engines: Synth, **808** (sine, pitch-drop PUNCH, GLIDE slides, mono choke, SUB layer one octave down) and **FM** (2-op bell with FM IDX and RATIO). Sound presets: Classic Bass, 808 Sub, 808 Distorted, Supersaw Lead, Soft Lead, Tubular Bell, Glass Bell, Dark Pad, Warm Pad. Bass and Bell are louder by default.
+- **Tempo**: BPM 10-240 (default 140) with chips 90 / 120 / 140 / 150 / 160 and half / double.
+- **Melody helpers**: note modes *Power* (root + 5th, follows the progression), *Power +8* (adds the octave) and *Minor riff* (riff degrees through the minor pentatonic). The rage presets turn on a minor bias for +KEY.
+- **Drive**: per-synth DRIVE in the 808 group plus a master DRIVE (before the limiter, gain-compensated).
+- **Hat rolls**: each drum has a x1 / x2 / x3 / x4 ratio button (top-right of its circle) and an F button (bottom-right) that fills the last 2 / 4 / 8 steps of the bar with rolls. Sample-accurate.
+- **Master FX**: DUCK (sidechain-style ducking of the synths on every kick), CRUSH + RATE (bitcrusher; sample-rate reduction needs AudioWorklet, i.e. https or localhost), NOISE (hiss bed), momentary STUTTER 1/8 and 1/16 (loops the last slice, quantized to the next step) and a hold-to-sweep RISER.
+- **Export** (song row): MIDI (SMF type 1, 480 PPQ, tempo map, drums on channel 10 with GM notes, one track per instrument), WAV mix (16-bit / 44.1 kHz, offline render) or a ZIP with the mix plus per-track stems, each for the whole song (sections x repeats once, outro included) or the current pattern. Stems skip the master compressor / drive / limiter so they sum back without clipping; the live STUTTER, RISER and hand-moved knobs are not recorded.
+- The version number is shown bottom-right; the page asks for no-cache and reloads once if a newer version is deployed.
+
 Shortcuts: **Space** play/stop, **C** capture section, **U** update section, **[ ]** previous/next section, **Del** remove section, **R** roll all, **V** vary, **E** end, **Up/Down** section repeat, **Ctrl+Z** undo delete.
 
 Inspired by the "Claudia Explains: Euclid" video by [@anabology](https://x.com/anabology) on X.
