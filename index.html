@@ -98,10 +98,11 @@ select:focus,button:focus-visible,input:focus-visible{outline:none;border-color:
 .lenp{display:inline-flex;align-items:center;gap:5px}
 .arr select{padding:2px 16px 2px 6px;font-size:10px}
 .arr .fill{flex:1}
+.hv{min-width:34px;color:#fff;font-weight:700;font-size:11px;letter-spacing:0;font-family:"Courier New",monospace}#hmv{width:110px}
 </style></head><body>
 <header><h1>GROK BAND<small>EUCLIDEAN</small></h1><button id="play">▶ Play</button>
 <select id="pre"><option value="">Presets…</option></select>
-<span id="hvol" class="hknob" title="Master volume"></span>
+<label title="Master volume">MASTER VOLUME <input id="hmv" type="range" min="0" max="100" value="85" aria-label="Master volume"> <span id="hmvv" class="hv">85%</span></label>
 <label>BPM <input id="bpm" type="range" min="60" max="200" value="110"> <span id="bv">110</span></label>
 <label>KEY <select id="key"></select></label><label>SCALE <select id="scale"></select></label>
 </header>
@@ -441,7 +442,7 @@ for(const k in P)$('#pre').add(new Option(k,k));
 $('#pre').onchange=e=>{if(P[e.target.value])applyP(P[e.target.value]);};
 $('#play').onclick=toggle;$('#bpm').oninput=e=>setBpm(+e.target.value);
 document.onkeydown=e=>{const t=e.target,tag=t.tagName;
-if(e.code==='Space'&&tag!=='INPUT'&&tag!=='SELECT'){e.preventDefault();toggle();return;}
+if(e.code==='Space'&&(tag!=='INPUT'||t.type==='range')&&tag!=='SELECT'){e.preventDefault();toggle();return;}
 if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA'||(t.closest&&t.closest('.kn')))return;
 if(e.ctrlKey||e.metaKey){if(e.key==='z'||e.key==='Z'){e.preventDefault();undo();}return;}
 const k=e.key;if(e.altKey)return;
@@ -450,7 +451,12 @@ else if(k==='['){selectEntry(selIdx-1);}else if(k===']'){selectEntry(selIdx+1);}
 const DEFS=[['Kick','kick',.8,[4,16,0]],['Snare','snare',.8,[2,16,4]],['Hat','hat',.7,[8,16,1]]];
 DEFS.forEach(d=>addTrack({name:d[0],id:d[1],drum:true,sound:d[1],vol:d[2]}).set(...d[3]));
 [['Bass','bass',.8,[5,16,2]],['Bell','bell',.6,Z],['Lead','lead',.6,Z],['Pad','pad',.6,Z]].forEach(d=>addTrack({name:d[0],id:d[1],vol:d[2]}).set(...d[3]));
-addMaster();volDraws.push(knob($('#hvol'),'VOL',0,100,()=>M.vol,setVol,v=>v+'%'));requestAnimationFrame(()=>volDraws.forEach(d=>d()));buildDock();
+addMaster();{const hm=$('#hmv'),hv=$('#hmvv');volDraws.push(()=>{hm.value=M.vol;hv.textContent=M.vol+'%';hm.setAttribute('aria-valuetext',M.vol+'%');});
+hm.oninput=()=>setVol(+hm.value);
+hm.onkeydown=e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;let v=M.vol,n=null;
+if(e.key==='+'||e.key==='=')n=v+1;else if(e.key==='-'||e.key==='_')n=v-1;else if(e.shiftKey&&(e.key==='ArrowUp'||e.key==='ArrowRight'))n=v+10;else if(e.shiftKey&&(e.key==='ArrowDown'||e.key==='ArrowLeft'))n=v-10;
+if(n!=null){e.preventDefault();e.stopPropagation();setVol(Math.max(0,Math.min(100,n)));}};
+volDraws.forEach(d=>d());}buildDock();
 (function loop(){if(playing&&ac){const now=ac.currentTime-(ac.outputLatency||0);while(uiq.length&&uiq[0][0]<=now){const e=uiq.shift();if(e[3]){e[3]();continue;}const tr=e[1],i=e[2];tr.cur=i;if(tr.pat[i]){tr.flash[i]=performance.now();tr.lastHit=tr.flash[i];}}tracks.forEach(t=>t.anim());}drawScope();updateLights();updatePlayhead();requestAnimationFrame(loop);})();
 function relayout(){const b=document.body;b.style.zoom=1;b.style.minHeight='0';const nat=b.offsetHeight||560;
 let z=Math.min(innerWidth/1280,innerHeight/nat);z=Math.max(1,Math.min(2,z));z=Math.round(z*50)/50;
