@@ -2,7 +2,7 @@
 <style>
 :root{--c:#ff6b4a;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:#0a0908;color:#ddd;font-family:"Helvetica Neue",Arial,sans-serif}
+body{margin:0;background:#0a0908;color:#ddd;font-family:"Helvetica Neue",Arial,sans-serif;display:flex;flex-direction:column;min-height:100vh;max-width:1800px;margin:0 auto}
 header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:4px 12px;background:linear-gradient(#1c1917,#141210);border-bottom:1px solid #2a2522}
 h1{font-size:15px;line-height:1;margin:0 6px 0 0;letter-spacing:3px;white-space:nowrap;color:var(--c);text-shadow:0 0 10px rgba(255,107,74,.5)}
 h1 small{display:block;font-size:9px;letter-spacing:5px;color:#8a7f78;font-weight:600;text-shadow:none;margin-top:2px}
@@ -14,11 +14,11 @@ input[type=range]{accent-color:var(--c)}
 select{appearance:none;-webkit-appearance:none;background:#1a1614 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23ff6b4a'/%3E%3C/svg%3E") no-repeat right 6px center;color:#e8e2dc;border:1px solid #3a3430;padding-right:18px}
 select option{background:#1a1614;color:#e8e2dc}
 select:focus,button:focus-visible,input:focus-visible{outline:none;border-color:#ff6b4a;box-shadow:0 0 0 2px rgba(255,107,74,.35)}
-#tracks{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:8px;padding:8px}
+#tracks{flex:1 1 auto;grid-auto-rows:1fr;display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:8px;padding:8px}
 @media(min-width:860px){#tracks{grid-template-columns:repeat(3,1fr)}}
 @media(min-width:1180px){#tracks{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:480px){#tracks{grid-template-columns:1fr}}
-.tr{background:linear-gradient(180deg,#26211e 0%,#1a1715 35%,#141210 100%);border-radius:12px;padding:6px 10px 8px;border:1px solid #2e2825;box-shadow:0 8px 20px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06);position:relative;overflow:hidden;transition:opacity .15s;min-width:0}
+.tr{display:flex;flex-direction:column;background:linear-gradient(180deg,#26211e 0%,#1a1715 35%,#141210 100%);border-radius:12px;padding:6px 10px 8px;border:1px solid #2e2825;box-shadow:0 8px 20px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06);position:relative;overflow:hidden;transition:opacity .15s;min-width:0}
 .tr:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.012) 0 1px,transparent 1px 3px);pointer-events:none}
 .tr.dim{opacity:.45}.tr.dim:hover{opacity:.8}
 .tr.sel{border-color:var(--tc);box-shadow:0 0 0 1px var(--tc),0 0 14px -2px var(--tc),0 8px 20px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06)}
@@ -30,7 +30,7 @@ select:focus,button:focus-visible,input:focus-visible{outline:none;border-color:
 .hd .sy{font-size:10px;letter-spacing:1px;padding:1px 7px;border-radius:9px;font-weight:700;color:#bdb5ae}
 .hd .sy.on{background:var(--tc,var(--c));color:#1a0d08}
 .hd .sub{display:none}
-.bd{display:flex;gap:8px;align-items:center;position:relative}.viz{width:104px;height:104px;flex:none}
+.bd{flex:1;display:flex;gap:8px;align-items:center;position:relative}.viz{width:104px;height:104px;flex:none}
 .rt{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
 .knobs{display:flex;justify-content:space-around}
 .kn{text-align:center;user-select:none;color:#bdb5ae;font-size:10px;font-weight:700;letter-spacing:.5px}
@@ -45,11 +45,11 @@ select:focus,button:focus-visible,input:focus-visible{outline:none;border-color:
 .ctl button{padding:2px 0;width:21px;text-align:center;font-weight:700;font-size:10px;flex:none;border-radius:6px}
 .ctl input[type=range]{flex:1;min-width:24px;width:30px;margin:0}
 .ctl .so.on{background:linear-gradient(#ffd24a,#f0a800);color:#1a1200;border-color:#ffd24a;box-shadow:0 0 10px rgba(255,200,40,.65)}
-.master .bd{flex-direction:column;align-items:stretch;gap:5px}
+.master .bd{flex-direction:column;align-items:stretch;justify-content:center;gap:5px}
 .scope{width:100%;height:36px;border-radius:7px;background:#050404;box-shadow:inset 0 2px 8px #000,0 1px 0 rgba(255,255,255,.05);border:1px solid #2a2522;display:block}
 .master .knobs{justify-content:space-between}
 /* dock */
-.dock{position:sticky;bottom:0;z-index:20;margin:0 8px 8px;border-radius:12px;background:linear-gradient(180deg,#26211e,#171412);border:1px solid #2e2825;box-shadow:0 -10px 24px rgba(0,0,0,.6),0 4px 14px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)}
+.dock{flex:none;margin:0 8px 8px;border-radius:12px;background:linear-gradient(180deg,#26211e,#171412);border:1px solid #2e2825;box-shadow:0 -10px 24px rgba(0,0,0,.6),0 4px 14px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)}
 .dtabs{display:flex;align-items:center;gap:6px;padding:4px 8px}
 .dock:not(.closed) .dtabs{border-bottom:1px solid #2c2623}
 .tabs{display:flex;gap:5px;align-items:center}
@@ -71,12 +71,12 @@ select:focus,button:focus-visible,input:focus-visible{outline:none;border-color:
 .kn canvas:focus{outline:none;border-radius:50%;box-shadow:0 0 0 2px rgba(255,107,74,.7),0 0 10px rgba(255,107,74,.5)}
 .hknob .kn{display:flex;align-items:center;gap:5px;color:#8a7f78;font-size:10px;letter-spacing:1px}
 .hknob .kn canvas{width:26px;height:26px;margin:0}.hknob .kn b{display:inline;font-size:11px;min-width:34px;text-align:left;color:#fff}
-.dtab.arrtab.on{border-color:var(--c);box-shadow:0 0 12px -3px var(--c)}.dtab.arrtab i{background:var(--c)}
-.ro{margin-left:auto;font-family:"Courier New",monospace;font-size:11px;color:var(--c);min-width:250px;text-align:right;white-space:nowrap;text-shadow:0 0 8px rgba(255,107,74,.35)}
+.ro{text-align:right;font-family:"Courier New",monospace;font-size:11px;color:var(--c);min-width:180px;white-space:nowrap;text-shadow:0 0 8px rgba(255,107,74,.35)}
 .seg{display:inline-flex}.seg button{border-radius:0;padding:2px 9px;font-size:10px;font-weight:700;letter-spacing:1px}
 .seg button:first-child{border-radius:6px 0 0 6px}.seg button:last-child{border-radius:0 6px 6px 0;border-left:0}
-.arr{padding:6px 8px 8px;display:flex;flex-direction:column;gap:4px}
-.strip{position:relative;display:flex;gap:3px;height:38px;padding:3px;background:#0c0b0a;border-radius:7px;box-shadow:inset 0 2px 5px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.05);border:1px solid #2a2522;overflow:hidden}
+.arr{flex:none;margin:8px 8px 0;padding:6px 8px;display:flex;flex-direction:column;gap:4px;border-radius:12px;background:linear-gradient(180deg,#26211e,#171412);border:1px solid #2e2825;box-shadow:0 8px 20px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06)}
+.sl1{display:flex;gap:6px;align-items:center}.sl1 .strip{flex:1;min-width:0}
+.strip{position:relative;display:flex;gap:3px;height:36px;padding:3px;background:#0c0b0a;border-radius:7px;box-shadow:inset 0 2px 5px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.05);border:1px solid #2a2522;overflow:hidden}
 .strip .empty{margin:auto;font-size:11px;color:#8a7f78;letter-spacing:.5px}
 .blk{--bc:#ff6b4a;position:relative;flex:var(--d,1) 1 0;min-width:44px;border-radius:5px;padding:2px 6px;cursor:pointer;overflow:hidden;background:linear-gradient(180deg,color-mix(in srgb,var(--bc) 62%,#201a17),color-mix(in srgb,var(--bc) 30%,#120f0e));border:1px solid color-mix(in srgb,var(--bc) 70%,#000);box-shadow:inset 0 1px 0 rgba(255,255,255,.25);user-select:none}
 .blk b{display:block;font-size:11px;line-height:14px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px #000}
@@ -94,10 +94,9 @@ select:focus,button:focus-visible,input:focus-visible{outline:none;border-color:
 .arr .col{width:18px;height:18px;padding:0;border-radius:50%;border:1px solid #000;box-shadow:0 0 0 1px #3a3430}
 .arr .nm{width:110px;background:#0c0b0a;border:1px solid #2e2825;border-radius:6px;color:#fff;font-size:11px;padding:2px 6px;font-family:inherit}
 .stp{display:inline-flex;align-items:center;gap:3px}.stp button{width:18px;padding:1px 0;text-align:center}.stp b{min-width:18px;text-align:center;font-size:11px;color:#fff}
-.stp.hid{visibility:hidden}
-.lenp{display:inline-grid}.lenp>*{grid-area:1/1;align-self:center}.lenp>.hid{visibility:hidden}
+.stp.hid,.lenp>.hid{display:none}
+.lenp{display:inline-flex;align-items:center;gap:5px}
 .arr select{padding:2px 16px 2px 6px;font-size:10px}
-.lo{font-family:"Courier New",monospace;font-size:11px;color:var(--c);min-width:260px}
 .arr .fill{flex:1}
 </style></head><body>
 <header><h1>GROK BAND<small>EUCLIDEAN</small></h1><button id="play">▶ Play</button>
@@ -106,6 +105,7 @@ select:focus,button:focus-visible,input:focus-visible{outline:none;border-color:
 <label>BPM <input id="bpm" type="range" min="60" max="200" value="110"> <span id="bv">110</span></label>
 <label>KEY <select id="key"></select></label><label>SCALE <select id="scale"></select></label>
 </header>
+<section id="song" class="arr"></section>
 <div id="tracks"></div>
 <script>
 function bjorklund(k,n){n=Math.max(1,n|0);k=Math.max(0,Math.min(n,k|0));if(k===0)return Array(n).fill(0);
@@ -210,7 +210,7 @@ function toggle(){if(!ac)build(new (window.AudioContext||window.webkitAudioConte
 if(playing){uiq=[];nextT=ac.currentTime+.06;beginTransport(nextT);timer=setInterval(sched,25);}
 else{clearInterval(timer);uiq=[];view.active=false;tracks.forEach(t=>{t.cur=-1;t.anim();});renderSel();updateRo();}}
 // ---------- drawing ----------
-const DPR=window.devicePixelRatio||1;
+let DPR=window.devicePixelRatio||1,ZOOM=1;
 function fit(c,w,h){const cw=c.clientWidth||w,k=cw/w,W=Math.round(cw*DPR);if(c.width!==W){c.width=W;c.height=Math.round(h*k*DPR);}const x=c.getContext('2d');x.setTransform(DPR*k,0,0,DPR*k,0,0);x.clearRect(0,0,w,h);return x;}
 function knob(el,label,min,max,get,set,fmt){const mx=typeof max==='function'?max:()=>max;const w=document.createElement('div');w.className='kn';const c=document.createElement('canvas');const b=document.createElement('b');w.append(label,c,b);el.append(w);
 let hov=false,drag=false,foc=false;c.tabIndex=0;c.setAttribute('role','slider');c.setAttribute('aria-label',typeof label==='string'?label:'knob');
@@ -280,14 +280,14 @@ tr.set=(h,st,r)=>{tr.steps=st;tr.hits=h;tr.rot=r||0;regen();};tracks.push(tr);re
 // ---------- synth editor dock ----------
 const VCOL={bass:'#ff6b4a',bell:'#ffc24a',lead:'#ff5f9e',pad:'#8fb8ff'};
 function dockDraw(){if(!dockCur)return;dockKnobs.forEach(k=>k());dockSel.value=dockCur.syn.lfoTgt;}
-function selectSyn(tr){paneSet('syn');dockCur=tr;tracks.forEach(t=>{const on=t===tr;t.el.classList.toggle('sel',on);const b=t.el.querySelector('.sy');if(b)b.classList.toggle('on',on);if(on)t.el.style.setProperty('--tc',VCOL[t.id]);});
+function selectSyn(tr){dockCur=tr;tracks.forEach(t=>{const on=t===tr;t.el.classList.toggle('sel',on);const b=t.el.querySelector('.sy');if(b)b.classList.toggle('on',on);if(on)t.el.style.setProperty('--tc',VCOL[t.id]);});
 for(const id in dockTabs)dockTabs[id].classList.toggle('on',id===tr.id);dockDraw();}
 function openDock(){dockEl.classList.remove('closed');}
 function buildDock(){dockEl=document.createElement('div');dockEl.className='dock';
-dockEl.innerHTML='<div class="dtabs"><span class="tabs"></span><span class="ro"></span><span class="seg"><button data-m="loop" title="Loop the selected section">LOOP</button><button data-m="song" title="Play the whole song">SONG</button></span><button class="dtog" title="Collapse / expand editor"><span>▾</span></button></div><div class="dbody"><div><div class="dstack"><div class="dgroups"></div></div></div></div>';
+dockEl.innerHTML='<div class="dtabs"><span class="tabs"></span><button class="dtog" title="Collapse / expand editor"><span>▾</span></button></div><div class="dbody"><div><div class="dstack"><div class="dgroups"></div></div></div></div>';
 document.body.append(dockEl);const tabs=dockEl.querySelector('.tabs'),gr=dockEl.querySelector('.dgroups');
 tracks.filter(t=>!t.drum).forEach(t=>{const b=document.createElement('button');b.className='dtab';b.style.setProperty('--tc',VCOL[t.id]);b.innerHTML='<i></i>'+t.id.toUpperCase();b.onclick=()=>selectSyn(t);tabs.append(b);dockTabs[t.id]=b;t.tabLight=b.querySelector('i');});
-dockEl.querySelector('.dtog').onclick=()=>dockEl.classList.toggle('closed');buildArr();
+dockEl.querySelector('.dtog').onclick=()=>{dockEl.classList.toggle('closed');setTimeout(relayout,340);};buildArr();
 const grp=(t,n)=>{const g=document.createElement('div');g.className='grp';g.style.setProperty('--n',n);g.innerHTML=`<h4>${t}</h4><div class="kk"></div>`;gr.append(g);return g.querySelector('.kk');};
 const K=(box,key,label,min,max,fmt)=>dockKnobs.push(knob(box,label,min,max,()=>dockCur.syn[key],v=>{dockCur.syn[key]=v;},fmt));
 let b=grp('OSCILLATOR',3);K(b,'wave','WAVE',0,3,v=>WNAME[v]);K(b,'uni','UNISON',1,5);K(b,'det','DETUNE',0,50,v=>v+'c');
@@ -331,8 +331,8 @@ function setMode(m){arr.mode=m;if(m==='song'&&song.length&&selIdx<0)selIdx=0;if(
 function onView(){if(arr.mode==='song'&&selIdx!==view.idx){selIdx=view.idx;refreshArr();}if(lastIdx!==view.idx||lastRep!==view.rep){lastIdx=view.idx;lastRep=view.rep;renderSel();}updateRo();}
 function renderSel(){if(!strip)return;[...strip.querySelectorAll('.blk')].forEach((b,i)=>{b.classList.toggle('sel',i===selIdx);b.classList.toggle('now',view.active&&i===view.idx);});}
 function readoutText(){if(view.active&&song[view.idx]){const e=song[view.idx],s=secs[e.sec];return s.name.toUpperCase()+' ×'+(view.rep+1)+'/'+e.rep+' · BAR '+(Math.floor(view.step/16)+1)+'/'+Math.ceil(view.len/16);}
-const s=curSec();if(!s)return 'NO SECTION';return s.name.toUpperCase()+' · '+fBars(secCalc(s,playing||arr.mode==='loop'?snapshot():s.state).n);}
-function updateRo(){const t=readoutText();if(t!==lastRo){lastRo=t;const r=dockEl.querySelector('.ro');if(r)r.textContent=t;}}
+const s=curSec();if(!s)return 'NO SECTION';const c=secCalc(s,playing||arr.mode==='loop'?snapshot():s.state);return s.name.toUpperCase()+' · '+fBars(c.n)+(c.capped?' ⚠':'');}
+function updateRo(){const t=readoutText();if(t!==lastRo){lastRo=t;const r=arrEl&&arrEl.querySelector('.ro');if(r)r.textContent=t;}}
 function updatePlayhead(){const ph=strip&&strip.querySelector('.ph2');if(!ph)return;const b=view.active&&playing&&strip.querySelectorAll('.blk')[view.idx];
 if(!b||!song[view.idx]){ph.style.display='none';return;}const now=ac.currentTime-(ac.outputLatency||0),sub=Math.max(0,Math.min(1,(now-view.t)/stepDur())),f=((view.rep*view.len)+view.step+sub)/(song[view.idx].rep*view.len);
 ph.style.display='block';ph.style.left=(b.offsetLeft+b.offsetWidth*Math.min(1,f))+'px';}
@@ -357,20 +357,17 @@ A.nm.value===(s?s.name:'')||(document.activeElement!==A.nm&&(A.nm.value=s?s.name
 A.rep.upd();A.lm.value=s?s.len.mode:'bars';const m=s?s.len.mode:'bars';A.pBars.el.classList.toggle('hid',m!=='bars');A.trSel.classList.toggle('hid',m!=='track');A.pCap.el.classList.toggle('hid',m!=='realign');A.pCyc.el.classList.toggle('hid',m!=='track');
 if(s){A.trSel.value=s.len.track;}[A.pBars,A.pCap,A.pCyc].forEach(p=>p.upd());
 A.tempo.classList.toggle('on',!!(s&&s.useBpm));A.sloop.classList.toggle('on',songLoop);
-dockEl.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.m===arr.mode));
+arrEl.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.m===arr.mode));
 A.und.style.opacity=undoStack.length?1:.4;renderSel();tick500(true);updateRo();}
 function tick500(force){volDraws.forEach(d=>d());if(!arrEl)return;const s=curSec();let txt='—',dirty=false;
 if(s){const live=snapshot(),c=secCalc(s,(playing&&arr.mode==='song')?s.state:live),bpm=bpmOf(s),sec=c.n*60/bpm/4;
 txt=fBars(c.n)+' · '+c.n+' st · '+sec.toFixed(1)+'s'+(c.capped?' · capped from '+fBars(c.full):'');
 const k=(st,u)=>JSON.stringify({...st,bpm:u?st.bpm:0});dirty=k(live,s.useBpm)!==k(s.state,s.useBpm);}
-if(A.lo.textContent!==txt)A.lo.textContent=txt;A.upd.classList.toggle('dirty',dirty);updateRo();}
-function buildArr(){const tabs=dockEl.querySelector('.tabs'),stack=dockEl.querySelector('.dstack');
-const sep=document.createElement('span');sep.className='tsep';tabs.append(sep);
-arrTab=document.createElement('button');arrTab.className='dtab arrtab';arrTab.innerHTML='<i></i>ARRANGE';arrTab.onclick=()=>paneSet('arr');tabs.append(arrTab);
-arrEl=document.createElement('div');arrEl.className='arr off';
-arrEl.innerHTML='<div class="strip"></div><div class="arow r1"><button class="cap" title="Save the current pattern as a new section (C)">● CAPTURE</button><button class="upd needsel" title="Overwrite the selected section with the current state (U)">UPDATE</button><button class="dup needsel" title="Copy the section (independent)">DUP</button><button class="ref needsel" title="Add another reference to the same section (linked)">REF</button><button class="del needsel" title="Remove from song (Del)">DEL</button><button class="und" title="Undo delete (Ctrl+Z)">UNDO</button><span class="sepv"></span><button class="col needsel" title="Section color"></button><input class="nm needsel" placeholder="Section name" maxlength="18"><span class="sepv"></span><span class="rp"></span><span class="sepv"></span><button class="tempo needsel" title="Section sets its own BPM">TEMPO</button></div><div class="arow r2"><span class="lbl">LENGTH</span><select class="lm needsel"><option value="bars">Bars</option><option value="track">By track</option><option value="realign">Realign</option></select><span class="lenp"></span><span class="cyc"></span><span class="lo"></span><span class="fill"></span><button class="sloop" title="Loop the song at the end">SONG LOOP</button><span class="sepv"></span><button class="demo">DEMO</button><button class="save" title="Download .grokband.json">SAVE</button><button class="load" title="Open a .grokband.json">LOAD</button><input type="file" accept=".json,application/json" hidden></div>';
-stack.append(arrEl);strip=arrEl.querySelector('.strip');const q=x=>arrEl.querySelector(x);
-A.nm=q('.nm');A.col=q('.col');A.lm=q('.lm');A.tempo=q('.tempo');A.sloop=q('.sloop');A.und=q('.und');A.upd=q('.upd');A.lo=q('.lo');
+const ro=arrEl.querySelector('.ro');if(ro.title!==txt)ro.title=txt;A.upd.classList.toggle('dirty',dirty);updateRo();}
+function buildArr(){arrEl=$('#song');
+arrEl.innerHTML='<div class="sl1"><div class="strip"></div><span class="seg"><button data-m="loop" title="Loop the selected section">LOOP</button><button data-m="song" title="Play the whole song">SONG</button></span><button class="sloop" title="Loop the song at the end">SONG LOOP</button></div><div class="arow r1"><button class="cap" title="Save the current pattern as a new section (C)">● CAPTURE</button><button class="upd needsel" title="Overwrite the selected section with the current state (U)">UPDATE</button><button class="dup needsel" title="Copy the section (independent)">DUP</button><button class="ref needsel" title="Add another reference to the same section (linked)">REF</button><button class="del needsel" title="Remove from song (Del)">DEL</button><button class="und" title="Undo delete (Ctrl+Z)">UNDO</button><span class="sepv"></span><button class="col needsel" title="Section color"></button><input class="nm needsel" placeholder="Section name" maxlength="18"><span class="sepv"></span><span class="rp"></span><span class="sepv"></span><button class="tempo needsel" title="Section sets its own BPM">TEMPO</button><span class="sepv"></span><span class="lbl">LENGTH</span><select class="lm needsel"><option value="bars">Bars</option><option value="track">By track</option><option value="realign">Realign</option></select><span class="lenp"></span><span class="cyc"></span><span class="fill"></span><span class="ro"></span><span class="sepv"></span><button class="demo">DEMO</button><button class="save" title="Download .grokband.json">SAVE</button><button class="load" title="Open a .grokband.json">LOAD</button><input type="file" accept=".json,application/json" hidden></div>';
+strip=arrEl.querySelector('.strip');const q=x=>arrEl.querySelector(x);
+A.nm=q('.nm');A.col=q('.col');A.lm=q('.lm');A.tempo=q('.tempo');A.sloop=q('.sloop');A.und=q('.und');A.upd=q('.upd');
 A.rep=stp('REPEAT',1,16,()=>curEnt()?curEnt().rep:0,v=>{if(curEnt()){curEnt().rep=v;renderStrip();tick500();}});q('.rp').append(A.rep.el);
 const L=()=>curSec()?curSec().len:{bars:0,cap:0,cycles:0,track:0},lc=()=>{renderStrip();tick500();};
 A.pBars=stp('BARS',1,32,()=>L().bars,v=>{if(curSec()){curSec().len.bars=v;lc();}});A.pCap=stp('CAP',1,32,()=>L().cap,v=>{if(curSec()){curSec().len.cap=v;lc();}});A.pCyc=stp('CYCLES',1,8,()=>L().cycles,v=>{if(curSec()){curSec().len.cycles=v;lc();}});
@@ -385,11 +382,9 @@ A.sloop.onclick=()=>{songLoop=!songLoop;refreshArr();};
 q('.demo').onclick=()=>{try{localStorage.setItem(LS+'.backup',JSON.stringify(project()));}catch(e){}buildDemo();};
 q('.save').onclick=saveFile;const fi=q('input[type=file]');q('.load').onclick=()=>fi.click();
 fi.onchange=()=>{const f=fi.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{restore(JSON.parse(r.result));}catch(e){alert('Could not load project: '+e.message);}fi.value='';};r.readAsText(f);};
-dockEl.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+arrEl.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
 renderStrip();refreshArr();setInterval(()=>{tick500();},500);setInterval(autosave,2000);
 try{const j=localStorage.getItem(LS);if(j)restore(JSON.parse(j));}catch(e){}}
-function paneSet(p){dockPane=p;const g=dockEl.querySelector('.dgroups');g.classList.toggle('off',p!=='syn');arrEl.classList.toggle('off',p!=='arr');arrTab.classList.toggle('on',p==='arr');
-if(p==='arr'){tracks.forEach(t=>{t.el.classList.remove('sel');const b=t.el.querySelector('.sy');if(b)b.classList.remove('on');});for(const id in dockTabs)dockTabs[id].classList.remove('on');}}
 // ---------- project IO ----------
 let lastSave='';
 function project(){return{app:'grokband',v:1,bpm:G.bpm,master:{...M},live:snapshot(),sections:Object.values(secs),song:song.map(e=>({...e})),sel:selIdx,mode:arr.mode,songLoop};}
@@ -457,6 +452,12 @@ DEFS.forEach(d=>addTrack({name:d[0],id:d[1],drum:true,sound:d[1],vol:d[2]}).set(
 [['Bass','bass',.8,[5,16,2]],['Bell','bell',.6,Z],['Lead','lead',.6,Z],['Pad','pad',.6,Z]].forEach(d=>addTrack({name:d[0],id:d[1],vol:d[2]}).set(...d[3]));
 addMaster();volDraws.push(knob($('#hvol'),'VOL',0,100,()=>M.vol,setVol,v=>v+'%'));requestAnimationFrame(()=>volDraws.forEach(d=>d()));buildDock();
 (function loop(){if(playing&&ac){const now=ac.currentTime-(ac.outputLatency||0);while(uiq.length&&uiq[0][0]<=now){const e=uiq.shift();if(e[3]){e[3]();continue;}const tr=e[1],i=e[2];tr.cur=i;if(tr.pat[i]){tr.flash[i]=performance.now();tr.lastHit=tr.flash[i];}}tracks.forEach(t=>t.anim());}drawScope();updateLights();updatePlayhead();requestAnimationFrame(loop);})();
-window.__gb={snapshot,loadState,secCalc,flatten,stepPlay,beginTransport,arr,view,songRef:()=>song,secsRef:()=>secs,buildDemo,project,restore,capture,setMode,selectEntry,startLog:()=>{LOG=[];return LOG;},stepDur,audible,refreshAudible,tracks:()=>tracks,P,applyP,build,triggerStep,setBpm,updateDelay,M,G,drawScope,setScope:f=>{scopeSrc=f;},resetCounters:()=>tracks.forEach(t=>t.hitN=0),ac:()=>ac};
+function relayout(){const b=document.body;b.style.zoom=1;b.style.minHeight='0';const nat=b.offsetHeight||560;
+let z=Math.min(innerWidth/1280,innerHeight/nat);z=Math.max(1,Math.min(2,z));z=Math.round(z*50)/50;
+b.style.zoom=z;b.style.minHeight=(innerHeight/z)+'px';ZOOM=z;DPR=(window.devicePixelRatio||1)*z;
+tracks.forEach(t=>t.draw());if(masterEl)masterEl.draw();volDraws.forEach(d=>d());dockDraw();drawScope();}
+let rlT;addEventListener('resize',()=>{cancelAnimationFrame(rlT);rlT=requestAnimationFrame(relayout);});
+relayout();
+window.__gb={relayout,zoom:()=>ZOOM,snapshot,loadState,secCalc,flatten,stepPlay,beginTransport,arr,view,songRef:()=>song,secsRef:()=>secs,buildDemo,project,restore,capture,setMode,selectEntry,startLog:()=>{LOG=[];return LOG;},stepDur,audible,refreshAudible,tracks:()=>tracks,P,applyP,build,triggerStep,setBpm,updateDelay,M,G,drawScope,setScope:f=>{scopeSrc=f;},resetCounters:()=>tracks.forEach(t=>t.hitN=0),ac:()=>ac};
 }
 </script></body></html>
