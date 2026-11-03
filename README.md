@@ -30,6 +30,14 @@ A multi-track Euclidean rhythm sequencer **and synth workstation** in a single, 
 - **Export** (song row): MIDI (SMF type 1, 480 PPQ, tempo map, drums on channel 10 with GM notes, one track per instrument), WAV mix (16-bit / 44.1 kHz, offline render) or a ZIP with the mix plus per-track stems, each for the whole song (sections x repeats once, outro included) or the current pattern. Stems skip the master compressor / drive / limiter so they sum back without clipping; the live STUTTER, RISER and hand-moved knobs are not recorded.
 - The version number is shown bottom-right; the page asks for no-cache and reloads once if a newer version is deployed.
 
-Shortcuts: **Space** play/stop, **C** capture section, **U** update section, **[ ]** previous/next section, **Del** remove section, **R** roll all, **V** vary, **E** end, **Up/Down** section repeat, **Ctrl+Z** undo delete.
+## NEW SONG (v10.1)
+
+- **NEW SONG** (dice button on the SONG strip, or **Shift+R**) replaces the song with a generated arrangement. **ROLL** / **R** still only re-rolls the live loop. **UNDO** (or Ctrl+Z) brings the previous song back.
+- The generator is **seeded**: the 6-character seed sits next to the button and is saved with the project. Type a seed and press Enter to reproduce a song exactly.
+- It picks a style (weighted: Rage, Trap, House, Latin, Synthwave, Dorian chill), which sets BPM range, key/scale bias, sounds, drive/duck, hat rolls and groove ranges. One core groove is rolled for all tracks, then the sections are derived from it: Intro (pad + hat or bell, filtered), Main x2 (loop point), Chorus (lead and bell in, denser hats, maybe a different progression), Break (no kick/bass), Main 2 (Vary-style mutations of the core), optional second Chorus, Outro (stripped back, outro marker).
+- Musicality: one riff motif is shared by lead, bell and bass across sections; pad, bass ("Chord root" mode) and lead follow one chord progression per song (the Chorus may switch).
+- If the transport is running it restarts at the Intro, otherwise the Intro is selected and ready to play.
+
+Shortcuts: **Space** play/stop, **C** capture section, **U** update section, **[ ]** previous/next section, **Del** remove section, **R** roll all, **Shift+R** new song, **V** vary, **E** end, **Up/Down** section repeat, **Ctrl+Z** undo delete.
 
 Inspired by the "Claudia Explains: Euclid" video by [@anabology](https://x.com/anabology) on X.
