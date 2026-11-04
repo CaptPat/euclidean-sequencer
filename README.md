@@ -46,6 +46,17 @@ A multi-track Euclidean rhythm sequencer **and synth workstation** in a single, 
 - A Grok Band MIDI export imports back to the same notes (on a no-roll song; sub-step rolls quantize to 16ths). Limits: 4/4 bars only, SMPTE and format 2 files are rejected, drum patterns are approximated beyond 2 bars, notes crossing a section boundary are clipped.
 - For scripts: `__gb.importApply(plan,{mode:'sections'|'current',n,useTempo,keepDrums})` takes a plan `{parts:[{target:'lead'|'bell'|'pad'|'bass'|'drums',notes:[{s,l,p,v}]}],bars,bpm,tempoAt,stepTicks}`; `keepDrums` leaves the current Euclid drums under the phrases.
 
+## Drum kits (v12.0)
+
+- **KIT** selector in the MASTER panel (next to RISER): **Default** (the original voices), **808**, **909**, **Linn**. All drum voices are synthesized in Web Audio, with no samples.
+  - **808:** boomy sine kick with a ~0.9 s tail, snappy noise + tuned-body snare, metallic 6-square hats, sine clave, clap and cowbell.
+  - **909:** punchy kick with a noise click and a fast pitch sweep through a tanh saturator, noisy snare plus body, hats from filtered + ring-modulated noise, 4-burst handclap, rim-style clave.
+  - **Linn:** tight kick, gated snare with a short room, crisp hats, claps, woodblock clave and a cabasa-style shaker, all through an 8-bit staircase quantizer.
+- The drum sound menus now also offer **clap**, **cowbell** and **shaker** (so the Clave track can be a clap or a cowbell in any kit).
+- The kit is stored per drum track inside each section, so sections, saves, autosave and Undo carry it. The master selector sets all drum tracks (shows "Mixed" if sections/tracks differ). Old saves load as Default.
+- Presets: Rage loop, Dark bell, Heavy 808 bounce, Trap 140 and Bembe bell use 808; Four on floor and Electronic use 909; Synthwave and Dorian Dream use Linn. NEW SONG: rage/trap/latin use 808 (trap puts a cowbell on the clave lane), house uses 909 (clap on the clave lane), synthwave and dorian chill use Linn.
+- Also fixed: NEW SONG no longer inherits the previous song's bass/bell volumes, so the same seed always gives the same song.
+
 Shortcuts: **Space** play/stop, **C** capture section, **U** update section, **[ ]** previous/next section, **Del** remove section, **R** roll all, **Shift+R** new song, **V** vary, **E** end, **Up/Down** section repeat, **Ctrl+Z** undo delete.
 
 Inspired by the "Claudia Explains: Euclid" video by [@anabology](https://x.com/anabology) on X.
