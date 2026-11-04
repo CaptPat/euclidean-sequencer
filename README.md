@@ -57,7 +57,7 @@ A multi-track Euclidean rhythm sequencer **and synth workstation** in a single, 
 - Presets: Rage loop, Dark bell, Heavy 808 bounce, Trap 140 and Bembe bell use 808; Four on floor and Electronic use 909; Synthwave and Dorian Dream use Linn. NEW SONG: rage/trap/latin use 808 (trap puts a cowbell on the clave lane), house uses 909 (clap on the clave lane), synthwave and dorian chill use Linn.
 - Also fixed: NEW SONG no longer inherits the previous song's bass/bell volumes, so the same seed always gives the same song.
 
-## HUMANIZE + built-in demos (v13.0)
+## HUMANIZE (now JITTER) + built-in demos (v13.0)
 
 - **HUMAN** slider (MASTER panel, default 15%, saved in the project; old saves get 15%): small per-hit jitter on drum hits. At 100%: timing 0-15 ms late (never early), pitch +/-40 cents, decay +/-20%, level +/-2 dB; everything scales with the slider. The jitter comes from a seeded PRNG keyed by song seed + track + step + sub-hit, so playback, WAV export and re-renders match (MIDI export stays on the grid). Noise, reverb IR and Random note mode are seeded as well.
 - **DEMO** cycles through 20 built-in demos (the index is kept in localStorage, so a reload continues where you were): the original demo, 8 Bach-style chorales (DeepBach: S on Lead and an octave-up Bell, A+T on Pad, B on Bass, Euclidean drums underneath), 5 LLM-written songs (full saves) and 6 Anticipatory Music Transformer pieces (Phrase notes with Euclidean drums). The name and source tag show in the readout, with a short toast at the bottom. The data is gzip+base64 inside index.html (about 25 KB) and unpacked on the first DEMO press. The state you had is stored in `grokband.project.v1.backup` first.
@@ -90,3 +90,11 @@ Inspired by the "Claudia Explains: Euclid" video by [@anabology](https://x.com/a
 - *808* snare: the noise tail is tighter (about 150 ms) and its reverb send is lower. The "dribble" between hits came from a roll **fill** on the snare (F2 repeats the last two steps of every bar), set by the *Rage loop* preset and by NEW SONG's Rage style. Neither sets a snare fill any more. NEW SONG only rarely puts one on the Break's snare, and you can still switch it on with the F button.
 
 **Metallic hats / cymbals (also v14.1).** Every kit's hat is now built like an 808 cymbal bank: six square oscillators at inharmonic frequencies (205.3, 304.4, 369.6, 522.7, 540, 800 Hz, scaled up for the brighter 909 and Linn), plus a ring-modulated pair for extra clang and a little noise sizzle, summed into a ~7 kHz high-pass and ~10 kHz band-pass. The closed hat decays in about 40-60 ms. There is a new **open hat** drum sound (about 300-450 ms of ring, MIDI note 46) in every track's sound menu, so you can set the Clave track, or any drum track, to *open hat*. A closed hat (or a new open hat) on any track chokes a ringing open hat within about 12 ms. Generated songs don't use the open hat yet, so pick it on a track to hear it.
+
+## v14.2 — master volume is yours
+
+The master VOLUME (header slider and master knob) is a personal setting kept in this browser's localStorage under its own key. Loading a demo (DEMO), a preset, a project file, an autosave, undo, NEW SONG, ROLL, or changing section never reads or changes it, and projects no longer save it (a volume stored in an older file is ignored). The first run after this update picks up the volume from your previous autosave once.
+
+The header now shows the version (small, bottom right of the title) and the **currently loaded song** under "GROK BAND": a demo as "Bach · F major pastoral" / "LLM · dark-trap-150" / "Anticipation · …", a generated one as "NEW · seed · style", a file as "File · name", a MIDI import as "Import · name", otherwise "Project". It has a fixed width with an ellipsis (full text on hover), so nothing moves. The DEMO button's tooltip reads "Now: X — Next: Y". The label is saved with the project.
+
+The HUMANIZE knob is renamed **JITTER** ("Per-hit seeded random variation in timing, pitch, decay, level"). It is the same control: the saved-state key (`master.hum`) is unchanged, so old saves and the demos load exactly as before.
