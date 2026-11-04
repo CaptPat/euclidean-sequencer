@@ -57,6 +57,11 @@ A multi-track Euclidean rhythm sequencer **and synth workstation** in a single, 
 - Presets: Rage loop, Dark bell, Heavy 808 bounce, Trap 140 and Bembe bell use 808; Four on floor and Electronic use 909; Synthwave and Dorian Dream use Linn. NEW SONG: rage/trap/latin use 808 (trap puts a cowbell on the clave lane), house uses 909 (clap on the clave lane), synthwave and dorian chill use Linn.
 - Also fixed: NEW SONG no longer inherits the previous song's bass/bell volumes, so the same seed always gives the same song.
 
+## HUMANIZE + built-in demos (v13.0)
+
+- **HUMAN** slider (MASTER panel, default 15%, saved in the project; old saves get 15%): small per-hit jitter on drum hits. At 100%: timing 0-15 ms late (never early), pitch +/-40 cents, decay +/-20%, level +/-2 dB; everything scales with the slider. The jitter comes from a seeded PRNG keyed by song seed + track + step + sub-hit, so playback, WAV export and re-renders match (MIDI export stays on the grid). Noise, reverb IR and Random note mode are seeded as well.
+- **DEMO** cycles through 20 built-in demos (the index is kept in localStorage, so a reload continues where you were): the original demo, 8 Bach-style chorales (DeepBach: S on Lead and an octave-up Bell, A+T on Pad, B on Bass, Euclidean drums underneath), 5 LLM-written songs (full saves) and 6 Anticipatory Music Transformer pieces (Phrase notes with Euclidean drums). The name and source tag show in the readout, with a short toast at the bottom. The data is gzip+base64 inside index.html (about 25 KB) and unpacked on the first DEMO press. The state you had is stored in `grokband.project.v1.backup` first.
+
 Shortcuts: **Space** play/stop, **C** capture section, **U** update section, **[ ]** previous/next section, **Del** remove section, **R** roll all, **Shift+R** new song, **V** vary, **E** end, **Up/Down** section repeat, **Ctrl+Z** undo delete.
 
 Inspired by the "Claudia Explains: Euclid" video by [@anabology](https://x.com/anabology) on X.
