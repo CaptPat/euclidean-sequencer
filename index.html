@@ -153,12 +153,22 @@ header{gap:6px 8px;padding:4px 8px}header label{font-size:9px}#hmv,#bpm{width:64
 .mb select{padding:2px 16px 2px 6px;font-size:10px;height:20px;background-position:right 4px center}
 .mb .hum{width:54px;flex:none;margin:0 0 0 -1px}.mb .hnv{min-width:24px;color:#c9beb6}
 #toast{position:fixed;bottom:14px;left:50%;transform:translate(-50%,8px);background:rgba(20,16,14,.95);border:1px solid #ff6b4a;color:#f1e9e2;font-size:12px;padding:6px 14px;border-radius:16px;z-index:60;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;max-width:92vw;text-align:center;box-shadow:0 4px 18px rgba(0,0,0,.5)}#toast.on{opacity:1;transform:translate(-50%,0)}
+#midd{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:60;display:flex;align-items:center;justify-content:center;padding:10px}
+#midd .ip{background:linear-gradient(180deg,#26211e,#171412);border:1px solid #3a3430;border-radius:12px;padding:12px 14px;width:min(600px,100%);max-height:92vh;overflow:auto;color:#ddd;font-size:12px;box-shadow:0 20px 50px rgba(0,0,0,.7)}
+#midd h3{margin:0 0 4px;font-size:14px;letter-spacing:2px;color:var(--c)}#midd .im{color:#8a7f78;font-size:11px;margin-bottom:8px}
+#midd .pr{display:grid;grid-template-columns:150px 1fr auto auto auto;gap:8px;align-items:center;padding:4px 0;border-top:1px solid #2c2623}#midd .pn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#midd .pc2{color:#8a7f78;font-size:10px;white-space:nowrap}
+#midd .po{display:flex;flex-direction:column;gap:5px;margin:10px 0;padding-top:8px;border-top:1px solid #2c2623}#midd label{display:flex;align-items:center;gap:5px}
+#midd .pb2{display:flex;justify-content:flex-end;gap:8px}#midd button{padding:4px 14px;font-weight:700}#midd button.go{background:var(--c);color:#1a0d08}
+@media(max-width:560px){#midd .pr{grid-template-columns:1fr 1fr}#midd .pn{grid-column:1/-1}}
+#midd .pr{grid-template-columns:1fr 70px 110px}#midd .mr0{grid-template-columns:140px 1fr}#midd .mh{border-top:0;padding:2px 0}#midd select{max-width:100%}#midd button.go{background:var(--c);color:#1a0d08}
+#midibtn.on{background:var(--c);color:#1a0d08;border-color:var(--c)}#midibtn{font-weight:700;font-size:11px;padding:3px 9px}
+@media(max-width:560px){#midd .pr{grid-template-columns:1fr 62px 74px!important}#midd .mr0{grid-template-columns:1fr 1fr!important}#midd .pn{grid-column:auto!important}}
 </style></head><body>
 <header><h1>GROK BAND<small>EUCLIDEAN</small></h1><button id="play">▶ Play</button>
 <select id="pre"><option value="">Presets…</option></select><button id="gdice" title="Roll new patterns and riffs for every track (R)"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="1.5" width="13" height="13" rx="3.2" fill="none" stroke="currentColor" stroke-width="1.5"/><g fill="currentColor"><circle cx="5" cy="5" r="1.2"/><circle cx="11" cy="5" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="5" cy="11" r="1.2"/><circle cx="11" cy="11" r="1.2"/></g></svg>ROLL</button><button id="gkey" title="Also roll key + scale when rolling all (riffs always follow the current key and scale)">+KEY</button>
 <label title="Master volume">VOL <input id="hmv" type="range" min="0" max="100" value="85" aria-label="Master volume"> <span id="hmvv" class="hv">85%</span></label>
 <label>BPM <input id="bpm" type="range" min="10" max="240" value="140"> <span id="bv">140</span></label><span class="chips" title="Tempo presets"><button data-b="90">90</button><button data-b="120">120</button><button data-b="140">140</button><button data-b="150">150</button><button data-b="160">160</button><button class="hx" data-m="0.5" title="Half tempo">½</button><button class="hx" data-m="2" title="Double tempo">×2</button></span>
-<label>KEY <select id="key"></select></label><label>SCALE <select id="scale"></select></label>
+<label>KEY <select id="key"></select></label><label>SCALE <select id="scale"></select></label><button id="midibtn" title="MIDI out: off (click to set up)">MIDI</button>
 </header>
 <section id="song" class="arr"></section>
 <div id="tracks"></div><div id="ver" title="Version"></div>
@@ -171,10 +181,10 @@ function rot(p,r){const n=p.length;r=((r%n)+n)%n;return p.slice(n-r).concat(p.sl
 if(typeof module!=='undefined'){module.exports={bjorklund,rot};}
 else{
 const $=s=>document.querySelector(s);
-const DRUMS=['kick','snare','hat','clave','clap','cowbell','shaker'],WAVES=['sine','triangle','sawtooth','square'],WNAME=['SIN','TRI','SAW','SQR'];
+const DRUMS=['kick','snare','hat','open hat','clave','clap','cowbell','shaker'],WAVES=['sine','triangle','sawtooth','square'],WNAME=['SIN','TRI','SAW','SQR'];
 const NOTE_NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const SCALES={Major:[0,2,4,5,7,9,11],Minor:[0,2,3,5,7,8,10],Dorian:[0,2,3,5,7,9,10],Phrygian:[0,1,3,5,7,8,10],Lydian:[0,2,4,6,7,9,11],Mixolydian:[0,2,4,5,7,9,10],'Pentatonic Maj':[0,2,4,7,9],'Pentatonic Min':[0,3,5,7,10],Blues:[0,3,5,6,7,10],'Harmonic Minor':[0,2,3,5,7,8,11]};
-const VERSION='v13.0 · 2026-11-03';
+const VERSION='v14.1 · 2026-11-03';
 const MODES=['Root','Up','Down','Ping-pong','Random','Chord','Riff','Power','Power +8','Minor riff','Chord root','Phrase'],RIFF=[0,0,4,0,3,0,5,4],PENT=[0,3,5,7,10],FMR=[.5,1,1.5,2,3,3.5,4,5,7];
 const PROGS={'I-V-vi-IV':[0,4,5,3],'i-VI-III-VII':[0,5,2,6],'ii-V-I':[1,4,0],'I-IV-V-iii':[0,3,4,2]},DEFPROG='I-IV-V-iii';
 const G={key:9,scale:'Minor',bpm:140};
@@ -190,7 +200,7 @@ for(let i=0;i<len;i++){if(i>0){const u=r();if(u<.2)d=0;else if(u<.4)d=f;else{d+=
 if(out.every(x=>x===out[0]))out[len-1]=f;return out;}
 const ROLL={kick:{st:[16,16,16,12],h:[2,5],rots:[0,0,0,1,2,3]},snare:{st:[16,16,16,12],h:[1,3],rots:[4,4,4,8,2,0]},hat:{st:[16,16,16,12,8],h:[5,12],rots:[0,0,1,2,3]},
 clave:{st:[16,16,8,12],h:[3,5],rots:'any'},bass:{st:[16,16,16,12],h:[3,7],rots:[0,0,1,2,3,4]},bell:{st:[8,12,16,16],h:[2,5],rots:'any'},
-lead:{st:[16,16,12,16],h:[3,9],rots:[0,0,1,2,3]},pad:{st:[16,32,32],h:[1,2],rots:[0,0,0,8]}};
+lead:{st:[16,16,12],h:[2,5],rots:[2,2,2,6,10,4]},pad:{st:[16,32,32],h:[1,2],rots:[0,0,0,8]}};
 const KEYMIN=['Minor','Minor','Phrygian','Harmonic Minor','Pentatonic Min','Blues','Dorian'],KEYSC=['Major','Minor','Dorian','Mixolydian','Lydian','Phrygian','Pentatonic Min','Pentatonic Maj','Blues','Harmonic Minor'];
 let rollKey=false,genInfo=null;
 const MDEF={vol:85,dt:3,fb:40,rev:35,duck:0,drive:0,crush:0,crate:0,noise:0,hum:15},M={...MDEF};
@@ -201,16 +211,17 @@ let secs={},song=[],selIdx=-1,songLoop=true,undoStack=[],secN=0,dockPane='syn',a
 const T={cut:v=>80*Math.pow(150,v/100),q:v=>.5+Math.pow(v/100,2)*17,a:v=>.002*Math.pow(1000,v/100),d:v=>.02*Math.pow(100,v/100),r:v=>.02*Math.pow(150,v/100),gate:v=>.25*Math.pow(128,v/100),lfo:v=>.1*Math.pow(200,v/100)};
 const fT=s=>s<1?Math.round(s*1000)+'ms':s.toFixed(1)+'s',fHz=h=>h>=1000?(h/1000).toFixed(1)+'k':Math.round(h)+'Hz';
 const SYN_DEF={wave:2,uni:1,det:10,cut:60,res:20,fenv:40,a:2,d:30,s:60,r:20,gate:35,dly:0,rev:0,lfoRate:30,lfoDepth:0,lfoTgt:'Off',oct:3,range:2,eng:'Synth',pd:0,gld:0,sub:0,drive:0,fmi:50,fmr:5};
+const LEAD_OLD={mode:'Ping-pong',syn:{wave:2,uni:3,det:14,cut:62,res:25,fenv:45,a:2,d:35,s:45,r:25,gate:45,oct:4,range:2,dly:35,rev:25,lfoRate:48,lfoDepth:14,lfoTgt:'Pitch'}};
 const PATCH={
 bass:{mode:'Riff',syn:{wave:2,uni:1,det:8,cut:30,res:35,fenv:55,a:0,d:28,s:15,r:12,gate:55,oct:1,range:2,rev:5}},
 bell:{mode:'Root',syn:{wave:1,uni:2,det:6,cut:88,res:10,fenv:0,a:0,d:58,s:0,r:45,gate:10,oct:5,range:2,dly:30,rev:40}},
-lead:{mode:'Ping-pong',syn:{wave:2,uni:3,det:14,cut:62,res:25,fenv:45,a:2,d:35,s:45,r:25,gate:45,oct:4,range:2,dly:35,rev:25,lfoRate:48,lfoDepth:14,lfoTgt:'Pitch'}},
+lead:{mode:'Chord',syn:{wave:2,uni:2,det:7,cut:44,res:14,fenv:50,a:0,d:34,s:6,r:14,gate:13,oct:3,range:2,dly:8,rev:14,lfoRate:30,lfoDepth:0,lfoTgt:'Off',drive:20}},
 pad:{mode:'Chord',syn:{wave:2,uni:5,det:22,cut:40,res:15,fenv:20,a:70,d:55,s:70,r:65,gate:62,oct:3,range:1,dly:20,rev:60,lfoRate:18,lfoDepth:30,lfoTgt:'Cutoff'}}};
 const _unusedCLAVE={wave:3,uni:1,det:0,cut:75,res:40,fenv:0,a:0,d:22,s:0,r:10,gate:5,oct:6,range:1,dly:5,rev:15};
-const DEFPATCH={bass:'Classic Bass',bell:'Glass Bell',lead:'Soft Lead',pad:'Warm Pad'};
+const DEFPATCH={bass:'Classic Bass',bell:'Glass Bell',lead:'Rhythm Gtr',pad:'Warm Pad'};
 const S808={eng:'808',wave:0,uni:1,det:0,cut:90,res:0,fenv:0,a:0,d:78,s:0,r:30,gate:68,dly:0,rev:3,oct:1,range:1,pd:45,gld:0,sub:35,drive:15};
 const SOUNDS={'Classic Bass':PATCH.bass.syn,'808 Sub':S808,'808 Distorted':{...S808,cut:75,res:10,pd:60,gld:30,sub:30,drive:72},
-'Supersaw Lead':{wave:2,uni:5,det:30,cut:80,res:12,fenv:25,a:3,d:48,s:72,r:28,gate:52,dly:28,rev:28,oct:4,range:2,drive:12},'Soft Lead':PATCH.lead.syn,
+'Rhythm Gtr':PATCH.lead.syn,'Supersaw Lead':{wave:2,uni:5,det:30,cut:80,res:12,fenv:25,a:3,d:48,s:72,r:28,gate:52,dly:28,rev:28,oct:4,range:2,drive:12},'Soft Lead':LEAD_OLD.syn,
 'Tubular Bell':{eng:'FM',wave:0,cut:92,res:0,fenv:0,a:0,d:64,s:0,r:58,gate:12,oct:5,range:2,dly:38,rev:48,fmi:48,fmr:5},'Glass Bell':PATCH.bell.syn,
 'Dark Pad':{wave:2,uni:5,det:26,cut:16,res:8,fenv:8,a:78,d:60,s:82,r:72,gate:85,oct:3,range:1,dly:12,rev:92,lfoRate:10,lfoDepth:45,lfoTgt:'Cutoff'},'Warm Pad':PATCH.pad.syn};
 // ---------- note logic ----------
@@ -299,12 +310,31 @@ g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(pk*vol,t+.001);g.g
 [f1,f2].forEach(fq=>kOsc('square',fq,0,0,t,dec+.05,f));};
 const kShk=(t,vol,tr,lofi,f,q,att,dec,pk)=>{const g=kg(tr,lofi);kEnv(g,t,pk*vol,att,dec);kNz(t,att+dec+.02,g,'bandpass',f,q);};
 const kRoom=(src,dest)=>{[[.011,.4],[.019,.28],[.031,.18]].forEach(([d,a])=>{const dn=ac.createDelay(.1);dn.delayTime.value=d;const gg=ac.createGain();gg.gain.value=a;src.connect(dn);dn.connect(gg);gg.connect(dest);});};
+// ---------- metallic hats / cymbals: 808-style bank of 6 inharmonic squares (+ ring-mod clang + a little noise) ----------
+const HATF=[205.3,304.4,369.6,522.7,540,800];let OHAT=null;
+function kMetal(t,v,tr,o){const out=kg(tr,o.lofi),c=ac.createGain(),env=ac.createGain(),hp=ac.createBiquadFilter(),bp=ac.createBiquadFilter(),sm=ac.createGain(),L=o.dec*kDs,life=L+.04;
+ c.connect(out);hp.type='highpass';hp.frequency.value=o.hp*kPr;bp.type='bandpass';bp.frequency.value=o.bp*kPr;bp.Q.value=o.q;sm.gain.value=o.sq;
+ HATF.forEach(f=>kOsc('square',f*o.sc,0,0,t,life,sm));
+ if(o.ring){const rm=ac.createGain(),ra=ac.createGain();rm.gain.value=0;ra.gain.value=o.ring;kOsc('square',1160*o.sc,0,0,t,life,rm);kOsc('square',1730*o.sc,0,0,t,life,rm.gain);rm.connect(ra);ra.connect(sm);}
+ if(o.nz){const nz=ac.createGain();nz.gain.value=o.nz;kNz(t,life,nz,'bandpass',o.nf,.8);nz.connect(hp);}
+ sm.connect(hp);hp.connect(bp);bp.connect(env);env.connect(c);
+ const pk=v*o.pk;env.gain.setValueAtTime(.0001,t);env.gain.linearRampToValueAtTime(pk,t+.0006);env.gain.exponentialRampToValueAtTime(pk*o.k1,t+.0006+o.t1*kDs);env.gain.exponentialRampToValueAtTime(.0008,t+.0006+L);
+ if(o.open)OHAT={c,t,end:t+.0006+L};}
+// a closed hat (or a new open hat) chokes a ringing open hat
+function hatChoke(t){if(OHAT&&OHAT.c.context===ac&&t>OHAT.t&&t<OHAT.end){OHAT.c.gain.setValueAtTime(1,t);OHAT.c.gain.linearRampToValueAtTime(0,t+.012);OHAT.end=t;}}
+const HATK={Default:{sc:1,hp:7000,bp:9500,q:.7,sq:.5,ring:.35,nz:.55,nf:9000,pk:.8,k1:.3,t1:.012,dec:.055},
+ '808':{sc:1,hp:7000,bp:10000,q:.8,sq:.55,ring:.3,nz:.3,nf:9500,pk:.9,k1:.3,t1:.012,dec:.05},
+ '909':{sc:1.15,hp:7500,bp:11000,q:.7,sq:.5,ring:.45,nz:.6,nf:10500,pk:.5,k1:.28,t1:.01,dec:.06},
+ Linn:{sc:1.28,hp:8000,bp:11500,q:.7,sq:.5,ring:.4,nz:.5,nf:11000,pk:.8,k1:.3,t1:.009,dec:.04,lofi:1}};
+const HATO={Default:{dec:.62,t1:.05,k1:.5},'808':{dec:.62,t1:.05,k1:.45},'909':{dec:.68,t1:.06,k1:.5},Linn:{dec:.45,t1:.04,k1:.45}};
+const hatV=(kit,open)=>(t,v,tr)=>kMetal(t,v,tr,open?{...HATK[kit],...HATO[kit],open:1,pk:HATK[kit].pk*.8}:HATK[kit]);
 const KITV={
 Default:{
  kick:(t,v,tr)=>{const g=kg(tr),o=ac.createOscillator();o.frequency.setValueAtTime(150*kPr,t);o.frequency.exponentialRampToValueAtTime(45*kPr,t+.15);env(g,t,v,.4);o.connect(g);o.start(t);o.stop(t+.45);},
  snare:(t,v,tr)=>{const g=kg(tr),n=noise(),f=ac.createBiquadFilter();f.type='highpass';f.frequency.value=1200;n.connect(f);f.connect(g);env(g,t,v*.7,.18);n.start(t);n.stop(t+.2);
   const o=ac.createOscillator(),g2=kg(tr);o.frequency.value=190*kPr;env(g2,t,v*.5,.1);o.connect(g2);o.start(t);o.stop(t+.12);send(g,.25,tr.gR);},
- hat:(t,v,tr)=>{const g=kg(tr),n=noise(),f=ac.createBiquadFilter();f.type='highpass';f.frequency.value=7000;n.connect(f);f.connect(g);env(g,t,v*.5,.05);n.start(t);n.stop(t+.07);},
+ hat:hatV('Default',0),
+ 'open hat':hatV('Default',1),
  clave:(t,v,tr)=>{const g=kg(tr),o=ac.createOscillator(),o2=ac.createOscillator();o.type=o2.type='square';o.frequency.value=2500*kPr;o2.frequency.value=1660*kPr;const f=ac.createBiquadFilter();f.type='bandpass';f.frequency.value=2200;o.connect(f);o2.connect(f);f.connect(g);env(g,t,v*.42,.07);o.start(t);o2.start(t);o.stop(t+.1);o2.stop(t+.1);},
  clap:(t,v,tr)=>kClap(t,v,tr,0,{f:1300,q:1.2,n:3,gap:.01,tail:.16,pk:1.6,send:.2}),
  cowbell:(t,v,tr)=>kCow(t,v,tr,0,560,845,2000,.25,.3),
@@ -313,11 +343,11 @@ Default:{
  // boomy sine kick: fast sweep from 135 Hz to 50 Hz, then a slow droop under a ~0.9 s tail
  kick:(t,v,tr)=>{const g=kg(tr);kEnv(g,t,v*.95,.002,.95);kOsc('sine',135,50,.05,t,1.05,g).frequency.exponentialRampToValueAtTime(43*kPr,t+.95);},
  // snappy: two tuned bodies + bright noise crack
- snare:(t,v,tr)=>{const gn=kg(tr),gb=kg(tr);kEnv(gn,t,v*.5,.001,.2);kNz(t,.23,gn,'highpass',1700,.7);send(gn,.18,tr.gR);
+ snare:(t,v,tr)=>{const gn=kg(tr),gb=kg(tr);kEnv(gn,t,v*.5,.001,.15);kNz(t,.17,gn,'highpass',1700,.7);send(gn,.11,tr.gR);
   kEnv(gb,t,v*.42,.001,.1);kOsc('triangle',250,180,.02,t,.13,gb);kOsc('triangle',330,330,0,t,.1,gb);},
  // six detuned squares -> high-pass/band-pass = the metallic 808 hat
- hat:(t,v,tr)=>{const g=kg(tr),sm=ac.createGain(),hp=ac.createBiquadFilter(),bp=ac.createBiquadFilter();sm.gain.value=.95;hp.type='highpass';hp.frequency.value=7000;bp.type='bandpass';bp.frequency.value=10000;bp.Q.value=.8;
-  [205.3,304.4,369.6,522.7,540,800].forEach(f=>kOsc('square',f,0,0,t,.1,sm));sm.connect(hp);hp.connect(bp);bp.connect(g);kEnv(g,t,v*.62,.0008,.045);},
+ hat:hatV('808',0),
+ 'open hat':hatV('808',1),
  clave:(t,v,tr)=>{const g=kg(tr);kEnv(g,t,v*.46,.0006,.05);kOsc('sine',2450,2150,.02,t,.08,g);kOsc('sine',1750,1750,0,t,.06,g);},
  clap:(t,v,tr)=>kClap(t,v,tr,0,{f:1000,q:1.4,n:4,gap:.0105,tail:.22,pk:1.6,send:.25}),
  cowbell:(t,v,tr)=>kCow(t,v,tr,0,540,800,2640,.34,.42),
@@ -327,12 +357,11 @@ Default:{
  kick:(t,v,tr)=>{const g=kg(tr,0,1),c=kg(tr);kEnv(g,t,v*.62,.0005,.36);kOsc('sine',220,55,.035,t,.42,g).frequency.exponentialRampToValueAtTime(46*kPr,t+.36);
   kEnv(c,t,v*.25,.0003,.007);kNz(t,.012,c,'highpass',2400,.7);},
  // body (two triangles) + noisy, bright snap
- snare:(t,v,tr)=>{const gn=kg(tr),gb=kg(tr);kEnv(gn,t,v*.45,.0007,.22);kNz(t,.25,gn,'highpass',1100,.7);send(gn,.22,tr.gR);
-  kEnv(gb,t,v*.33,.0007,.09);kOsc('triangle',230,185,.02,t,.12,gb);kOsc('triangle',331,331,0,t,.09,gb);},
+ snare:(t,v,tr)=>{const gn=kg(tr),gb=kg(tr),rm=kg(tr);rm.gain.value=.3;kEnv(gn,t,v*.45,.0007,.22);kNz(t,.25,gn,'highpass',1100,.7);send(gn,.28,tr.gR);
+  kEnv(gb,t,v*.33,.0007,.09);kOsc('triangle',230,185,.02,t,.12,gb);kOsc('triangle',331,331,0,t,.09,gb);send(gb,.26,tr.gR);kRoom(gn,rm);kRoom(gb,rm);},
  // filtered noise x ring-modulated noise: the sampled-hat sizzle
- hat:(t,v,tr)=>{const g=kg(tr),n=noise(),hp=ac.createBiquadFilter(),rm=ac.createGain(),mix=ac.createGain(),dry=ac.createGain(),bp=ac.createBiquadFilter();
-  hp.type='highpass';hp.frequency.value=6500;rm.gain.value=0;dry.gain.value=.55;bp.type='bandpass';bp.frequency.value=9500;bp.Q.value=.6;
-  n.connect(hp);hp.connect(rm);hp.connect(dry);dry.connect(mix);rm.connect(mix);mix.connect(bp);bp.connect(g);kOsc('square',7300,0,0,t,.12,rm.gain);kEnv(g,t,v*.5,.0006,.055);n.start(t,kU[2]*.4);n.stop(t+.12);},
+ hat:hatV('909',0),
+ 'open hat':hatV('909',1),
  clave:(t,v,tr)=>{const g=kg(tr);kEnv(g,t,v*.35,.0005,.04);kOsc('sine',1750,1450,.012,t,.07,g);kOsc('sine',480,480,0,t,.06,g);kNz(t,.012,g,'highpass',3000,.7);},
  clap:(t,v,tr)=>kClap(t,v,tr,0,{f:1200,q:.9,n:4,gap:.009,tail:.3,pk:.95,send:.3}),
  cowbell:(t,v,tr)=>kCow(t,v,tr,0,587,845,2500,.22,.32),
@@ -341,16 +370,20 @@ Linn:{
  // tight, dry, 8-bit-ish (staircase quantizer on every voice)
  kick:(t,v,tr)=>{const g=kg(tr,1);kEnv(g,t,v*.88,.0005,.2);kOsc('sine',135,58,.03,t,.24,g).frequency.exponentialRampToValueAtTime(50*kPr,t+.2);{const c=ac.createGain();c.gain.value=.3;c.connect(g);kOsc('triangle',900,300,.006,t,.012,c);}},
  // gated: the noise holds then is cut hard, with a short room behind it
- snare:(t,v,tr)=>{const g=kg(tr,1),gn=ac.createGain(),rm=ac.createGain();rm.gain.value=.55;rm.connect(g);
-  gn.gain.setValueAtTime(.0001,t);gn.gain.linearRampToValueAtTime(v*.85,t+.001);gn.gain.linearRampToValueAtTime(v*.65,t+.105*kDs);gn.gain.linearRampToValueAtTime(.0001,t+.12*kDs);
-  kNz(t,.13,gn,'bandpass',3200,.55);gn.connect(g);kRoom(gn,rm);send(gn,.1,tr.gR);
-  const gb=ac.createGain();kEnv(gb,t,v*.55,.0008,.085);kOsc('triangle',205,170,.02,t,.1,gb);gb.connect(g);},
- hat:(t,v,tr)=>{const g=kg(tr,1);kEnv(g,t,v*.55,.0005,.032);kNz(t,.05,g,'highpass',8200,.8);},
+ snare:(t,v,tr)=>{const g=kg(tr,1),gn=ac.createGain(),gb=ac.createGain(),rm=ac.createGain(),lp=ac.createBiquadFilter();rm.gain.value=.5;rm.connect(g);
+  // body: two sines (~190 Hz + ~330 Hz) with a fast pitch drop, the part that makes it a snare and not a spray
+  kEnv(gb,t,v*.58,.0006,.11);kOsc('sine',290,190,.014,t,.14,gb);{const c=ac.createGain();c.gain.value=.55;c.connect(gb);kOsc('sine',500,330,.011,t,.12,c);}gb.connect(g);
+  // noise: ~120 ms, band-passed around 2.2 kHz + low-passed at 7 kHz (no high-pass hiss), cut off hard at the end
+  lp.type='lowpass';lp.frequency.value=7000*kPr;lp.Q.value=.5;lp.connect(gn);
+  gn.gain.setValueAtTime(.0001,t);gn.gain.linearRampToValueAtTime(v*.64,t+.0008);gn.gain.exponentialRampToValueAtTime(v*.17,t+.06*kDs);gn.gain.linearRampToValueAtTime(.0001,t+.12*kDs);
+  kNz(t,.13,lp,'bandpass',2200,.9);gn.connect(g);kRoom(gn,rm);kRoom(gb,rm);send(gn,.08,tr.gR);},
+ hat:hatV('Linn',0),
+ 'open hat':hatV('Linn',1),
  clave:(t,v,tr)=>{const g=kg(tr,1);kEnv(g,t,v*.45,.0005,.055);kOsc('sine',1180,1000,.015,t,.09,g);kOsc('sine',770,770,0,t,.07,g);kNz(t,.01,g,'bandpass',3000,1);},
  clap:(t,v,tr)=>kClap(t,v,tr,1,{f:1800,q:.8,n:3,gap:.008,tail:.13,pk:.85,send:.15}),
  cowbell:(t,v,tr)=>kCow(t,v,tr,1,560,835,1900,.18,.3),
  shaker:(t,v,tr)=>kShk(t,v,tr,1,8500,.6,.003,.045,.5)}};
-function play(s,t,vol,step,tr){const k=KITV[tr.kit]||KITV.Default,f=k[s]||KITV.Default[s]||KITV.Default.kick;f(t,vol,tr);}
+function play(s,t,vol,step,tr){const k=KITV[tr.kit]||KITV.Default,f=k[s]||KITV.Default[s]||KITV.Default.kick;if(s==='hat'||s==='open hat')hatChoke(t);f(t,vol,tr);}
 function syncKit(){if(!kitSel)return;const ks=[...new Set(tracks.filter(t=>t.drum).map(t=>t.kit||'Default'))];[...kitSel.options].forEach(o=>{if(o.value==='Mixed')o.remove();});
 if(ks.length>1){kitSel.add(new Option('Mixed','Mixed'));kitSel.value='Mixed';}else kitSel.value=ks[0]||'Default';}
 function kitPreview(){if(!ac||ac.state!=='running'||playing||exporting)return;const t0=ac.currentTime+.03;[['kick',0],['snare',.17],['hat',.34],['hat',.42]].forEach(([id,d])=>{const tr=tracks.find(x=>x.id===id);if(tr&&audible(tr))play(tr.sound,t0+d,tr.vol,0,tr);});}
@@ -390,7 +423,7 @@ let riser=null;
 function riserStart(){if(!ac||riser||exporting)return;if(ac.state==='suspended')ac.resume();const t=ac.currentTime,src=noise(),bp=ac.createBiquadFilter(),g=ac.createGain();src.loop=true;bp.type='bandpass';bp.Q.value=1.4;bp.frequency.setValueAtTime(250,t);bp.frequency.exponentialRampToValueAtTime(9000,t+4);
 g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.4,t+4);src.connect(bp);bp.connect(g);g.connect(masterIn);const rv=ac.createGain();rv.gain.value=.5;g.connect(rv);rv.connect(revIn);src.start(t);riser={src,g,rv};}
 function riserStop(){if(!riser)return;const r=riser,t=ac.currentTime;riser=null;r.g.gain.cancelScheduledValues(t);r.g.gain.setValueAtTime(r.g.gain.value,t);r.g.gain.setTargetAtTime(0,t,.12);try{r.src.stop(t+1)}catch(e){}}
-const DRUMN={kick:36,snare:38,hat:42,clave:75,clap:39,cowbell:56,shaker:70};
+const DRUMN={kick:36,snare:38,hat:42,'open hat':46,clave:75,clap:39,cowbell:56,shaker:70};
 // ---- Phrase mode: stored note list {s start step, l length in steps, p MIDI pitch, v velocity} that loops at its own length (bars) ----
 const phLen=tr=>(tr.mode==='Phrase'&&tr.phrase)?tr.phrase.len*16:0;
 function cleanPhrase(ph){if(!ph||!Array.isArray(ph.notes))return null;const len=Math.max(1,Math.min(16,Math.round(ph.len)||1)),L=len*16;
@@ -400,16 +433,65 @@ const phraseOut=ph=>ph?{len:ph.len,notes:ph.notes.map(n=>({s:n.s,l:n.l,p:n.p,v:n
 function phraseAt(tr,g){const ph=tr.phrase;if(!ph||!ph.notes.length)return null;const k=g%(ph.len*16);let o=null;for(const n of ph.notes)if(n.s===k)(o=o||[]).push(n);return o;}
 function phraseNote(tr,t,n){if(TRLOG)TRLOG.push({id:tr.id,t,g:n.s,sub:0,p:n.p});
 if(REC){REC.ev.push({k:tracks.indexOf(tr),tick:Math.round(t),dur:Math.max(30,n.l*120),n:[n.p],v:n.v,mono:(tr.syn.eng||'Synth')==='808'});return;}
-synthNote(tr,t,n.p,n.l*stepDur(),Math.max(.1,Math.min(1.3,n.v/100)));}
+midiNote(tr,t,n.p,n.l*stepDur(),n.v*tr.vol/.8);if(!intOff(tr))synthNote(tr,t,n.p,n.l*stepDur(),Math.max(.1,Math.min(1.3,n.v/100)));}
 function bakePhrase(tr){const hn=tr.hitN,notes=[],L=32;tr.hitN=0;const gl=Math.max(1,Math.round(T.gate(tr.syn.gate)));
 for(let n=0;n<L;n++)if(tr.pat[n%tr.pat.length])pickNotes(tr,n).forEach(p=>notes.push({s:n,l:Math.min(gl,L-n),p,v:100}));tr.hitN=hn;return cleanPhrase({len:2,notes});}
 function setTrMode(tr,v){const old=tr.mode;if(v==='Phrase'&&!(tr.phrase&&tr.phrase.notes.length)){tr.phrase=bakePhrase(tr);}tr.mode=v;tr.syncAll();if(dockCur===tr)dockDraw();}
+// ---------- MIDI OUT (Web MIDI; made for a Synthstrom Deluge over USB, works with any output) ----------
+const MIDI_DEF={on:false,dev:'',devName:'',clock:false,ch:{kick:10,snare:10,hat:10,clave:10,bass:1,bell:2,lead:3,pad:4},int:{kick:1,snare:1,hat:1,clave:1,bass:1,bell:1,lead:1,pad:1}};
+const MIDI=JSON.parse(JSON.stringify(MIDI_DEF));let midiAcc=null,midiOut=null,midiErr='',midiEl=null;const midiPend=new Map();
+const midiOK=typeof navigator!=='undefined'&&typeof navigator.requestMIDIAccess==='function';
+const midiLive=()=>!!(MIDI.on&&midiOut&&midiOut.state!=='disconnected'&&!REC&&!DRY&&ac&&!(typeof OfflineAudioContext!=='undefined'&&ac instanceof OfflineAudioContext));
+const intOff=tr=>midiLive()&&!MIDI.int[tr.id];
+// audio-clock time -> performance.now() timeline (what the audio is actually heard at)
+let midiOffV=null;
+function midiSync(){const o=ac.getOutputTimestamp?ac.getOutputTimestamp():null;let raw;if(o&&o.contextTime>0&&o.performanceTime>0)raw=o.performanceTime-o.contextTime*1000;else raw=performance.now()-ac.currentTime*1000;
+if(midiOffV==null||Math.abs(raw-midiOffV)>40)midiOffV=raw;else midiOffV+=(raw-midiOffV)*.05;}
+const midiTs=t=>{if(midiOffV==null)midiSync();return t*1000+midiOffV;};
+function midiNote(tr,t,p,dur,vel){if(!midiLive())return;try{const ch=Math.max(0,Math.min(15,(MIDI.ch[tr.id]||1)-1)),n=Math.max(0,Math.min(127,p|0)),v=Math.max(1,Math.min(127,Math.round(vel))),on=midiTs(t),off=on+Math.max(15,dur*1000-1),k=ch*128+n,po=midiPend.get(k);
+if(po!=null&&po>on)midiOut.send([0x80|ch,n,0],on-1);
+midiOut.send([0x90|ch,n,v],on);midiOut.send([0x80|ch,n,0],off);midiPend.set(k,off);
+if(midiPend.size>300){const now=performance.now();midiPend.forEach((o,kk)=>{if(o<now)midiPend.delete(kk);});}}catch(e){}}
+function midiClock(t){if(!midiLive())return;midiSync();if(!MIDI.clock)return;try{const sd=stepDur();for(let k=0;k<6;k++)midiOut.send([0xF8],midiTs(t+k*sd/6));}catch(e){}}
+function midiStart(t){midiOffV=null;if(!midiLive())return;midiPend.clear();if(MIDI.clock)try{midiOut.send([0xFA],midiTs(t));}catch(e){}}
+function midiPanic(o){o=o||midiOut;if(!o)return;try{if(o.clear)o.clear();const now=performance.now();midiPend.forEach((off,k)=>{if(off>=now-5)o.send([0x80|(k>>7),k&127,0]);});midiPend.clear();for(let c=0;c<16;c++)o.send([0xB0|c,123,0]);}catch(e){}}
+function midiStop(){if(!midiOut||!MIDI.on)return;midiPanic();if(MIDI.clock)try{midiOut.send([0xFC]);}catch(e){}}
+const midiOutputs=()=>midiAcc?[...midiAcc.outputs.values()]:[];
+function midiRefresh(){const o=midiOutputs();let m=o.find(x=>x.id===MIDI.dev)||o.find(x=>MIDI.devName&&x.name===MIDI.devName)||null;
+if(!m&&!MIDI.dev){m=o.find(x=>/deluge/i.test(x.name))||null;}
+if(m!==midiOut){if(midiOut&&MIDI.on)midiPanic(midiOut);midiOut=m;if(m){MIDI.dev=m.id;MIDI.devName=m.name;}}midiUI();}
+async function midiConnect(){if(!midiOK)return false;if(midiAcc){midiRefresh();return true;}
+try{midiAcc=await navigator.requestMIDIAccess({sysex:false});midiErr='';}catch(e){midiAcc=null;midiErr=(e&&e.message)||'MIDI access was blocked';MIDI.on=false;midiUI();return false;}
+midiAcc.onstatechange=midiRefresh;midiRefresh();return true;}
+function midiSet(o){if(!o||typeof o!=='object')return;MIDI.on=!!o.on;MIDI.dev=String(o.dev||'');MIDI.devName=String(o.devName||'');MIDI.clock=!!o.clock;
+MIDI.ch={...MIDI_DEF.ch};MIDI.int={...MIDI_DEF.int};Object.keys(MIDI_DEF.ch).forEach(k=>{const c=(o.ch||{})[k]|0;if(c>=1&&c<=16)MIDI.ch[k]=c;if(o.int&&o.int[k]!=null)MIDI.int[k]=o.int[k]?1:0;});
+if(MIDI.on&&!midiAcc)midiConnect();else midiRefresh();}
+const midiState=()=>JSON.parse(JSON.stringify(MIDI));
+function midiUI(){const b=document.getElementById('midibtn');if(b){b.classList.toggle('on',!!(MIDI.on&&midiOut));b.title=!MIDI.on?'MIDI out: off (click to set up)':midiOut?'MIDI out: '+midiOut.name:'MIDI out: on, no device found';}if(midiEl)showMidi();}
+function closeMidi(){if(midiEl){midiEl.remove();midiEl=null;}}
+function showMidi(){const keep=midiEl&&midiEl.querySelector('.ip')?midiEl.querySelector('.ip').scrollTop:0;if(midiEl){midiEl.remove();midiEl=null;}
+const d=document.createElement('div');d.id='midd';midiEl=d;const mk=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;};
+const box=mk('div','ip');d.append(box);box.append(mk('h3',null,'MIDI OUT'));
+const outs=midiOutputs();box.append(mk('div','im',!midiOK?'Web MIDI is not available in this browser.':!MIDI.on?(midiErr?midiErr+'. ':'')+'Off. Enable it to send notes (and optionally clock) to a USB MIDI device such as a Deluge.':midiOut?'Sending to '+midiOut.name+(midiLive()?'':' (idle)'):(midiAcc?'No MIDI output found. Plug in the device.':'Waiting for MIDI access…')));
+const r0=mk('div','pr mr0');const en=mk('button',MIDI.on?null:'go',MIDI.on?'Turn off':'Enable MIDI out');en.disabled=!midiOK;
+en.onclick=async()=>{if(MIDI.on){midiPanic();MIDI.on=false;midiUI();}else{MIDI.on=true;midiUI();await midiConnect();}};
+const sel=document.createElement('select');sel.add(new Option(outs.length?'— choose output —':'no outputs',''));outs.forEach(o=>sel.add(new Option(o.name,o.id)));sel.value=midiOut?midiOut.id:'';sel.disabled=!MIDI.on||!outs.length;
+sel.onchange=()=>{if(midiOut)midiPanic();const o=outs.find(x=>x.id===sel.value)||null;MIDI.dev=o?o.id:'';MIDI.devName=o?o.name:'';midiOut=o;midiUI();};
+r0.append(en,sel);box.append(r0);
+const cl=document.createElement('label'),ci=document.createElement('input');ci.type='checkbox';ci.checked=MIDI.clock;ci.onchange=()=>{MIDI.clock=ci.checked;};cl.append(ci,' Send clock (24 ppqn) + Start/Stop');cl.style.margin='6px 0';box.append(cl);
+const hd=mk('div','pr mh');hd.append(mk('span','pc2','TRACK'),mk('span','pc2','CHANNEL'),mk('span','pc2','INTERNAL'));box.append(hd);
+tracks.forEach(tr=>{const r=mk('div','pr');const cs=document.createElement('select');for(let c=1;c<=16;c++)cs.add(new Option(c,c));cs.value=MIDI.ch[tr.id]||1;cs.onchange=()=>{if(midiOut&&MIDI.on)midiPanic();MIDI.ch[tr.id]=+cs.value;};
+const il=document.createElement('label'),ii=document.createElement('input');ii.type='checkbox';ii.checked=!!MIDI.int[tr.id];ii.onchange=()=>{MIDI.int[tr.id]=ii.checked?1:0;};il.append(ii,' on');
+r.append(mk('span','pn',tr.name+(tr.drum?' · note '+(DRUMN[tr.sound]||36):'')),cs,il);box.append(r);});
+box.append(mk('div','im','Drums send GM-style notes (kick 36, snare 38, hat 42, clave 75, clap 39, cowbell 56, shaker 70) on the channel above; synths send their notes. With the device on and found, untick “on” to silence a track here while it plays on the device. Stop sends all-notes-off.'));
+const bt=mk('div','pb2'),cn=mk('button',null,'Close');cn.onclick=closeMidi;bt.append(cn);box.append(bt);d.onclick=e=>{if(e.target===d)closeMidi();};d.onkeydown=e=>{if(e.key==='Escape')closeMidi();};
+document.body.append(d);box.scrollTop=keep;}
 function recHit(tr,tick,i,g,sub){const k=tracks.indexOf(tr),v=Math.max(1,Math.min(127,Math.round(tr.vol*(sub?.78:1)*127*1.1)));
 if(tr.drum){REC.ev.push({k,tick:Math.round(tick),dur:30,n:[DRUMN[tr.sound]||36],v});return;}
 REC.ev.push({k,tick:Math.round(tick),dur:Math.max(30,Math.round(T.gate(tr.syn.gate)*120)),n:pickNotes(tr,g),v,mono:(tr.syn.eng||'Synth')==='808'});}
 function trigger(tr,t,i,g,sub){if(TRLOG)TRLOG.push({id:tr.id,t,g,sub:sub|0});if(REC){recHit(tr,t,i,g,sub);return;}
-if(tr.drum){const hh=humHit(tr,g,sub),tt=t+hh.dt;if(tr.sound==='kick')duckAt(tt);try{play(tr.sound,tt,tr.vol*(sub?.78:1)*hh.lv,i,tr);}finally{humOff();}return;}
-const gs=T.gate(tr.syn.gate)*stepDur();pickNotes(tr,g).forEach(m=>synthNote(tr,t,m,gs));}
+if(tr.drum){const hh=humHit(tr,g,sub),tt=t+hh.dt;if(tr.sound==='kick')duckAt(tt);midiNote(tr,tt,DRUMN[tr.sound]||36,60,tr.vol*(sub?.78:1)*hh.lv*127*1.1);try{if(!intOff(tr))play(tr.sound,tt,tr.vol*(sub?.78:1)*hh.lv,i,tr);}finally{humOff();}return;}
+const gs=T.gate(tr.syn.gate)*stepDur();pickNotes(tr,g).forEach(m=>{midiNote(tr,t,m,gs,tr.vol*127*1.1);if(!intOff(tr))synthNote(tr,t,m,gs);});}
 // offsets (0..1 of a step) at which a track plays on global step n: x1/x2/x3/x4 subdivisions + roll fill in the last N steps of the bar
 function hitOffsets(tr,n){const pat=tr.pat,hit=pat[n%pat.length];let r=1,fl=false;
 if(tr.drum){r=Math.max(1,Math.min(4,tr.ratio|0||1));if(tr.fill>0&&n%16>=16-tr.fill&&pat.some(x=>x)){fl=true;r=Math.max(2,r);}}
@@ -439,15 +521,15 @@ else if(!arr.free&&arr.step>=arr.len){
 if(!song[arr.idx])arr.free=true;
 else if(arr.mode==='song'){const nx=nextPos(arr.idx,arr.rep,arr.ending);if(!nx){arr.halt=true;uiq.push([t,null,0,()=>{if(playing)toggle();}]);return;}enter(t,nx.i,nx.r);}
 else enter(t,arr.idx,0);}
-const n=arr.free?gstep++:arr.step++;
+const n=arr.free?gstep++:arr.step++;midiClock(t);
 if(LOG)LOG.push({t,idx:arr.idx,rep:arr.rep,step:n,len:arr.len,bpm:G.bpm,hitN:tracks.map(x=>x.hitN)});
 stutterTick(t);triggerStep(n,t);tracks.forEach(tr=>uiq.push([t,tr,n%(phLen(tr)||tr.pat.length)]));
 const I=arr.idx,R=arr.rep,L=arr.len,fr=arr.free;
 uiq.push([t,null,0,()=>{view.active=!fr;view.idx=I;view.rep=R;view.step=n;view.len=L;view.t=t;if(!fr)onView();}]);}
 function sched(){while(!arr.halt&&nextT<ac.currentTime+.15){const t=nextT;stepPlay(t);nextT+=stepDur();}}
 function toggle(){if(exporting)return;if(!ac){build(new (window.AudioContext||window.webkitAudioContext)());initCrush(ac,rig);}if(ac.state==='suspended')ac.resume();playing=!playing;$('#play').classList.toggle('on',playing);$('#play').textContent=playing?'■ Stop':'▶ Play';
-if(playing){uiq=[];nextT=ac.currentTime+.06;beginTransport(nextT);timer=setInterval(sched,25);}
-else{clearInterval(timer);uiq=[];arr.ending=false;if(rig&&STUT.on){STUT.want=0;stutterTick(ac.currentTime);}stutBtns();riserStop();view.active=false;tracks.forEach(t=>{t.cur=-1;t.anim();});renderSel();updateRo();}}
+if(playing){uiq=[];nextT=ac.currentTime+.06;beginTransport(nextT);midiStart(nextT);timer=setInterval(sched,25);}
+else{midiStop();clearInterval(timer);uiq=[];arr.ending=false;if(rig&&STUT.on){STUT.want=0;stutterTick(ac.currentTime);}stutBtns();riserStop();view.active=false;tracks.forEach(t=>{t.cur=-1;t.anim();});renderSel();updateRo();}}
 // ---------- drawing ----------
 let DPR=window.devicePixelRatio||1,ZOOM=1;
 function fit(c,w,h){const cw=c.clientWidth||w,k=cw/w,W=Math.round(cw*DPR);if(c.width!==W){c.width=W;c.height=Math.round(h*k*DPR);}const x=c.getContext('2d');x.setTransform(DPR*k,0,0,DPR*k,0,0);x.clearRect(0,0,w,h);return x;}
@@ -491,7 +573,7 @@ const rg=x.createRadialGradient(px-r*.35,py-r*.35,1,px,py,r);rg.addColorStop(0,f
 // ---------- tracks ----------
 const mkSel=(opts,val,fn)=>{const s=document.createElement('select');opts.forEach(o=>s.add(new Option(o,o)));s.value=val;s.onchange=()=>fn(s.value);return s;};
 function addTrack(o){const tr={id:o.id,name:o.name,drum:!!o.drum,kit:o.drum?'Default':undefined,sound:o.sound,vol:o.vol,defVol:o.vol,mute:false,solo:false,cur:-1,flash:{},hitN:0,hits:0,steps:16,rot:0,pat:[],synKnobs:[],seed:0,ratio:1,fill:0};
-if(!tr.drum){tr.riffSeed=hashStr('riff'+o.id);tr.riff=genRiff(tr.riffSeed,6);tr.prog=DEFPROG;tr.rate='bar';tr.patch=DEFPATCH[o.id];const p=PATCH[o.id];tr.defSyn={...SYN_DEF,...p.syn};tr.defMode=p.mode;tr.syn={...tr.defSyn};tr.mode=p.mode;}
+if(!tr.drum){tr.riffSeed=hashStr('riff'+o.id);tr.riff=genRiff(tr.riffSeed,6);tr.prog=DEFPROG;tr.rate='bar';tr.patch=DEFPATCH[o.id];const p=PATCH[o.id];tr.defSyn={...SYN_DEF,...p.syn};tr.defMode=p.mode;if(o.id==='lead'){tr.legSyn={...SYN_DEF,...LEAD_OLD.syn};tr.legMode=LEAD_OLD.mode;}tr.syn={...tr.defSyn};tr.mode=p.mode;}
 const el=document.createElement('div');el.className='tr';tr.el=el;
 el.innerHTML=`<div class="hd"><span class="led"></span><span class="t">EUCLIDEAN</span><input value="${o.name}">${tr.drum?'':'<button class="sy">SYNTH</button>'}<span class="e"></span></div><div class="bd"><div class="vzw"><canvas class="viz"></canvas><button class="dc" title="Roll a new pattern (hits / steps / rotate${tr.drum?'':' + riff'})"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="1.5" width="13" height="13" rx="3.2" fill="none" stroke="currentColor" stroke-width="1.5"/><g fill="currentColor"><circle cx="5" cy="5" r="1.2"/><circle cx="11" cy="5" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="5" cy="11" r="1.2"/><circle cx="11" cy="11" r="1.2"/></g></svg></button>${tr.drum?'<button class="vb rt" title="Roll ratio: x1 / x2 / x3 triplet / x4 hits per step">×1</button><button class="vb fl" title="Roll fill: last N steps of every bar play rapid rolls (off / 2 / 4 / 8)">F-</button>':''}</div><div class="rt"><div class="knobs"></div></div></div><div class="steps"></div>${tr.drum?'':'<div class="proll"><canvas></canvas><div class="pc"><span>PHRASE</span><i class="sp"></i><button class="pm" title="Shorter phrase (bars)">−</button><b></b><button class="pp" title="Longer phrase (bars)">+</button><button class="px" title="Clear all notes">✕</button></div></div>'}<div class="ctl"><span class="sl"></span><button class="m" title="Mute">M</button><button class="so" title="Solo (Alt/Shift-click = exclusive solo)">S</button><input title="Volume" type="range" min="0" max="1" step=".01" value="${o.vol}"></div>`;
 $('#tracks').append(el);const cv=el.querySelector('canvas.viz'),stEl=el.querySelector('.steps'),kn=el.querySelector('.knobs');
@@ -552,7 +634,7 @@ tr.sync();return{seed,hits:h,steps:st,rot:rt};}
 function setKeyScale(k,sc){G.key=k;G.scale=sc;$('#key').value=k;$('#scale').value=sc;}
 function rollAll(seed){seed=(seed==null?Math.random()*4294967296:seed)>>>0;const r=rng(seed);
 if(rollKey)setKeyScale(ri(r,0,11),pick(r,minorBias?KEYMIN:KEYSC));
-const prob={clave:.45,bell:.5,lead:.6,pad:.6};
+const prob={clave:.45,bell:.5,lead:.45,pad:.6};
 tracks.forEach(tr=>{const ts=Math.floor(r()*4294967296),u=r();if(tr.hits>0||prob[tr.id]==null||u<prob[tr.id])rollTrack(tr,ts);});dockDraw();}
 const riffScale=tr=>tr.mode==='Minor riff'?'Pentatonic Min':undefined;
 const noteName=(d,tr)=>{const sc=(tr&&tr.mode==='Minor riff')?SCALES['Pentatonic Min']:SCALES[G.scale];return NOTE_NAMES[(G.key+sc[d%sc.length])%12];};
@@ -601,19 +683,21 @@ function updateLights(){const n=performance.now();tracks.forEach(t=>{if(t.tabLig
 const SCOL=['#ff6b4a','#ffc24a','#ff5f9e','#8fb8ff','#6fe0a8','#c28bff','#ff9d5c','#5fd3d3'],SNAMES=['Main','Chorus','Break','Bridge','Outro','Intro'];
 const gcd=(a,b)=>b?gcd(b,a%b):a,lcm=(a,b)=>a/gcd(a,b)*b,LS='grokband.project.v1';
 const trkOut=o=>({hits:o.hits,steps:o.steps,rot:o.rot,pat:o.pat.slice(),sound:o.sound,vol:o.vol,mute:o.mute,solo:o.solo,mode:o.mode,syn:o.syn?{...o.syn}:null,riff:o.riff?o.riff.slice():null,seed:o.seed>>>0,riffSeed:o.riffSeed>>>0,prog:o.prog,rate:o.rate,ratio:o.ratio||1,fill:o.fill|0,patch:o.patch,phrase:phraseOut(o.phrase),kit:o.kit});
-function snapshot(){return{bpm:G.bpm,key:G.key,scale:G.scale,tracks:tracks.map(trkOut)};}
+function snapshot(perf){const s={bpm:G.bpm,key:G.key,scale:G.scale,tracks:tracks.map(trkOut)};if(!perf)s.tracks.forEach(q=>{q.mute=false;q.solo=false;});return s;}
+// old saves kept mute/solo inside sections: bake it into the section content (empty parts) so they still sound the same
+function bakeMute(st){if(!st||!Array.isArray(st.tracks))return;const any=st.tracks.some(q=>q&&q.solo);st.tracks.forEach(q=>{if(!q)return;if(q.mute||(any&&!q.solo)){q.hits=0;q.pat=Array(q.steps||16).fill(0);if(q.phrase&&q.phrase.notes)q.phrase={...q.phrase,notes:[]};}q.mute=false;q.solo=false;});}
 // old saves: add the tracks / fields that did not exist yet (Clave, riff, progression) so they compare + load cleanly
 function normState(st){if(!st||!Array.isArray(st.tracks))return st;
 while(st.tracks.length<tracks.length){const t=tracks[st.tracks.length];st.tracks.push({hits:0,steps:16,rot:0,pat:Array(16).fill(0),sound:t.sound,vol:t.vol,mute:false,solo:false});}
-st.tracks=st.tracks.map((q,i)=>{const t=tracks[i];if(!t)return q;const o={...q};if(!t.drum){if(!o.riff||!o.riff.length)o.riff=RIFF.slice();if(!PROGS[o.prog])o.prog=DEFPROG;if(o.rate!=='bar')o.rate='hit';o.riffSeed=o.riffSeed>>>0;o.syn={...t.defSyn,...(o.syn||{})};if(!o.patch)o.patch='Custom';o.phrase=cleanPhrase(o.phrase);if(!o.mode)o.mode=t.defMode;}else{o.riff=null;o.kit=KITS.includes(o.kit)?o.kit:'Default';}if(!t.drum)delete o.kit;o.seed=o.seed>>>0;if(!o.pat)o.pat=[];return trkOut(o);});return st;}
-function loadState(st,useBpm,tm){G.key=st.key;G.scale=st.scale;$('#key').value=st.key;$('#scale').value=st.scale;if(useBpm&&st.bpm)setBpm(st.bpm);
-tracks.forEach((t,i)=>{const q=st.tracks[i];if(!q){if(t.id==='clave'){t.mute=t.solo=false;t.set(0,16,0);t.syncAll();}return;}if(t.drum){t.sound=q.sound;t.kit=KITS.includes(q.kit)?q.kit:'Default';}else{t.mode=q.mode;t.syn={...t.defSyn,...q.syn};t.riff=(q.riff&&q.riff.length)?q.riff.slice():RIFF.slice();t.prog=PROGS[q.prog]?q.prog:DEFPROG;t.rate=q.rate==='bar'?'bar':'hit';t.riffSeed=q.riffSeed>>>0;t.phrase=cleanPhrase(q.phrase);}t.seed=q.seed>>>0;t.ratio=q.ratio||1;t.fill=q.fill|0;if(!t.drum){t.patch=q.patch||'Custom';t.lastV=null;}t.vol=q.vol;t.mute=q.mute;t.solo=q.solo;
+st.tracks=st.tracks.map((q,i)=>{const t=tracks[i];if(!t)return q;const o={...q};if(!t.drum){if(!o.riff||!o.riff.length)o.riff=RIFF.slice();if(!PROGS[o.prog])o.prog=DEFPROG;if(o.rate!=='bar')o.rate='hit';o.riffSeed=o.riffSeed>>>0;o.syn={...(t.legSyn||t.defSyn),...(o.syn||{})};if(!o.patch)o.patch='Custom';o.phrase=cleanPhrase(o.phrase);if(!o.mode)o.mode=t.legMode||t.defMode;}else{o.riff=null;o.kit=KITS.includes(o.kit)?o.kit:'Default';}if(!t.drum)delete o.kit;o.seed=o.seed>>>0;if(!o.pat)o.pat=[];return trkOut(o);});return st;}
+function loadState(st,useBpm,tm,perf){G.key=st.key;G.scale=st.scale;$('#key').value=st.key;$('#scale').value=st.scale;if(useBpm&&st.bpm)setBpm(st.bpm);
+tracks.forEach((t,i)=>{const q=st.tracks[i];if(!q){if(t.id==='clave'){if(perf)t.mute=t.solo=false;t.set(0,16,0);t.syncAll();}return;}if(t.drum){t.sound=q.sound;t.kit=KITS.includes(q.kit)?q.kit:'Default';}else{t.mode=q.mode;t.syn={...t.defSyn,...q.syn};t.riff=(q.riff&&q.riff.length)?q.riff.slice():RIFF.slice();t.prog=PROGS[q.prog]?q.prog:DEFPROG;t.rate=q.rate==='bar'?'bar':'hit';t.riffSeed=q.riffSeed>>>0;t.phrase=cleanPhrase(q.phrase);}t.seed=q.seed>>>0;t.ratio=q.ratio||1;t.fill=q.fill|0;if(!t.drum){t.patch=q.patch||'Custom';t.lastV=null;}t.vol=q.vol;if(perf){t.mute=q.mute;t.solo=q.solo;}
 t.set(q.hits,q.steps,q.rot);if(q.pat&&q.pat.length===t.steps){t.pat=q.pat.slice();t.draw();}t.syncAll();});refreshAudible(tm);}
 const phS=t=>t.mode==='Phrase'&&t.phrase&&t.phrase.notes&&t.phrase.notes.length?t.phrase.len*16:0;
 function secCalc(sec,st){const L=sec.len,tt=st.tracks;let n,capped=false,full=0;
 if(L.mode==='bars')n=L.bars*16;
 else if(L.mode==='track'){const t=tt[L.track];n=(t?(phS(t)||t.steps):16)*L.cycles;}
-else{const any=tt.some(t=>t.solo),act=tt.filter(t=>(t.mode==='Phrase'?phS(t)>0:t.hits>0)&&!t.mute&&(!any||t.solo));let l=1;act.forEach(t=>{l=Math.min(1e7,lcm(l,phS(t)||t.steps));});if(!act.length)l=16;full=l;n=Math.min(l,L.cap*16);capped=l>n;}
+else{const act=tt.filter(t=>(t.mode==='Phrase'?phS(t)>0:t.hits>0)&&true);let l=1;act.forEach(t=>{l=Math.min(1e7,lcm(l,phS(t)||t.steps));});if(!act.length)l=16;full=l;n=Math.min(l,L.cap*16);capped=l>n;}
 return{n:Math.max(1,n),capped,full};}
 const bpmOf=sec=>sec.useBpm&&sec.state.bpm?sec.state.bpm:G.bpm;
 const fBars=n=>{const b=n/16;return(Math.round(b*10)/10).toString().replace(/\.0$/,'')+(b===1?' bar':' bars');};
@@ -726,14 +810,15 @@ renderStrip();refreshArr();setInterval(()=>{tick500();},500);setInterval(autosav
 try{const j=localStorage.getItem(LS);if(j)restore(JSON.parse(j));}catch(e){}}
 // ---------- project IO ----------
 let lastSave='';
-function project(){return{app:'grokband',v:3,diceKey:rollKey,minorBias,bpm:G.bpm,master:{...M},live:snapshot(),sections:Object.values(secs),song:song.map(e=>({...e})),sel:selIdx,mode:arr.mode,songLoop,gen:genInfo};}
+function project(){return{app:'grokband',v:3,diceKey:rollKey,minorBias,bpm:G.bpm,master:{...M},pm:1,live:snapshot(true),sections:Object.values(secs),song:song.map(e=>({...e})),sel:selIdx,mode:arr.mode,songLoop,gen:genInfo,midi:midiState()};}
 function restore(p){if(!p||p.app!=='grokband'||!Array.isArray(p.sections)||!Array.isArray(p.song))throw new Error('not a Grok Band project');
-secs={};p.sections.forEach(x=>{normState(x.state);secs[x.id]=x;});song=p.song.filter(e=>secs[e.sec]);normState(p.live);rollKey=!!p.diceKey;syncRollKey();undoStack=[];selIdx=song.length?Math.max(0,Math.min(song.length-1,p.sel|0)):-1;
+secs={};p.sections.forEach(x=>{normState(x.state);if(!p.pm)bakeMute(x.state);secs[x.id]=x;});song=p.song.filter(e=>secs[e.sec]);normState(p.live);rollKey=!!p.diceKey;syncRollKey();undoStack=[];selIdx=song.length?Math.max(0,Math.min(song.length-1,p.sel|0)):-1;
 rollKey=!!p.diceKey;minorBias=!!p.minorBias;if(p.master){Object.assign(M,MDEF,p.master);masterApply();if(outG)outG.gain.value=M.vol/100*.92;if(fbG)fbG.gain.value=M.fb/100;updateDelay();rebuildIR();if(masterEl)masterEl.draw();volDraws.forEach(d=>d());}
-if(p.live)loadState(p.live,true);arr.mode=p.mode==='song'?'song':'loop';songLoop=p.songLoop!==false;genInfo=p.gen&&p.gen.seed?p.gen:null;syncSeed();renderStrip();refreshArr();}
+if(p.live)loadState(p.live,true,undefined,true);arr.mode=p.mode==='song'?'song':'loop';songLoop=p.songLoop!==false;genInfo=p.gen&&p.gen.seed?p.gen:null;if(p.midi)midiSet(p.midi);syncSeed();renderStrip();refreshArr();}
 function autosave(){try{const j=JSON.stringify(project());if(j!==lastSave){localStorage.setItem(LS,j);lastSave=j;}}catch(e){}}
 function saveFile(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(project(),null,1)],{type:'application/json'}));a.download='grok-band-'+new Date().toISOString().slice(0,10)+'.grokband.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);}
-function buildDemo(){secs={};song=[];undoStack=[];selIdx=-1;const base=P['Synthwave (A minor)'],Z0=[0,16,0];
+const pinLead=()=>{const l=tracks.find(t=>t.id==='lead');if(l){l.vol=.6;l.syncAll();}};
+function buildDemo(){pinLead();secs={};song=[];undoStack=[];selIdx=-1;const base=P['Synthwave (A minor)'],Z0=[0,16,0];
 const mk=(name,ci,len,tw)=>{applyP(base);tw(tracks);const sc=newSection(name,snapshot(),len);sc.color=SCOL[ci];sc.useBpm=true;return sc;};
 const intro=mk('Intro',3,{mode:'bars',bars:2,track:0,cycles:1,cap:8},T=>{T[1].set(...Z0);T[2].set(4,16,2);T[3].set(...Z0);T[5].set(...Z0);T[6].set(2,32,0);});
 const main=mk('Main',0,{mode:'bars',bars:4,track:0,cycles:1,cap:8},T=>{T[5].set(...Z0);});
@@ -751,7 +836,7 @@ while(more){more=false;src.forEach(([tag,arr,sr],j)=>{if(ix[j]<arr.length){const
 const masterSync=()=>{if(outG)outG.gain.value=M.vol/100*.92;if(fbG)fbG.gain.value=M.fb/100;updateDelay();rebuildIR();if(masterEl)masterEl.draw();volDraws.forEach(d=>d());};
 const DZ=[0,16,0];
 function demoPlan(parts,bars){return{parts:parts.filter(p=>p[1].length).map(([target,notes])=>({target,drum:false,notes:notes.map(a=>({s:a[0],l:a[1],p:a[2],v:a[3]}))})),bars,stepTicks:1,tempoAt:()=>G.bpm};}
-function demoBase(preset,k,sc,bpm,snd){applyP(preset);setKeyScale(k,sc);setBpm(bpm);Object.entries(snd).forEach(([id,name])=>{const tr=tracks.find(t=>t.id===id);if(tr)applySound(tr,name);});
+function demoBase(preset,k,sc,bpm,snd){pinLead();applyP(preset);setKeyScale(k,sc);setBpm(bpm);Object.entries(snd).forEach(([id,name])=>{const tr=tracks.find(t=>t.id===id);if(tr)applySound(tr,name);});
 const pr=JSON.parse(JSON.stringify(project()));pr.sections=[];pr.song=[];pr.sel=-1;pr.mode='loop';pr.gen=null;restore(pr);}
 const BACH_SND={lead:'Soft Lead',bell:'Glass Bell',pad:'Warm Pad',bass:'Classic Bass'};
 const ANT_STY={house:['Four on floor E(4,8)',{lead:'Supersaw Lead',bell:'Glass Bell',pad:'Warm Pad',bass:'Classic Bass'}],rage:['Rage loop',{lead:'Supersaw Lead',bell:'Tubular Bell',pad:'Dark Pad',bass:'808 Sub'}],dorian:['Dorian Dream (polyrhythm)',BACH_SND],sunny:['Bossa clave E(5,16)',BACH_SND],synthwave:['Synthwave (A minor)',{lead:'Supersaw Lead',bell:'Glass Bell',pad:'Warm Pad',bass:'Classic Bass'}]};
@@ -773,44 +858,45 @@ function demoToast(txt){let t=$('#toast');if(!t){t=document.createElement('div')
 // ---------- NEW SONG: seeded random arrangement ----------
 const GSEEDCH='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const randSeed=()=>{let x='';for(let i=0;i<6;i++)x+=GSEEDCH[Math.floor(Math.random()*32)];return x;};
-const GD={kick:{st:[16],h:[3,5],rots:[0,0,2]},snare:{st:[16],h:[2,2],rots:[4,8]},hat:{st:[16],h:[8,12],rots:[0,1]},clave:{st:[16],h:[3,5],rots:'any'},bass:{st:[16],h:[4,7],rots:[0,1,2]},bell:{st:[16],h:[3,6],rots:'any'},lead:{st:[16],h:[4,8],rots:[0,1,2]},pad:{st:[32],h:[1,2],rots:[0]}};
+const GD={kick:{st:[16],h:[3,5],rots:[0,0,2]},snare:{st:[16],h:[2,2],rots:[4,8]},hat:{st:[16],h:[8,12],rots:[0,1]},clave:{st:[16],h:[3,5],rots:'any'},bass:{st:[16],h:[4,7],rots:[0,1,2]},bell:{st:[16],h:[3,6],rots:'any'},lead:{st:[16],h:[3,5],rots:[2,2,6,10]},pad:{st:[32],h:[1,2],rots:[0]}};
 // per-style: tempo / key / scale bias, sounds, note modes, roll usage, drive + duck, groove ranges (hits are absolute, steps listed)
 const GSTY={
 rage:{label:'Rage',w:3,bpm:[140,160],keys:[1,5,6,9,8,3],sc:['Minor','Minor','Minor','Phrygian','Harmonic Minor'],rage:1,
  snd:{bass:['808 Distorted','808 Distorted','808 Sub'],bell:['Tubular Bell','Glass Bell'],lead:['Supersaw Lead'],pad:['Dark Pad']},
  mode:{bass:['Chord root','Minor riff','Riff'],bell:['Minor riff'],lead:['Power +8','Power','Minor riff'],pad:['Chord']},
- roll:{kick:{h:[3,5]},snare:{h:[1,2],rots:[8,8,4]},hat:{h:[9,13]},clave:{h:[2,3]},bass:{h:[4,7]},bell:{h:[3,5]},lead:{h:[4,8]}},
- clave:.5,bell:.9,bellMain:.6,ratio:[2,3],fill:[2,4],snFill:[0,2],mst:{drive:[25,45],duck:[45,70],noise:[0,10]},prog:['i-VI-III-VII','i-VI-III-VII','ii-V-I'],vol:{bass:.95,bell:.75}},
+ roll:{kick:{h:[3,5]},snare:{h:[1,2],rots:[8,8,4]},hat:{h:[9,13]},clave:{h:[2,3]},bass:{h:[4,7]},bell:{h:[3,5]}},
+ clave:.5,bell:.9,bellMain:.6,ratio:[2,3],fill:[2,4],snFill:[0,0],mst:{drive:[25,45],duck:[45,70],noise:[0,10]},prog:['i-VI-III-VII','i-VI-III-VII','ii-V-I'],vol:{bass:.95,bell:.75}},
 trap:{label:'Trap',w:2,bpm:[134,146],keys:[9,5,6,1,8],sc:['Minor','Minor','Phrygian'],rage:1,
  snd:{bass:['808 Sub','808 Sub','808 Distorted'],bell:['Glass Bell','Tubular Bell'],lead:['Soft Lead','Supersaw Lead'],pad:['Dark Pad']},
  mode:{bass:['Chord root','Riff','Minor riff'],bell:['Minor riff'],lead:['Minor riff','Power'],pad:['Chord']},
- roll:{kick:{h:[2,4]},snare:{h:[1,1],rots:[8]},hat:{h:[10,14]},clave:{h:[2,3]},bass:{h:[3,6]},bell:{h:[2,4]},lead:{h:[3,6]}},
+ roll:{kick:{h:[2,4]},snare:{h:[1,1],rots:[8]},hat:{h:[10,14]},clave:{h:[2,3]},bass:{h:[3,6]},bell:{h:[2,4]}},
  clave:.4,bell:.9,bellMain:.7,ratio:[2,2],fill:[2,2],snFill:[0,0],mst:{drive:[10,25],duck:[35,55],noise:[0,6]},prog:['i-VI-III-VII','I-V-vi-IV'],vol:{bass:.95,bell:.8}},
 house:{label:'House',w:2,bpm:[120,128],keys:[0,2,5,7,9,3,10],sc:['Minor','Dorian','Mixolydian','Major'],rage:0,
  snd:{bass:['Classic Bass'],bell:['Glass Bell'],lead:['Supersaw Lead','Soft Lead'],pad:['Warm Pad']},
  mode:{bass:['Chord root','Riff'],bell:['Riff','Up'],lead:['Riff','Up','Ping-pong'],pad:['Chord']},
- roll:{kick:{h:[4,4],rots:[0]},snare:{h:[2,2],rots:[4]},hat:{h:[8,8],rots:[1]},clave:{h:[3,5]},bass:{h:[5,8],rots:[0,2]},bell:{h:[3,5]},lead:{h:[5,8]}},
+ roll:{kick:{h:[4,4],rots:[0]},snare:{h:[2,2],rots:[4]},hat:{h:[8,8],rots:[1]},clave:{h:[3,5]},bass:{h:[5,8],rots:[0,2]},bell:{h:[3,5]}},
  clave:.3,bell:.7,bellMain:.5,ratio:[1,1],fill:[0,2],snFill:[0,0],mst:{drive:[0,15],duck:[55,75],noise:[0,4]},prog:['I-V-vi-IV','I-IV-V-iii','ii-V-I'],vol:{}},
 latin:{label:'Latin',w:1.5,bpm:[92,112],keys:[0,1,2,3,4,5,6,7,8,9,10,11],sc:['Dorian','Mixolydian','Major','Minor'],rage:0,
  snd:{bass:['Classic Bass'],bell:['Glass Bell'],lead:['Soft Lead'],pad:['Warm Pad']},
  mode:{bass:['Chord root','Riff'],bell:['Riff','Up','Random'],lead:['Riff','Ping-pong'],pad:['Chord']},
- roll:{kick:{st:[8],h:[3,3],rots:[0]},snare:{h:[3,5],rots:[4,2]},hat:{h:[8,10],rots:[1,2]},clave:{h:[5,5],rots:[0,3]},bass:{h:[4,6]},bell:{st:[12],h:[5,7],rots:'any'},lead:{st:[16,12],h:[4,7]}},
+ roll:{kick:{st:[8],h:[3,3],rots:[0]},snare:{h:[3,5],rots:[4,2]},hat:{h:[8,10],rots:[1,2]},clave:{h:[5,5],rots:[0,3]},bass:{h:[4,6]},bell:{st:[12],h:[5,7],rots:'any'}},
  clave:1,bell:.9,bellMain:.8,ratio:[1,1],fill:[0,0],snFill:[0,0],mst:{drive:[0,8],duck:[0,15],noise:[0,0]},prog:['I-IV-V-iii','ii-V-I','I-V-vi-IV'],vol:{}},
 synth:{label:'Synthwave',w:1.5,bpm:[100,118],keys:[9,4,2,0,7,5],sc:['Minor'],rage:0,
  snd:{bass:['Classic Bass'],bell:['Glass Bell'],lead:['Supersaw Lead','Soft Lead'],pad:['Warm Pad']},
  syn:{bass:{cut:34,res:40,fenv:65,gate:60},pad:{cut:45,rev:65}},
  mode:{bass:['Riff','Chord root'],bell:['Riff','Up'],lead:['Ping-pong','Riff'],pad:['Chord']},
- roll:{kick:{h:[4,4],rots:[0]},snare:{h:[2,2],rots:[4]},hat:{h:[8,9],rots:[1,0]},clave:{h:[3,5]},bass:{h:[6,9],rots:[0,2]},bell:{h:[3,5]},lead:{h:[5,8]}},
+ roll:{kick:{h:[4,4],rots:[0]},snare:{h:[2,2],rots:[4]},hat:{h:[8,9],rots:[1,0]},clave:{h:[3,5]},bass:{h:[6,9],rots:[0,2]},bell:{h:[3,5]}},
  clave:.2,bell:.7,bellMain:.5,ratio:[1,1],fill:[0,0],snFill:[0,0],mst:{drive:[5,15],duck:[20,40],noise:[0,4]},prog:['i-VI-III-VII','I-V-vi-IV'],vol:{}},
 dorian:{label:'Dorian chill',w:1.5,bpm:[84,98],keys:[2,7,9,4,0,11],sc:['Dorian','Dorian','Mixolydian'],rage:0,
  snd:{bass:['Classic Bass'],bell:['Glass Bell'],lead:['Soft Lead'],pad:['Warm Pad']},
  syn:{bell:{dly:45,rev:55},pad:{rev:75,gate:70}},
  mode:{bass:['Riff','Chord root'],bell:['Random','Riff','Up'],lead:['Up','Riff'],pad:['Chord']},
- roll:{kick:{st:[8,12],h:[3,4],rots:[0]},snare:{h:[1,2],rots:[8,4]},hat:{st:[12,16,8],h:[5,7],rots:'any'},clave:{h:[3,5]},bass:{st:[16,12],h:[3,5]},bell:{st:[7,12],h:[3,5],rots:'any'},lead:{st:[7,16,12],h:[3,5]}},
+ roll:{kick:{st:[8,12],h:[3,4],rots:[0]},snare:{h:[1,2],rots:[8,4]},hat:{st:[12,16,8],h:[5,7],rots:'any'},clave:{h:[3,5]},bass:{st:[16,12],h:[3,5]},bell:{st:[7,12],h:[3,5],rots:'any'}},
  clave:.3,bell:.9,bellMain:.8,ratio:[1,1],fill:[0,0],snFill:[0,0],mst:{drive:[0,0],duck:[10,30],noise:[0,0]},prog:['I-V-vi-IV','ii-V-I','i-VI-III-VII'],vol:{}}};
 GSTY.rage.kit='808';GSTY.trap.kit='808';GSTY.trap.dsnd={clave:'cowbell'};GSTY.house.kit='909';GSTY.house.dsnd={clave:'clap'};GSTY.latin.kit='808';GSTY.synth.kit='Linn';GSTY.dorian.kit='Linn';
 function rollSpec(r,c){const st=pick(r,c.st);let h=ri(r,c.h[0],c.h[1]);h=Math.max(1,Math.min(st-1,h));const rt=(!c.rots||c.rots==='any')?ri(r,0,st-1):(pick(r,c.rots)%st);return[h,st,rt];}
 // builds secs/song from a seed (no audio, no UI); returns info
+Object.values(GSTY).forEach(S=>{S.arp={snd:S.snd.lead.slice(),mode:['Up','Ping-pong']};S.snd.lead=['Rhythm Gtr'];S.mode.lead=['Chord'];});
 function genSong(seedStr){
 const seed=String(seedStr||'').trim().toUpperCase()||randSeed(),r=rng(hashStr('GB'+seed));
 const keys=Object.keys(GSTY),tw=keys.reduce((a,k)=>a+GSTY[k].w,0);let u=r()*tw,sk=keys[0];for(const k of keys){u-=GSTY[k].w;if(u<0){sk=k;break;}}
@@ -831,19 +917,20 @@ tracks.forEach(tr=>{if(tr.drum)return;const m=genRiff(mseed,mlen,riffScale(tr));
 const core=snapshot(),cp=()=>JSON.parse(JSON.stringify(core)),Q=(st,id)=>st.tracks[ix[id]];
 const off=q=>{q.hits=0;q.pat=Array(q.steps).fill(0);},setH=(q,h)=>{h=Math.max(0,Math.min(q.steps,h|0));q.hits=h;q.pat=rot(bjorklund(h,q.steps),q.rot);};
 const has=id=>core.tracks[ix[id]].hits>0,half=q=>{if(q.hits)setH(q,Math.max(1,Math.round(q.hits/2)));},cutMul=(q,m)=>{q.syn.cut=Math.max(5,Math.min(100,Math.round(q.syn.cut*m)));};
+const arpLead=q=>{const an=pick(r,S.arp.snd);q.syn={...SYN_DEF,...SOUNDS[an]};q.patch=an;q.mode=pick(r,S.arp.mode);q.rot=0;setH(q,ri(r,6,9));};
 // Intro: pad + hat (or pad + bell), filtered
 const intro=cp();['kick','snare','bass','lead','clave'].forEach(id=>off(Q(intro,id)));
 if(r()<.5||!has('bell')){half(Q(intro,'hat'));off(Q(intro,'bell'));}else off(Q(intro,'hat'));
 cutMul(Q(intro,'pad'),.6);cutMul(Q(intro,'bell'),.75);
 // Main: the core groove, lead held back
-const main=cp();off(Q(main,'lead'));if(!bellMain)off(Q(main,'bell'));
+const main=cp();if(r()>=.7)off(Q(main,'lead'));if(!bellMain)off(Q(main,'bell'));
 // Chorus: everything on, denser hats, lead and bell join, maybe another progression
-const ch=cp();{const h=Q(ch,'hat');setH(h,Math.min(h.steps-1,h.hits+2));h.ratio=Math.min(4,(h.ratio||1)+(r()<.5?1:0));h.fill=Math.max(h.fill||0,hf?hf:(r()<.5?2:0));cutMul(Q(ch,'lead'),1.15);
+const ch=cp();{const h=Q(ch,'hat');setH(h,Math.min(h.steps-1,h.hits+2));h.ratio=Math.min(4,(h.ratio||1)+(r()<.5?1:0));h.fill=Math.max(h.fill||0,hf?hf:(r()<.5?2:0));cutMul(Q(ch,'lead'),1.1);if(r()<.3)arpLead(Q(ch,'lead'));
 if(r()<.7)['pad','bass','lead','bell'].forEach(id=>{Q(ch,id).prog=alt;});}
 // Break: no kick / bass, pad + bell (or lead) carry it
-const br=cp();off(Q(br,'kick'));off(Q(br,'bass'));if(r()<.5)off(Q(br,'snare'));half(Q(br,'hat'));half(Q(br,'clave'));if(has('bell')&&r()<.6)off(Q(br,'lead'));else half(Q(br,'lead'));
+const br=cp();off(Q(br,'kick'));off(Q(br,'bass'));if(r()<.5)off(Q(br,'snare'));half(Q(br,'hat'));half(Q(br,'clave'));if(r()<.5)off(Q(br,'lead'));else half(Q(br,'lead'));if(r()<.12)Q(br,'snare').fill=2;
 // Main reprise: Main with the lead in, then Vary-style mutations so it is related but not identical
-const m2=cp();varyState(m2,r);
+const m2=cp();varyState(m2,r);if(r()>=.75)off(Q(m2,'lead'));
 // Outro: strip back
 const ou=cp();['snare','bass','lead','clave'].forEach(id=>off(Q(ou,id)));half(Q(ou,'kick'));half(Q(ou,'hat'));cutMul(Q(ou,'pad'),.7);
 const bars=n=>({mode:'bars',bars:n,track:0,cycles:1,cap:8}),mk=(name,ci,n,st)=>{const sc=newSection(name,st,bars(n));sc.color=SCOL[ci];sc.useBpm=true;sc.state.bpm=bpm;return sc;};
@@ -1030,7 +1117,7 @@ const Z=[0,16,0];
 const P={
 'Rage loop':{rage:1,bpm:150,key:6,scale:'Minor',t:[[3,16,0],[1,16,8],[9,16,1],[5,16,2],[3,16,5],[4,16,0],[2,32,0],[2,16,10]],
  sound:{bass:'808 Distorted',bell:'Tubular Bell',lead:'Supersaw Lead',pad:'Dark Pad'},mode:{bass:'Minor riff',bell:'Minor riff',lead:'Power +8',pad:'Chord'},prog:{lead:'i-VI-III-VII',pad:'i-VI-III-VII'},
- ratio:{hat:2},fill:{hat:4,snare:2},master:{drive:35,duck:55,noise:6},vol:{bass:.95,bell:.75}},
+ ratio:{hat:2},fill:{hat:4},master:{drive:35,duck:55,noise:6},vol:{bass:.95,bell:.75}},
 'Dark bell':{rage:1,bpm:140,key:1,scale:'Minor',t:[[2,16,0],[1,16,8],[7,16,2],[3,16,0],[5,16,0],Z,[2,32,0],[3,8,2]],
  sound:{bass:'808 Sub',bell:'Tubular Bell',pad:'Dark Pad'},mode:{bass:'Root',bell:'Minor riff',pad:'Chord'},prog:{pad:'i-VI-III-VII'},
  ratio:{hat:1},fill:{hat:2},master:{drive:15,duck:40,noise:10},vol:{bass:.9,bell:.85}},
@@ -1048,9 +1135,9 @@ const P={
 'Bembe bell E(7,12)':{t:[[4,12,0],[2,12,3],[6,12,1],Z,[7,12,0],Z,Z,Z]},
 'Electronic':{t:[[4,16,0],[2,16,4],[8,16,1],[12,16,15],Z,Z,Z,Z]},
 'Synthwave (A minor)':{bpm:108,key:9,scale:'Minor',t:[[4,16,0],[2,16,4],[8,16,1],[9,16,0],Z,[7,16,2],[2,32,0],Z],
- syn:{bass:{cut:34,res:40,fenv:65,gate:60},lead:{cut:68,dly:45,rev:30},pad:{cut:45,rev:65}},mode:{lead:'Ping-pong',pad:'Chord',bass:'Riff'},prog:{pad:'i-VI-III-VII'}},
+ syn:{bass:{cut:34,res:40,fenv:65,gate:60},lead:{cut:68,dly:45,rev:30},pad:{cut:45,rev:65}},mode:{lead:'Ping-pong',pad:'Chord',bass:'Riff'},sound:{lead:'Soft Lead'},prog:{pad:'i-VI-III-VII'}},
 'Dorian Dream (polyrhythm)':{bpm:92,key:2,scale:'Dorian',t:[[3,8,0],Z,[5,12,0],[5,16,2],[7,12,0],[5,7,0],[3,32,0],Z],
- syn:{bass:{wave:1,cut:40,fenv:30},bell:{oct:5,range:2,dly:45,rev:55},lead:{wave:1,uni:2,det:10,cut:70,dly:50,rev:45,oct:4},pad:{wave:2,cut:42,rev:75,gate:70}},mode:{bell:'Random',lead:'Up',bass:'Riff'},prog:{pad:'I-V-vi-IV'}}};
+ syn:{bass:{wave:1,cut:40,fenv:30},bell:{oct:5,range:2,dly:45,rev:55},lead:{wave:1,uni:2,det:10,cut:70,dly:50,rev:45,oct:4},pad:{wave:2,cut:42,rev:75,gate:70}},mode:{bell:'Random',lead:'Up',bass:'Riff'},sound:{lead:'Soft Lead'},prog:{pad:'I-V-vi-IV'}}};
 function kitPresets(){['Rage loop','Dark bell','Heavy 808 bounce','Trap 140'].forEach(k=>{if(P[k])P[k].kit='808';});if(P['Trap 140'])P['Trap 140'].dsnd={clave:'cowbell'};
 ['Four on floor E(4,8)','Electronic'].forEach(k=>{if(P[k])P[k].kit='909';});['Synthwave (A minor)','Dorian Dream (polyrhythm)'].forEach(k=>{if(P[k])P[k].kit='Linn';});if(P['Bembe bell E(7,12)'])P['Bembe bell E(7,12)'].kit='808';}
 kitPresets();
@@ -1083,7 +1170,7 @@ else if(k==='R'&&e.shiftKey){newSong();}else if(k==='r'||k==='R'){rollAll();}els
 else if((k==='ArrowUp'||k==='ArrowDown')&&curEnt()){e.preventDefault();setRep(selIdx,curEnt().rep+(k==='ArrowUp'?1:-1));}};
 const DEFS=[['Kick','kick',.8,[4,16,0]],['Snare','snare',.8,[2,16,4]],['Hat','hat',.7,[8,16,1]]];
 DEFS.forEach(d=>addTrack({name:d[0],id:d[1],drum:true,sound:d[1],vol:d[2]}).set(...d[3]));
-[['Bass','bass',.9,[5,16,2]],['Bell','bell',.75,Z],['Lead','lead',.6,Z],['Pad','pad',.6,Z]].forEach(d=>addTrack({name:d[0],id:d[1],vol:d[2]}).set(...d[3]));
+[['Bass','bass',.9,[5,16,2]],['Bell','bell',.75,Z],['Lead','lead',.3,Z],['Pad','pad',.6,Z]].forEach(d=>addTrack({name:d[0],id:d[1],vol:d[2]}).set(...d[3]));
 {const cl=addTrack({name:'Clave',id:'clave',drum:true,sound:'clave',vol:.8});cl.set(0,16,0);tracks[2].el.after(cl.el);}
 addMaster();{const hm=$('#hmv'),hv=$('#hmvv');volDraws.push(()=>{hm.value=M.vol;hv.textContent=M.vol+'%';hm.setAttribute('aria-valuetext',M.vol+'%');});
 hm.oninput=()=>setVol(+hm.value);
@@ -1104,6 +1191,7 @@ relayout();
 addEventListener('dragover',e=>{if(e.dataTransfer&&[...(e.dataTransfer.types||[])].includes('Files'))e.preventDefault();});
 addEventListener('drop',e=>{const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(f&&/\.midi?$/i.test(f.name)){e.preventDefault();openImport(f);}});
 const DEMO_GZ='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';
-window.__gb={loadDemoAt,demoData,demoList,humHit,humOff,KITS,KITV,voiceRender,setKit,syncKit,parseSMF,planImport,importApply,showImport,phraseAt,bakePhrase,setTrMode,cleanPhrase,genSong,newSong,GSTY,genInfoRef:()=>genInfo,undo,DRV_MK,buildMidi,renderAudio,wavBytes,zipStore,crc32,walkPlan,doExport,hitOffsets,SOUNDS,applySound,rigRef:()=>rig,masterApply,MDEF,VERSION,STUT,stutterTick,duckAt,applyCrush,initCrush,trigLog:()=>{TRLOG=[];return TRLOG;},stopTrigLog:()=>{TRLOG=null;},setMinorBias:v=>{minorBias=v;},status,snapGraph,restoreGraph,setStem:v=>{STEM=v;},crushBits,crushRate,masterMk,voiceCurve,masterCurve,riserStart,riserStop,nextPos,tailStart,loopStart,rollTrack,rollAll,genRiff,pickNotes,varyState,vary,normState,setRep,PROGS,SCALES,rng,setKeyScale,setRollKey:v=>{rollKey=v;syncRollKey();},relayout,zoom:()=>ZOOM,snapshot,loadState,secCalc,flatten,stepPlay,beginTransport,arr,view,songRef:()=>song,secsRef:()=>secs,buildDemo,project,restore,capture,setMode,selectEntry,startLog:()=>{LOG=[];return LOG;},stepDur,audible,refreshAudible,tracks:()=>tracks,P,applyP,build,triggerStep,setBpm,updateDelay,M,G,drawScope,setScope:f=>{scopeSrc=f;},resetCounters:()=>tracks.forEach(t=>t.hitN=0),ac:()=>ac};
+{const mb2=document.getElementById('midibtn');if(!midiOK)mb2.style.display='none';else{mb2.onclick=showMidi;midiUI();}}
+window.__gb={MIDI,midiNote,midiSet,midiConnect,midiLive,midiState,showMidi,midiPanic,loadDemoAt,demoData,demoList,humHit,humOff,KITS,KITV,voiceRender,setKit,syncKit,parseSMF,planImport,importApply,showImport,phraseAt,bakePhrase,setTrMode,cleanPhrase,genSong,newSong,GSTY,genInfoRef:()=>genInfo,undo,DRV_MK,buildMidi,renderAudio,wavBytes,zipStore,crc32,walkPlan,doExport,hitOffsets,SOUNDS,applySound,rigRef:()=>rig,masterApply,MDEF,VERSION,STUT,stutterTick,duckAt,applyCrush,initCrush,trigLog:()=>{TRLOG=[];return TRLOG;},stopTrigLog:()=>{TRLOG=null;},setMinorBias:v=>{minorBias=v;},status,snapGraph,restoreGraph,setStem:v=>{STEM=v;},crushBits,crushRate,masterMk,voiceCurve,masterCurve,riserStart,riserStop,nextPos,tailStart,loopStart,rollTrack,rollAll,genRiff,pickNotes,varyState,vary,normState,setRep,PROGS,SCALES,rng,setKeyScale,setRollKey:v=>{rollKey=v;syncRollKey();},relayout,zoom:()=>ZOOM,snapshot,loadState,secCalc,flatten,stepPlay,beginTransport,arr,view,songRef:()=>song,secsRef:()=>secs,buildDemo,project,restore,capture,setMode,selectEntry,startLog:()=>{LOG=[];return LOG;},stepDur,audible,refreshAudible,tracks:()=>tracks,P,applyP,build,triggerStep,setBpm,updateDelay,M,G,drawScope,setScope:f=>{scopeSrc=f;},resetCounters:()=>tracks.forEach(t=>t.hitN=0),ac:()=>ac};
 }
 </script></body></html>
