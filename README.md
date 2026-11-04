@@ -38,6 +38,14 @@ A multi-track Euclidean rhythm sequencer **and synth workstation** in a single, 
 - Musicality: one riff motif is shared by lead, bell and bass across sections; pad, bass ("Chord root" mode) and lead follow one chord progression per song (the Chorus may switch).
 - If the transport is running it restarts at the Intro, otherwise the Intro is selected and ready to play.
 
+## Phrase mode + Import MIDI (v11.0)
+
+- **Phrase** is a new mode for the four synth tracks (Lead/Bell/Pad/Bass). Instead of Euclidean hits and scale degrees, the track plays a stored note list (start step, length in 16ths, MIDI pitch, velocity). It loops at its own length (1-16 bars) and is saved with each section. A mini piano-roll replaces the hit ring and steps (the card layout does not change). Click an empty cell to add a note (drag for length), click a note to delete it, `-`/`+` set the bars, `x` goes back to Euclid. Switching to Phrase on an empty track bakes the current pattern into a 2-bar phrase.
+- Section length modes "track" and "realign" use the phrase length. Dice, VARY and ROLL skip Phrase tracks.
+- **Import MIDI...** (song row, next to Export, or drop a .mid on the page): reads SMF format 0/1 at any PPQN, with tempo changes. It lists each track/channel and auto-maps up to four melodic parts by register (highest = Lead, lowest = Bass; tracks named Lead/Bell/Pad/Bass keep their names). You can change the mapping. Notes are quantized to 16ths. Import into the current section, or as new sections split every N bars (tempo follows the file). Channel 10 drums map to kick/snare/hat/clave step patterns (GM notes). Undo restores the project.
+- A Grok Band MIDI export imports back to the same notes (on a no-roll song; sub-step rolls quantize to 16ths). Limits: 4/4 bars only, SMPTE and format 2 files are rejected, drum patterns are approximated beyond 2 bars, notes crossing a section boundary are clipped.
+- For scripts: `__gb.importApply(plan,{mode:'sections'|'current',n,useTempo,keepDrums})` takes a plan `{parts:[{target:'lead'|'bell'|'pad'|'bass'|'drums',notes:[{s,l,p,v}]}],bars,bpm,tempoAt,stepTicks}`; `keepDrums` leaves the current Euclid drums under the phrases.
+
 Shortcuts: **Space** play/stop, **C** capture section, **U** update section, **[ ]** previous/next section, **Del** remove section, **R** roll all, **Shift+R** new song, **V** vary, **E** end, **Up/Down** section repeat, **Ctrl+Z** undo delete.
 
 Inspired by the "Claudia Explains: Euclid" video by [@anabology](https://x.com/anabology) on X.
