@@ -219,7 +219,7 @@ const $=s=>document.querySelector(s);
 const DRUMS=['kick','snare','tight snare','wet snare','hat','open hat','clave','clap','cowbell','shaker','tom'],WAVES=['sine','triangle','sawtooth','square'],WNAME=['SIN','TRI','SAW','SQR'];
 const NOTE_NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const SCALES={Major:[0,2,4,5,7,9,11],Minor:[0,2,3,5,7,8,10],Dorian:[0,2,3,5,7,9,10],Phrygian:[0,1,3,5,7,8,10],Lydian:[0,2,4,6,7,9,11],Mixolydian:[0,2,4,5,7,9,10],'Pentatonic Maj':[0,2,4,7,9],'Pentatonic Min':[0,3,5,7,10],Blues:[0,3,5,6,7,10],'Harmonic Minor':[0,2,3,5,7,8,11]};
-const VERSION='v14.16 · 2026-11-06';
+const VERSION='v14.17 · 2026-11-06';
 const MODES=['Root','Up','Down','Ping-pong','Random','Chord','Riff','Power','Power +8','Minor riff','Chord root','Phrase'],RIFF=[0,0,4,0,3,0,5,4],PENT=[0,3,5,7,10],FMR=[.5,1,1.5,2,3,3.5,4,5,7];
 const PROGS={'I-V-vi-IV':[0,4,5,3],'i-VI-III-VII':[0,5,2,6],'ii-V-I':[1,4,0],'I-IV-V-iii':[0,3,4,2]},DEFPROG='I-IV-V-iii';
 const G={key:9,scale:'Minor',bpm:140};
@@ -1340,8 +1340,17 @@ const P={
 'Synthwave (A minor)':{bpm:108,key:9,scale:'Minor',t:[[4,16,0],[2,16,4],[8,16,1],[9,16,0],Z,[7,16,2],[2,32,0],Z],
  syn:{bass:{cut:34,res:40,fenv:65,gate:60},lead:{cut:68,dly:45,rev:30},pad:{cut:45,rev:65}},mode:{lead:'Ping-pong',pad:'Chord',bass:'Riff'},sound:{lead:'Soft Lead'},prog:{pad:'i-VI-III-VII'}},
 'Dorian Dream (polyrhythm)':{bpm:92,key:2,scale:'Dorian',t:[[3,8,0],Z,[5,12,0],[5,16,2],[7,12,0],[5,7,0],[3,32,0],Z],
- syn:{bass:{wave:1,cut:40,fenv:30},bell:{oct:5,range:2,dly:45,rev:55},lead:{wave:1,uni:2,det:10,cut:70,dly:50,rev:45,oct:4},pad:{wave:2,cut:42,rev:75,gate:70}},mode:{bell:'Random',lead:'Up',bass:'Riff'},sound:{lead:'Soft Lead'},prog:{pad:'I-V-vi-IV'}}};
-function kitPresets(){['Rage loop','Dark bell','Heavy 808 bounce','Trap 140'].forEach(k=>{if(P[k])P[k].kit='808';});if(P['Trap 140'])P['Trap 140'].dsnd={clave:'cowbell'};
+ syn:{bass:{wave:1,cut:40,fenv:30},bell:{oct:5,range:2,dly:45,rev:55},lead:{wave:1,uni:2,det:10,cut:70,dly:50,rev:45,oct:4},pad:{wave:2,cut:42,rev:75,gate:70}},mode:{bell:'Random',lead:'Up',bass:'Riff'},sound:{lead:'Soft Lead'},prog:{pad:'I-V-vi-IV'}},
+'Yeat Dreamy (Antarctica)':{rage:1,bpm:132,key:9,scale:'Minor',t:[[2,16,0],[1,16,8],[7,16,2],[2,16,6],[1,16,8],Z,Z,[2,16,10],[3,16,2],Z,[2,32,0],Z,[2,16,0],Z],
+ sound:{bass:'808 Sub',bell:'Glass Bell',pad:'Dark Pad'},mode:{bass:'Root',bell:'Minor riff',pad:'Chord'},prog:{pad:'i-VI-III-VII'},
+ ratio:{hat:1},fill:{hat:2},master:{drive:15,duck:40,noise:6},vol:{bass:.85,bell:.55}},
+'Yeat Dark (Aint Try)':{rage:1,bpm:145,key:5,scale:'Minor',t:[[5,16,0],[1,16,8],[13,16,0],[5,16,2],[3,16,5],Z,[2,16,4],[2,16,10],[3,8,2],Z,Z,Z,[3,16,0],Z],
+ sound:{bass:'808 Distorted',bell:'Tubular Bell',pad:'Dark Pad'},mode:{bass:'Riff',bell:'Minor riff',pad:'Chord'},prog:{pad:'i-VI-III-VII'},syn:{bass:{gld:40,drive:78}},
+ ratio:{hat:3},fill:{hat:4},master:{drive:45,duck:70},vol:{bass:1,bell:.6}},
+'Yeat Futuristic (Take It For Granted)':{rage:1,bpm:140,key:9,scale:'Minor',t:[[4,16,0],[1,16,8],[12,16,0],[4,16,2],[2,16,4],Z,Z,[3,16,0],[2,16,0],[3,16,5],Z,[2,16,0],[5,16,0],Z],
+ sound:{bass:'808 Sub',bell:'Glass Bell',lead:'Soft Lead'},mode:{bass:'Root',bell:'Minor riff',lead:'Up',pad:'Chord'},prog:{pad:'i-VI-III-VII'},
+ ratio:{hat:2},fill:{hat:4},master:{drive:20,duck:45},vol:{bass:.9,bell:.65}}};
+function kitPresets(){['Rage loop','Dark bell','Heavy 808 bounce','Trap 140','Yeat Dreamy (Antarctica)','Yeat Dark (Aint Try)','Yeat Futuristic (Take It For Granted)'].forEach(k=>{if(P[k])P[k].kit='808';});if(P['Trap 140'])P['Trap 140'].dsnd={clave:'cowbell'};
 ['Four on floor E(4,8)','Electronic'].forEach(k=>{if(P[k])P[k].kit='909';});['Synthwave (A minor)','Dorian Dream (polyrhythm)'].forEach(k=>{if(P[k])P[k].kit='Linn';});if(P['Bembe bell E(7,12)'])P['Bembe bell E(7,12)'].kit='808';}
 kitPresets();
 const DEF_DRUM_SND={openhat:'open hat'};
