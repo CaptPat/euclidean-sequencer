@@ -98,3 +98,13 @@ The master VOLUME (header slider and master knob) is a personal setting kept in 
 The header now shows the version (small, bottom right of the title) and the **currently loaded song** under "GROK BAND": a demo as "Bach · F major pastoral" / "LLM · dark-trap-150" / "Anticipation · …", a generated one as "NEW · seed · style", a file as "File · name", a MIDI import as "Import · name", otherwise "Project". It has a fixed width with an ellipsis (full text on hover), so nothing moves. The DEMO button's tooltip reads "Now: X — Next: Y". The label is saved with the project.
 
 The HUMANIZE knob is renamed **JITTER** ("Per-hit seeded random variation in timing, pitch, decay, level"). It is the same control: the saved-state key (`master.hum`) is unchanged, so old saves and the demos load exactly as before.
+
+## v14.21 — restrained Roll, NEW SONG, and demos
+
+**ROLL** (header) is the “give me something to leave on” control. **+KEY** starts on, so a fresh session rolls key and scale with the patterns. A project that saved `diceKey` true or false keeps that choice; only a missing value uses the new default.
+
+Empty **keys** and **arp** lanes stay empty. Kick, hat, and bass stay in the groove. Pad or strings may join as a quiet bed; bell and lead only rarely, and never in an Up / Down / Ping-pong / Random scale walk unless that mode is held (the SONG lock from the mode menu). A mood of **EDM** (also techno, rave, club, trance) nudges tempo toward 128, forces a 4-on-the-floor kick, and does not wake bell, lead, keys, or arp. Master volume is not touched.
+
+**NEW SONG** intros are drums plus bass, with bell, lead, arp, and keys out. Later sections can bring those parts back as Chord, Riff, Minor riff, Root, or Chord root. The old chorus trick that swapped the lead to Up or Ping-pong on a supersaw is gone. Up, Down, Ping-pong, and Random stay in the mode menu. Loading a save does not rewrite modes, phrases, holds, or 808 slides.
+
+Presets that were scale drills (Synthwave lead, Dorian Dream bell/lead, Futuristic lead, and the arp lanes on Dreamy, Dark, and Futuristic) now use riff or chord modes, with lower bell/lead cutoff and level on those presets only. DEMO songs get the same role caps on bell, lead, arp, and keys. Phrase pitches are not transposed.
