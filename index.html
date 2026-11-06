@@ -196,7 +196,7 @@ function rot(p,r){const n=p.length;r=((r%n)+n)%n;return p.slice(n-r).concat(p.sl
 if(typeof module!=='undefined'){module.exports={bjorklund,rot};}
 else{
 const $=s=>document.querySelector(s);
-const DRUMS=['kick','snare','tight snare','wet snare','hat','open hat','clave','clap','cowbell','shaker'],WAVES=['sine','triangle','sawtooth','square'],WNAME=['SIN','TRI','SAW','SQR'];
+const DRUMS=['kick','snare','tight snare','wet snare','hat','open hat','clave','clap','cowbell','shaker','tom'],WAVES=['sine','triangle','sawtooth','square'],WNAME=['SIN','TRI','SAW','SQR'];
 const NOTE_NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const SCALES={Major:[0,2,4,5,7,9,11],Minor:[0,2,3,5,7,8,10],Dorian:[0,2,3,5,7,9,10],Phrygian:[0,1,3,5,7,8,10],Lydian:[0,2,4,6,7,9,11],Mixolydian:[0,2,4,5,7,9,10],'Pentatonic Maj':[0,2,4,7,9],'Pentatonic Min':[0,3,5,7,10],Blues:[0,3,5,6,7,10],'Harmonic Minor':[0,2,3,5,7,8,11]};
 const VERSION='v14.6 · 2026-11-06';
@@ -366,6 +366,7 @@ Default:{
  clap:(t,v,tr)=>kClap(t,v,tr,0,{f:1300,q:1.2,n:3,gap:.01,tail:.16,pk:1.6,send:.2}),
  cowbell:(t,v,tr)=>kCow(t,v,tr,0,560,845,2000,.25,.3),
  shaker:(t,v,tr)=>kShk(t,v,tr,0,6500,.7,.006,.06,.55)},
+ tom:(t,v,tr)=>{const g=kg(tr),o=ac.createOscillator(),o2=ac.createOscillator();o.type='sine';o2.type='triangle';o.frequency.setValueAtTime(140*kPr,t);o.frequency.exponentialRampToValueAtTime(85*kPr,t+.08);o2.frequency.setValueAtTime(180*kPr,t);o2.frequency.exponentialRampToValueAtTime(110*kPr,t+.06);env(g,t,v*.65,.22);o.connect(g);o2.connect(g);o.start(t);o2.start(t);o.stop(t+.25);o2.stop(t+.2);const n=noise(),ng=ac.createGain(),f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=600;n.connect(f);f.connect(ng);ng.gain.setValueAtTime(v*.15,t);ng.gain.exponentialRampToValueAtTime(.0008,t+.01);ng.connect(g);n.start(t);n.stop(t+.02);}},
 '808':{
  // boomy sine kick: fast sweep from 135 Hz to 50 Hz, then a slow droop under a ~0.9 s tail
  kick:(t,v,tr)=>{const g=kg(tr),pg=ac.createGain();kEnv(g,t,v*.95,.002,.95);kOsc('sine',135,50,.05,t,1.05,g).frequency.exponentialRampToValueAtTime(43*kPr,t+.95);
@@ -380,6 +381,7 @@ Default:{
  clap:(t,v,tr)=>kClap(t,v,tr,0,{f:1000,q:1.4,n:4,gap:.0105,tail:.22,pk:1.6,send:.25}),
  cowbell:(t,v,tr)=>kCow(t,v,tr,0,540,800,2640,.34,.42),
  shaker:(t,v,tr)=>kShk(t,v,tr,0,5500,.6,.004,.04,.7)},
+ tom:(t,v,tr)=>{const g=kg(tr);kEnv(g,t,v*.7,.001,.24);kOsc('sine',160,95,.1,t,.26,g);const g2=ac.createGain();g2.gain.value=.4;g2.connect(g);kOsc('triangle',210,120,.07,t,.2,g2);const ng=ac.createGain(),f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=700;ng.gain.setValueAtTime(v*.12,t);ng.gain.exponentialRampToValueAtTime(.0008,t+.012);f.connect(ng);ng.connect(g);kNz(t,.015,f,'lowpass',700,.7);}},
 '909':{
  // punchy: 220 Hz -> 55 Hz in ~35 ms through a tanh saturator, short body + a noise click
  kick:(t,v,tr)=>{const g=kg(tr,0,1),c=kg(tr);kEnv(g,t,v*.62,.0005,.36);kOsc('sine',220,55,.035,t,.42,g).frequency.exponentialRampToValueAtTime(46*kPr,t+.36);
@@ -394,6 +396,7 @@ Default:{
  clap:(t,v,tr)=>kClap(t,v,tr,0,{f:1200,q:.9,n:4,gap:.009,tail:.3,pk:.95,send:.3}),
  cowbell:(t,v,tr)=>kCow(t,v,tr,0,587,845,2500,.22,.32),
  shaker:(t,v,tr)=>kShk(t,v,tr,0,7500,.8,.01,.07,.55)},
+ tom:(t,v,tr)=>{const g=kg(tr);kEnv(g,t,v*.72,.0008,.2);kOsc('sine',170,90,.08,t+.001,.22,g);const g2=ac.createGain();g2.gain.value=.35;g2.connect(g);kOsc('triangle',220,125,.06,t,.18,g2);const ng=ac.createGain(),f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=750;ng.gain.setValueAtTime(v*.1,t);ng.gain.exponentialRampToValueAtTime(.0008,t+.01);f.connect(ng);ng.connect(g);kNz(t,.012,f,'lowpass',750,.7);}},
 Linn:{
  // tight, dry, 8-bit-ish (staircase quantizer on every voice)
  kick:(t,v,tr)=>{const g=kg(tr,1);kEnv(g,t,v*.88,.0005,.2);kOsc('sine',135,58,.03,t,.24,g).frequency.exponentialRampToValueAtTime(50*kPr,t+.2);{const c=ac.createGain();c.gain.value=.3;c.connect(g);kOsc('triangle',900,300,.006,t,.012,c);}},
@@ -410,7 +413,8 @@ Linn:{
  clave:(t,v,tr)=>{const g=kg(tr,1);kEnv(g,t,v*.45,.0005,.055);kOsc('sine',1180,1000,.015,t,.09,g);kOsc('sine',770,770,0,t,.07,g);kNz(t,.01,g,'bandpass',3000,1);},
  clap:(t,v,tr)=>kClap(t,v,tr,1,{f:1800,q:.8,n:3,gap:.008,tail:.13,pk:.85,send:.15}),
  cowbell:(t,v,tr)=>kCow(t,v,tr,1,560,835,1900,.18,.3),
- shaker:(t,v,tr)=>kShk(t,v,tr,1,8500,.6,.003,.045,.5)}};
+ shaker:(t,v,tr)=>kShk(t,v,tr,1,8500,.6,.003,.045,.5)},
+ tom:(t,v,tr)=>{const g=kg(tr,1);kEnv(g,t,v*.68,.0007,.18);kOsc('sine',155,82,.075,t+.001,.2,g);const g2=ac.createGain();g2.gain.value=.38;g2.connect(g);kOsc('triangle',200,115,.055,t,.16,g2);const ng=ac.createGain(),f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=680;ng.gain.setValueAtTime(v*.08,t);ng.gain.exponentialRampToValueAtTime(.0008,t+.008);f.connect(ng);ng.connect(g);kNz(t,.01,f,'lowpass',680,.7);}};
 
 // ===== v14.4 fitted drum voices (Peaks/io-808/ChowKick architecture; no samples) =====
 const FV={};
@@ -801,14 +805,23 @@ function updateLights(){const n=performance.now();tracks.forEach(t=>{if(t.tabLig
 // ---------- arranger ----------
 const SCOL=['#ff6b4a','#ffc24a','#ff5f9e','#8fb8ff','#6fe0a8','#c28bff','#ff9d5c','#5fd3d3'],SNAMES=['Main','Chorus','Break','Bridge','Outro','Intro'];
 const gcd=(a,b)=>b?gcd(b,a%b):a,lcm=(a,b)=>a/gcd(a,b)*b,LS='grokband.project.v1';
-const trkOut=o=>({hits:o.hits,steps:o.steps,rot:o.rot,pat:o.pat.slice(),sound:o.sound,vol:o.vol,mute:o.mute,solo:o.solo,mode:o.mode,syn:o.syn?{...o.syn}:null,riff:o.riff?o.riff.slice():null,seed:o.seed>>>0,riffSeed:o.riffSeed>>>0,prog:o.prog,rate:o.rate,ratio:o.ratio||1,fill:o.fill|0,patch:o.patch,phrase:phraseOut(o.phrase),kit:o.kit});
+const trkOut=o=>({id:o.id,hits:o.hits,steps:o.steps,rot:o.rot,pat:o.pat.slice(),sound:o.sound,vol:o.vol,mute:o.mute,solo:o.solo,mode:o.mode,syn:o.syn?{...o.syn}:null,riff:o.riff?o.riff.slice():null,seed:o.seed>>>0,riffSeed:o.riffSeed>>>0,prog:o.prog,rate:o.rate,ratio:o.ratio||1,fill:o.fill|0,patch:o.patch,phrase:phraseOut(o.phrase),kit:o.kit});
 function snapshot(perf){const s={bpm:G.bpm,key:G.key,scale:G.scale,tracks:tracks.map(trkOut)};if(!perf)s.tracks.forEach(q=>{q.mute=false;q.solo=false;});return s;}
 // old saves kept mute/solo inside sections: bake it into the section content (empty parts) so they still sound the same
 function bakeMute(st){if(!st||!Array.isArray(st.tracks))return;const any=st.tracks.some(q=>q&&q.solo);st.tracks.forEach(q=>{if(!q)return;if(q.mute||(any&&!q.solo)){q.hits=0;q.pat=Array(q.steps||16).fill(0);if(q.phrase&&q.phrase.notes)q.phrase={...q.phrase,notes:[]};}q.mute=false;q.solo=false;});}
-// old saves: add the tracks / fields that did not exist yet (Clave, riff, progression) so they compare + load cleanly
+// old saves: remap legacy 9-track order to current 14-track layout by ID, then normalize
+const LEGACY_ORDER=['kick','snare','hat','bass','bell','lead','pad','clave','keys'];
 function normState(st){if(!st||!Array.isArray(st.tracks))return st;
-while(st.tracks.length<tracks.length){const t=tracks[st.tracks.length];st.tracks.push({hits:0,steps:16,rot:0,pat:Array(16).fill(0),sound:t.sound,vol:t.vol,mute:false,solo:false});}
-st.tracks=st.tracks.map((q,i)=>{const t=tracks[i];if(!t)return q;const o={...q};if(!t.drum){if(!o.riff||!o.riff.length)o.riff=RIFF.slice();if(!PROGS[o.prog])o.prog=DEFPROG;if(o.rate!=='bar')o.rate='hit';o.riffSeed=o.riffSeed>>>0;o.syn={...(t.legSyn||t.defSyn),...(o.syn||{})};if(!o.patch)o.patch='Custom';o.phrase=cleanPhrase(o.phrase);if(!o.mode)o.mode=t.legMode||t.defMode;}else{o.riff=null;o.kit=KITS.includes(o.kit)?o.kit:'Default';}if(!t.drum)delete o.kit;o.seed=o.seed>>>0;if(!o.pat)o.pat=[];return trkOut(o);});return st;}
+const hasIds=st.tracks.length>0&&st.tracks[0]&&st.tracks[0].id;
+const legacy=!hasIds&&st.tracks.length===9;
+let remapped;
+if(legacy){const tmap={};LEGACY_ORDER.forEach((id,i)=>{if(st.tracks[i])tmap[id]=st.tracks[i];});
+remapped=tracks.map(t=>tmap[t.id]||{hits:0,steps:16,rot:0,pat:Array(16).fill(0),sound:t.sound,vol:t.vol,mute:false,solo:false});}
+else if(hasIds){const tmap={};st.tracks.forEach(q=>{if(q&&q.id)tmap[q.id]=q;});
+remapped=tracks.map(t=>tmap[t.id]||{hits:0,steps:16,rot:0,pat:Array(16).fill(0),sound:t.sound,vol:t.vol,mute:false,solo:false});}
+else{while(st.tracks.length<tracks.length){const t=tracks[st.tracks.length];st.tracks.push({hits:0,steps:16,rot:0,pat:Array(16).fill(0),sound:t.sound,vol:t.vol,mute:false,solo:false});}
+remapped=st.tracks;}
+st.tracks=remapped.map((q,i)=>{const t=tracks[i];if(!t)return q;const o={...q};if(!t.drum){if(!o.riff||!o.riff.length)o.riff=RIFF.slice();if(!PROGS[o.prog])o.prog=DEFPROG;if(o.rate!=='bar')o.rate='hit';o.riffSeed=o.riffSeed>>>0;o.syn={...(t.legSyn||t.defSyn),...(o.syn||{})};if(!o.patch)o.patch='Custom';o.phrase=cleanPhrase(o.phrase);if(!o.mode)o.mode=t.legMode||t.defMode;}else{o.riff=null;o.kit=KITS.includes(o.kit)?o.kit:'Default';}if(!t.drum)delete o.kit;o.seed=o.seed>>>0;if(!o.pat)o.pat=[];return trkOut(o);});return st;}
 function loadState(st,useBpm,tm,perf){G.key=st.key;G.scale=st.scale;$('#key').value=st.key;$('#scale').value=st.scale;if(useBpm&&st.bpm)setBpm(st.bpm);
 tracks.forEach((t,i)=>{const q=st.tracks[i];if(!q){if(perf)t.mute=t.solo=false;t.set(0,16,0);t.syncAll();return;}if(t.drum){t.sound=q.sound;t.kit=KITS.includes(q.kit)?q.kit:'Default';}else{t.mode=q.mode;t.syn={...t.defSyn,...q.syn};t.riff=(q.riff&&q.riff.length)?q.riff.slice():RIFF.slice();t.prog=PROGS[q.prog]?q.prog:DEFPROG;t.rate=q.rate==='bar'?'bar':'hit';t.riffSeed=q.riffSeed>>>0;t.phrase=cleanPhrase(q.phrase);}t.seed=q.seed>>>0;t.ratio=q.ratio||1;t.fill=q.fill|0;if(!t.drum){t.patch=q.patch||'Custom';t.lastV=null;}t.vol=q.vol;if(perf){t.mute=q.mute;t.solo=q.solo;}
 t.set(q.hits,q.steps,q.rot);if(q.pat&&q.pat.length===t.steps){t.pat=q.pat.slice();t.draw();}t.syncAll();});refreshAudible(tm);}
@@ -1108,7 +1121,7 @@ return{fname:fname||'',fmt:smf.fmt,ppqn:smf.ppqn,parts,bars:Math.max(1,Math.ceil
 const PH_TARGETS=['lead','bell','pad','bass','keys','arp','strings'],DR_IDS=['kick','snare','hat','openhat','clap','clave','tom'];
 function importApply(plan,o){o=o||{};if(plan.fname)setNow('Import · '+plan.fname.replace(/\.midi?$/i,''));const mode=o.mode==='current'?'current':'sections',N=Math.max(1,Math.min(16,o.n|0||4));
 const before=JSON.stringify(project());undoStack.push({whole:before});if(undoStack.length>30)undoStack.shift();
-const ix={};tracks.forEach((t,i)=>ix[t.id]=i);const mel={},dr={kick:[],snare:[],hat:[],clave:[]};let anyDrums=false;
+const ix={};tracks.forEach((t,i)=>ix[t.id]=i);const mel={},dr={kick:[],snare:[],hat:[],openhat:[],clap:[],clave:[],tom:[]};let anyDrums=false;
 plan.parts.forEach(q=>{if(q.target==='skip')return;if(q.drum||q.target==='drums'){anyDrums=true;q.notes.forEach(n=>{const k=GMDR[n.p];if(k)dr[k].push(n.s);});}else if(PH_TARGETS.includes(q.target))(mel[q.target]=mel[q.target]||[]).push(...q.notes);});
 const useT=o.useTempo!==false,clone=x=>JSON.parse(JSON.stringify(x)),off=q=>{q.hits=0;q.pat=Array(q.steps).fill(0);};
 const build=(base,b0,L)=>{const st=clone(base),s0=b0*16,s1=(b0+L)*16;let any=false;
