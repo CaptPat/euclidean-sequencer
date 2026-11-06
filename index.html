@@ -365,8 +365,9 @@ Default:{
  clave:(t,v,tr)=>{const g=kg(tr),o=ac.createOscillator(),o2=ac.createOscillator();o.type=o2.type='square';o.frequency.value=2500*kPr;o2.frequency.value=1660*kPr;const f=ac.createBiquadFilter();f.type='bandpass';f.frequency.value=2200;o.connect(f);o2.connect(f);f.connect(g);env(g,t,v*.42,.07);o.start(t);o2.start(t);o.stop(t+.1);o2.stop(t+.1);},
  clap:(t,v,tr)=>kClap(t,v,tr,0,{f:1300,q:1.2,n:3,gap:.01,tail:.16,pk:1.6,send:.2}),
  cowbell:(t,v,tr)=>kCow(t,v,tr,0,560,845,2000,.25,.3),
- shaker:(t,v,tr)=>kShk(t,v,tr,0,6500,.7,.006,.06,.55)},
- tom:(t,v,tr)=>{const g=kg(tr),o=ac.createOscillator(),o2=ac.createOscillator();o.type='sine';o2.type='triangle';o.frequency.setValueAtTime(140*kPr,t);o.frequency.exponentialRampToValueAtTime(85*kPr,t+.08);o2.frequency.setValueAtTime(180*kPr,t);o2.frequency.exponentialRampToValueAtTime(110*kPr,t+.06);env(g,t,v*.65,.22);o.connect(g);o2.connect(g);o.start(t);o2.start(t);o.stop(t+.25);o2.stop(t+.2);const n=noise(),ng=ac.createGain(),f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=600;n.connect(f);f.connect(ng);ng.gain.setValueAtTime(v*.15,t);ng.gain.exponentialRampToValueAtTime(.0008,t+.01);ng.connect(g);n.start(t);n.stop(t+.02);}},
+ shaker:(t,v,tr)=>kShk(t,v,tr,0,6500,.7,.006,.06,.55),
+ tom:(t,v,tr)=>{const g=kg(tr),o=ac.createOscillator(),o2=ac.createOscillator();o.type='sine';o2.type='triangle';o.frequency.setValueAtTime(140*kPr,t);o.frequency.exponentialRampToValueAtTime(85*kPr,t+.08);o2.frequency.setValueAtTime(180*kPr,t);o2.frequency.exponentialRampToValueAtTime(110*kPr,t+.06);env(g,t,v*.65,.22);o.connect(g);o2.connect(g);o.start(t);o2.start(t);o.stop(t+.25);o2.stop(t+.2);const n=noise(),ng=ac.createGain(),f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=600;n.connect(f);f.connect(ng);ng.gain.setValueAtTime(v*.15,t);ng.gain.exponentialRampToValueAtTime(.0008,t+.01);ng.connect(g);n.start(t);n.stop(t+.02);}
+},
 '808':{
  // boomy sine kick: fast sweep from 135 Hz to 50 Hz, then a slow droop under a ~0.9 s tail
  kick:(t,v,tr)=>{const g=kg(tr),pg=ac.createGain();kEnv(g,t,v*.95,.002,.95);kOsc('sine',135,50,.05,t,1.05,g).frequency.exponentialRampToValueAtTime(43*kPr,t+.95);
@@ -380,8 +381,9 @@ Default:{
  clave:(t,v,tr)=>{const g=kg(tr);kEnv(g,t,v*.46,.0006,.05);kOsc('sine',2450,2150,.02,t,.08,g);kOsc('sine',1750,1750,0,t,.06,g);},
  clap:(t,v,tr)=>kClap(t,v,tr,0,{f:1000,q:1.4,n:4,gap:.0105,tail:.22,pk:1.6,send:.25}),
  cowbell:(t,v,tr)=>kCow(t,v,tr,0,540,800,2640,.34,.42),
- shaker:(t,v,tr)=>kShk(t,v,tr,0,5500,.6,.004,.04,.7)},
- tom:(t,v,tr)=>{const g=kg(tr);kEnv(g,t,v*.7,.001,.24);kOsc('sine',160,95,.1,t,.26,g);const g2=ac.createGain();g2.gain.value=.4;g2.connect(g);kOsc('triangle',210,120,.07,t,.2,g2);const ng=ac.createGain(),f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=700;ng.gain.setValueAtTime(v*.12,t);ng.gain.exponentialRampToValueAtTime(.0008,t+.012);f.connect(ng);ng.connect(g);kNz(t,.015,f,'lowpass',700,.7);}},
+ shaker:(t,v,tr)=>kShk(t,v,tr,0,5500,.6,.004,.04,.7),
+ tom:(t,v,tr)=>{const g=kg(tr);kEnv(g,t,v*.7,.001,.24);kOsc('sine',160,95,.1,t,.26,g);const g2=ac.createGain();g2.gain.value=.4;g2.connect(g);kOsc('triangle',210,120,.07,t,.2,g2);const ng=ac.createGain(),f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=700;ng.gain.setValueAtTime(v*.12,t);ng.gain.exponentialRampToValueAtTime(.0008,t+.012);f.connect(ng);ng.connect(g);kNz(t,.015,f,'lowpass',700,.7);}
+},
 '909':{
  // punchy: 220 Hz -> 55 Hz in ~35 ms through a tanh saturator, short body + a noise click
  kick:(t,v,tr)=>{const g=kg(tr,0,1),c=kg(tr);kEnv(g,t,v*.62,.0005,.36);kOsc('sine',220,55,.035,t,.42,g).frequency.exponentialRampToValueAtTime(46*kPr,t+.36);
@@ -395,8 +397,9 @@ Default:{
  clave:(t,v,tr)=>{const g=kg(tr);kEnv(g,t,v*.35,.0005,.04);kOsc('sine',1750,1450,.012,t,.07,g);kOsc('sine',480,480,0,t,.06,g);kNz(t,.012,g,'highpass',3000,.7);},
  clap:(t,v,tr)=>kClap(t,v,tr,0,{f:1200,q:.9,n:4,gap:.009,tail:.3,pk:.95,send:.3}),
  cowbell:(t,v,tr)=>kCow(t,v,tr,0,587,845,2500,.22,.32),
- shaker:(t,v,tr)=>kShk(t,v,tr,0,7500,.8,.01,.07,.55)},
- tom:(t,v,tr)=>{const g=kg(tr);kEnv(g,t,v*.72,.0008,.2);kOsc('sine',170,90,.08,t+.001,.22,g);const g2=ac.createGain();g2.gain.value=.35;g2.connect(g);kOsc('triangle',220,125,.06,t,.18,g2);const ng=ac.createGain(),f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=750;ng.gain.setValueAtTime(v*.1,t);ng.gain.exponentialRampToValueAtTime(.0008,t+.01);f.connect(ng);ng.connect(g);kNz(t,.012,f,'lowpass',750,.7);}},
+ shaker:(t,v,tr)=>kShk(t,v,tr,0,7500,.8,.01,.07,.55),
+ tom:(t,v,tr)=>{const g=kg(tr);kEnv(g,t,v*.72,.0008,.2);kOsc('sine',170,90,.08,t+.001,.22,g);const g2=ac.createGain();g2.gain.value=.35;g2.connect(g);kOsc('triangle',220,125,.06,t,.18,g2);const ng=ac.createGain(),f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=750;ng.gain.setValueAtTime(v*.1,t);ng.gain.exponentialRampToValueAtTime(.0008,t+.01);f.connect(ng);ng.connect(g);kNz(t,.012,f,'lowpass',750,.7);}
+},
 Linn:{
  // tight, dry, 8-bit-ish (staircase quantizer on every voice)
  kick:(t,v,tr)=>{const g=kg(tr,1);kEnv(g,t,v*.88,.0005,.2);kOsc('sine',135,58,.03,t,.24,g).frequency.exponentialRampToValueAtTime(50*kPr,t+.2);{const c=ac.createGain();c.gain.value=.3;c.connect(g);kOsc('triangle',900,300,.006,t,.012,c);}},
@@ -413,8 +416,9 @@ Linn:{
  clave:(t,v,tr)=>{const g=kg(tr,1);kEnv(g,t,v*.45,.0005,.055);kOsc('sine',1180,1000,.015,t,.09,g);kOsc('sine',770,770,0,t,.07,g);kNz(t,.01,g,'bandpass',3000,1);},
  clap:(t,v,tr)=>kClap(t,v,tr,1,{f:1800,q:.8,n:3,gap:.008,tail:.13,pk:.85,send:.15}),
  cowbell:(t,v,tr)=>kCow(t,v,tr,1,560,835,1900,.18,.3),
- shaker:(t,v,tr)=>kShk(t,v,tr,1,8500,.6,.003,.045,.5)},
- tom:(t,v,tr)=>{const g=kg(tr,1);kEnv(g,t,v*.68,.0007,.18);kOsc('sine',155,82,.075,t+.001,.2,g);const g2=ac.createGain();g2.gain.value=.38;g2.connect(g);kOsc('triangle',200,115,.055,t,.16,g2);const ng=ac.createGain(),f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=680;ng.gain.setValueAtTime(v*.08,t);ng.gain.exponentialRampToValueAtTime(.0008,t+.008);f.connect(ng);ng.connect(g);kNz(t,.01,f,'lowpass',680,.7);}};
+ shaker:(t,v,tr)=>kShk(t,v,tr,1,8500,.6,.003,.045,.5),
+ tom:(t,v,tr)=>{const g=kg(tr,1);kEnv(g,t,v*.68,.0007,.18);kOsc('sine',155,82,.075,t+.001,.2,g);const g2=ac.createGain();g2.gain.value=.38;g2.connect(g);kOsc('triangle',200,115,.055,t,.16,g2);const ng=ac.createGain(),f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=680;ng.gain.setValueAtTime(v*.08,t);ng.gain.exponentialRampToValueAtTime(.0008,t+.008);f.connect(ng);ng.connect(g);kNz(t,.01,f,'lowpass',680,.7);}
+};
 
 // ===== v14.4 fitted drum voices (Peaks/io-808/ChowKick architecture; no samples) =====
 const FV={};
