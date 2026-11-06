@@ -1283,12 +1283,13 @@ const DEF_DRUM_SND={openhat:'open hat'};
 function applyP(p){if(p.key!=null){G.key=p.key;$('#key').value=p.key;}if(p.scale){G.scale=p.scale;$('#scale').value=p.scale;}if(p.bpm)setBpm(p.bpm);
 minorBias=!!p.rage;['duck','drive','crush','crate','noise'].forEach(k=>M[k]=0);{const pm={...(p.master||{})};delete pm.vol;Object.assign(M,pm);}masterApply();
 const pk=JSON.stringify(p.t)+G.key+G.scale;
-const pmap={};LEGACY_ORDER.forEach((id,i)=>{if(p.t&&p.t[i])pmap[id]=p.t[i];});
+const legacy=p.t&&p.t.length<=9,pmap={};
+if(legacy)LEGACY_ORDER.forEach((id,i)=>{if(p.t[i])pmap[id]=p.t[i];});
 tracks.forEach((tr,i)=>{if(!tr.drum){const snd=(p.sound||{})[tr.id],ov=(p.syn||{})[tr.id];tr.syn={...(snd?{...SYN_DEF,...SOUNDS[snd]}:tr.defSyn),...(ov||{})};tr.patch=snd&&!ov?snd:(ov?'Custom':(snd||DEFPATCH[tr.id]));tr.lastV=null;
 tr.mode=((p.mode||{})[tr.id])||tr.defMode;tr.phrase=null;tr.prog=((p.prog||{})[tr.id])||DEFPROG;tr.rate='bar';tr.riffSeed=hashStr(pk+tr.id);tr.riff=genRiff(tr.riffSeed,4+tr.riffSeed%5,riffScale(tr));}
 else{tr.ratio=((p.ratio||{})[tr.id])||1;tr.fill=((p.fill||{})[tr.id])|0;tr.kit=KITS.includes(p.kit)?p.kit:'Default';tr.sound=((p.dsnd||{})[tr.id])||DEF_DRUM_SND[tr.id]||tr.id;}
 if(p.vol&&p.vol[tr.id]!=null)tr.vol=p.vol[tr.id];
-tr.seed=0;tr.set(...(pmap[tr.id]||Z));tr.syncAll();});}
+tr.seed=0;tr.set(...(legacy?pmap[tr.id]||Z:p.t[i]||Z));tr.syncAll();});}
 function setBpm(v){v=Math.max(10,Math.min(240,Math.round(+v)||140));G.bpm=v;$('#bpm').value=v;$('#bv').textContent=v;document.querySelectorAll('.chips button[data-b]').forEach(b=>b.classList.toggle('on',+b.dataset.b===v));updateDelay();}
 document.querySelectorAll('.chips button').forEach(b=>b.onclick=()=>setBpm(b.dataset.b?+b.dataset.b:G.bpm*+b.dataset.m));
 NOTE_NAMES.forEach((n,i)=>$('#key').add(new Option(n,i)));Object.keys(SCALES).forEach(s=>$('#scale').add(new Option(s,s)));$('#key').value=G.key;$('#scale').value=G.scale;
