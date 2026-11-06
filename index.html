@@ -226,7 +226,7 @@ const $=s=>document.querySelector(s);
 const DRUMS=['kick','snare','tight snare','wet snare','hat','open hat','clave','clap','cowbell','shaker','tom'],WAVES=['sine','triangle','sawtooth','square'],WNAME=['SIN','TRI','SAW','SQR'];
 const NOTE_NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const SCALES={Major:[0,2,4,5,7,9,11],Minor:[0,2,3,5,7,8,10],Dorian:[0,2,3,5,7,9,10],Phrygian:[0,1,3,5,7,8,10],Lydian:[0,2,4,6,7,9,11],Mixolydian:[0,2,4,5,7,9,10],'Pentatonic Maj':[0,2,4,7,9],'Pentatonic Min':[0,3,5,7,10],Blues:[0,3,5,6,7,10],'Harmonic Minor':[0,2,3,5,7,8,11]};
-const VERSION='v14.18 · 2026-11-06';
+const VERSION='v14.19 · 2026-11-06';
 const MODES=['Root','Up','Down','Ping-pong','Random','Chord','Riff','Power','Power +8','Minor riff','Chord root','Phrase'],RIFF=[0,0,4,0,3,0,5,4],PENT=[0,3,5,7,10],FMR=[.5,1,1.5,2,3,3.5,4,5,7];
 const PROGS={'I-V-vi-IV':[0,4,5,3],'i-VI-III-VII':[0,5,2,6],'ii-V-I':[1,4,0],'I-IV-V-iii':[0,3,4,2]},DEFPROG='I-IV-V-iii';
 const G={key:9,scale:'Minor',bpm:140};
@@ -546,7 +546,7 @@ function setKit(v){if(!KITS.includes(v))return;tracks.forEach(t=>{if(t.drum){t.k
 async function voiceRender(kit,voice,vol,dur){const sr=44100,oc=new OfflineAudioContext(1,Math.ceil(sr*(dur||1.3)),sr),G0=snapGraph();let r;try{ac=oc;noiseBuf=null;const tr={kit,gate:oc.createGain(),gR:oc.createGain()};tr.gR.gain.value=0;tr.gate.connect(oc.destination);tr.gR.connect(oc.destination);play(voice,.02,vol==null?.8:vol,0,tr);r=await oc.startRendering();}finally{restoreGraph(G0);}return r;}
 const CURVES={};
 function voiceCurve(drive){const k=Math.round(drive);if(CURVES[k])return CURVES[k];const K=1+Math.pow(k/100,1.2)*13,N=2049,a=new Float32Array(N),den=Math.tanh(K);for(let i=0;i<N;i++){const x=i/(N-1)*2-1;a[i]=Math.tanh(K*x)/den;}return CURVES[k]=a;}
-function synthNote(tr,t,midi,gateSec,vf){const s=tr.syn,c=ac,f0=440*Math.pow(2,(midi-69)/12),eng=s.eng||'Synth';
+function synthNote(tr,t,midi,gateSec,vf,sl){const s=tr.syn,c=ac,f0=440*Math.pow(2,(midi-69)/12),eng=s.eng||'Synth';
 const a=T.a(s.a),d=T.d(s.d),r=T.r(s.r),sus=s.s/100,g=Math.max(gateSec,a+.01),dd=(s.drive||0)/100,peak=.3*tr.vol*(vf||1)/.8/(1+.33*dd);
 const flt=c.createBiquadFilter();flt.type='lowpass';flt.Q.value=T.q(s.res);const cut=T.cut(s.cut),top=Math.min(16000,cut*(1+s.fenv/100*8));
 flt.frequency.setValueAtTime(top,t);flt.frequency.setTargetAtTime(cut,t,(a+d)/3+.005);
@@ -554,7 +554,7 @@ const vca=c.createGain(),tau=Math.max(.005,d/3);vca.gain.setValueAtTime(0,t);vca
 vca.gain.setValueAtTime(peak*sus+(peak-peak*sus)*Math.exp(-(g-a)/tau),t+g);vca.gain.setTargetAtTime(0,t+g,r/3);
 const tEnd=t+g+r*2+.05,gn=c.createGain(),oscs=[];
 if(eng==='808'&&tr.lastV){const lv=tr.lastV;lv.gain.cancelScheduledValues(t);lv.gain.setTargetAtTime(0,t,.006);}// mono 808: previous note choked
-const legato=eng==='808'&&s.gld>0&&tr.lastF>0&&tr.lastEnd>t,gt=s.gld/100*.4,fs=legato?tr.lastF:f0,dr=Math.pow(2,(s.pd||0)/100*2.4);
+const forceSl=eng==='808'&&!!sl&&tr.lastF>0,legato=forceSl||(eng==='808'&&s.gld>0&&tr.lastF>0&&tr.lastEnd>t),gt=(forceSl&&!(s.gld>0))?.15:s.gld/100*.4,fs=legato?tr.lastF:f0,dr=Math.pow(2,(s.pd||0)/100*2.4);
 const fenv=(o,mul)=>{const fq=o.frequency;fq.setValueAtTime(fs*mul*dr,t);fq.exponentialRampToValueAtTime(fs*mul,t+.045);if(fs!==f0)fq.exponentialRampToValueAtTime(f0*mul,t+.045+gt);};
 if(eng==='808'){gn.gain.value=1;const o=c.createOscillator();o.type='sine';fenv(o,1);o.connect(gn);o.start(t);o.stop(tEnd);oscs.push(o);}
 else if(eng==='FM'){gn.gain.value=1;const ratio=FMR[Math.max(0,Math.min(8,s.fmr|0))],dev=(s.fmi||0)/100*6*f0*ratio,co=c.createOscillator(),mo=c.createOscillator(),mg=c.createGain();co.type=mo.type='sine';co.frequency.value=f0;mo.frequency.value=f0*ratio;
@@ -579,16 +579,16 @@ function riserStart(){if(!ac||riser||exporting)return;if(ac.state==='suspended')
 g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.4,t+4);src.connect(bp);bp.connect(g);g.connect(masterIn);const rv=ac.createGain();rv.gain.value=.5;g.connect(rv);rv.connect(revIn);src.start(t);riser={src,g,rv};}
 function riserStop(){if(!riser)return;const r=riser,t=ac.currentTime;riser=null;r.g.gain.cancelScheduledValues(t);r.g.gain.setValueAtTime(r.g.gain.value,t);r.g.gain.setTargetAtTime(0,t,.12);try{r.src.stop(t+1)}catch(e){}}
 const DRUMN={kick:36,snare:38,'tight snare':37,'wet snare':40,hat:42,'open hat':46,clave:75,clap:39,cowbell:56,shaker:70,tom:45};
-// ---- Phrase mode: stored note list {s start step, l length in steps, p MIDI pitch, v velocity} that loops at its own length (bars) ----
+// ---- Phrase mode: stored note list {s start step, l length in steps, p MIDI pitch, v velocity, sl slide (0/1, 808 only)} that loops at its own length (bars) ----
 const phLen=tr=>(tr.mode==='Phrase'&&tr.phrase)?tr.phrase.len*16:0;
 function cleanPhrase(ph){if(!ph||!Array.isArray(ph.notes))return null;const len=Math.max(1,Math.min(16,Math.round(ph.len)||1)),L=len*16;
-const notes=ph.notes.map(n=>({s:n.s|0,l:Math.max(1,n.l|0),p:Math.max(0,Math.min(127,n.p|0)),v:Math.max(1,Math.min(127,(n.v|0)||100))})).filter(n=>n.s>=0&&n.s<L);
+const notes=ph.notes.map(n=>({s:n.s|0,l:Math.max(1,n.l|0),p:Math.max(0,Math.min(127,n.p|0)),v:Math.max(1,Math.min(127,(n.v|0)||100)),sl:n.sl?1:0})).filter(n=>n.s>=0&&n.s<L);
 notes.sort((a,b)=>a.s-b.s||a.p-b.p);return{len,notes};}
-const phraseOut=ph=>ph?{len:ph.len,notes:ph.notes.map(n=>({s:n.s,l:n.l,p:n.p,v:n.v}))}:null;
+const phraseOut=ph=>ph?{len:ph.len,notes:ph.notes.map(n=>({s:n.s,l:n.l,p:n.p,v:n.v,sl:n.sl?1:0}))}:null;
 function phraseAt(tr,g){const ph=tr.phrase;if(!ph||!ph.notes.length)return null;const k=g%(ph.len*16);let o=null;for(const n of ph.notes)if(n.s===k)(o=o||[]).push(n);return o;}
 function phraseNote(tr,t,n){if(TRLOG)TRLOG.push({id:tr.id,t,g:n.s,sub:0,p:n.p});
 if(REC){REC.ev.push({k:tracks.indexOf(tr),tick:Math.round(t),dur:Math.max(30,n.l*120),n:[n.p],v:n.v,mono:(tr.syn.eng||'Synth')==='808'});return;}
-midiNote(tr,t,n.p,n.l*stepDur(),n.v*tr.vol/.8);if(!intOff(tr))synthNote(tr,t,n.p,n.l*stepDur(),Math.max(.1,Math.min(1.3,n.v/100)));}
+midiNote(tr,t,n.p,n.l*stepDur(),n.v*tr.vol/.8);if(!intOff(tr))synthNote(tr,t,n.p,n.l*stepDur(),Math.max(.1,Math.min(1.3,n.v/100)),n.sl?1:0);}
 function bakePhrase(tr){const hn=tr.hitN,notes=[],L=32;tr.hitN=0;const gl=Math.max(1,Math.round(T.gate(tr.syn.gate)));
 for(let n=0;n<L;n++)if(tr.pat[n%tr.pat.length])pickNotes(tr,n).forEach(p=>notes.push({s:n,l:Math.min(gl,L-n),p,v:100}));tr.hitN=hn;return cleanPhrase({len:2,notes});}
 function setTrMode(tr,v){const old=tr.mode;if(v==='Phrase'&&!(tr.phrase&&tr.phrase.notes.length)){tr.phrase=bakePhrase(tr);}tr.mode=v;if(!HOLDS[tr.id])HOLDS[tr.id]={};HOLDS[tr.id].mode=v;syncHolds();tr.syncAll();if(dockCur===tr)dockDraw();}
@@ -767,13 +767,14 @@ const x0=3,x1=W-3,y0=19,y1=H-3,gw=x1-x0,gh=y1-y0,span=hi-lo+1,rh=gh/span;rg={W,H
 for(let p=lo;p<=hi;p++){const y=y1-(p-lo+1)*rh;if([1,3,6,8,10].includes(p%12)){x.fillStyle='rgba(255,255,255,.035)';x.fillRect(x0,y,gw,rh);}if(p%12===0){x.fillStyle='rgba(255,255,255,.12)';x.fillRect(x0,y+rh-.5,gw,.6);}}
 for(let i=0;i<=L;i+=4){x.fillStyle=i%16===0?'rgba(255,255,255,.28)':'rgba(255,255,255,.07)';x.fillRect(x0+i/L*gw-.3,y0,.6,gh);}
 const cur=tr.cur;ph.notes.forEach(n=>{const nx=x0+n.s/L*gw,nw=Math.max(1.6,n.l/L*gw-.7),ny=y1-(n.p-lo+1)*rh,nh=Math.max(2,rh-.8),on=cur>=n.s&&cur<n.s+n.l;
-x.fillStyle=on?'#fff':'rgba(255,107,74,'+(.5+.5*n.v/127).toFixed(2)+')';if(on){x.shadowColor='#ff6b4a';x.shadowBlur=8;}x.fillRect(nx,ny,nw,nh);x.shadowBlur=0;});
+x.fillStyle=on?'#fff':'rgba(255,107,74,'+(.5+.5*n.v/127).toFixed(2)+')';if(on){x.shadowColor='#ff6b4a';x.shadowBlur=8;}x.fillRect(nx,ny,nw,nh);x.shadowBlur=0;if(n.sl){x.strokeStyle='#ffd166';x.lineWidth=1.5;x.beginPath();x.moveTo(nx+1,ny+nh-1);x.lineTo(nx+nw-1,ny+1);x.stroke();}});
 if(cur>=0&&playing){x.fillStyle='#ff6b4a';x.fillRect(x0+cur/L*gw-.5,y0,1.3,gh);}};
 const edit=ev=>{const r=pcv.getBoundingClientRect();return{lx:(ev.clientX-r.left)/r.width*rg.W,ly:(ev.clientY-r.top)/r.height*rg.H};};
 const cell=(lx,ly)=>({s:Math.floor((lx-rg.x0)/rg.gw*rg.L),p:rg.lo+rg.span-1-Math.floor((ly-rg.y0)/rg.rh)});
+pcv.title='Click: add note (drag = length). Click a note: delete. Alt-click a note: toggle 808 slide.';
 pcv.onpointerdown=ev=>{ev.preventDefault();if(!rg)return;const ph=tr.phrase,{lx,ly}=edit(ev);if(ly<rg.y0)return;const c=cell(lx,ly);if(c.s<0||c.s>=rg.L||c.p<0||c.p>127)return;
-const hit=ph.notes.findIndex(n=>n.p===c.p&&c.s>=n.s&&c.s<n.s+n.l);if(hit>=0){ph.notes.splice(hit,1);tr.drawRoll();return;}
-const nn={s:c.s,l:1,p:c.p,v:100};ph.notes.push(nn);if(ac&&ac.state==='running'&&!DRY)synthNote(tr,ac.currentTime+.01,nn.p,.2*1,1);tr.drawRoll();
+const hit=ph.notes.findIndex(n=>n.p===c.p&&c.s>=n.s&&c.s<n.s+n.l);if(hit>=0){if(ev.altKey){ph.notes[hit].sl=ph.notes[hit].sl?0:1;tr.drawRoll();return;}ph.notes.splice(hit,1);tr.drawRoll();return;}
+const nn={s:c.s,l:1,p:c.p,v:100,sl:0};ph.notes.push(nn);if(ac&&ac.state==='running'&&!DRY)synthNote(tr,ac.currentTime+.01,nn.p,.2*1,1);tr.drawRoll();
 try{pcv.setPointerCapture(ev.pointerId);}catch(e){}
 const mv=e2=>{const q=cell(edit(e2).lx,0);nn.l=Math.max(1,Math.min(rg.L-nn.s,q.s-nn.s+1));tr.drawRoll();};
 const up=()=>{pcv.removeEventListener('pointermove',mv);ph.notes.sort((a,b)=>a.s-b.s||a.p-b.p);tr.drawRoll();};pcv.addEventListener('pointermove',mv);pcv.addEventListener('pointerup',up,{once:true});pcv.addEventListener('pointercancel',up,{once:true});};
