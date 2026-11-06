@@ -4,7 +4,7 @@ A multi-track Euclidean rhythm sequencer **and synth workstation** in a single, 
 
 **Live:** https://captpat.github.io/euclidean-sequencer/
 
-- 4 drum tracks (Kick, Snare, Hat, Clave) + 5 synth voices (Bass, Bell, Lead, Pad, Keys), each with its own HITS / STEPS (1-32) / ROTATE, so tracks of different lengths make polyrhythms. Per-hit kit pick (Default / 808 / 909 / Linn); tight + wet snare; Peaks/io-808/ChowKick-inspired recipes (v14.4).
+- 7 drum tracks (Kick, Snare, Hat, Open Hat, Clap, Clave, Tom) + 7 synth voices (Bass, Bell, Lead, Pad, Keys, Arp, Strings), each with its own HITS / STEPS (1-32) / ROTATE, so tracks of different lengths make polyrhythms. Per-hit kit pick (Default / 808 / 909 / Linn); tight + wet snare; Peaks/io-808/ChowKick-inspired recipes (v14.6).
 - Bjorklund algorithm, rotary knobs (drag or mouse wheel), clickable step keys, animated circular visualizer.
 - Fixed-height synth editor dock below the tracks (click **SYNTH** on a voice or use the Bass/Bell/Lead/Pad tabs; the layout auto-scales to fill large screens): oscillator wave, unison/detune, filter cutoff/resonance/envelope amount, ADSR, gate length, one LFO (cutoff / pitch / volume), delay + reverb sends, octave and note range.
 - Global **Key** and **Scale** (major, minor, dorian, phrygian, lydian, mixolydian, pentatonic, blues, harmonic minor). Euclidean hits play notes in key via note modes: Root, Up, Down, Ping-pong, Random, Chord, Riff.
