@@ -14,10 +14,13 @@ input[type=range]{accent-color:var(--c)}
 select{appearance:none;-webkit-appearance:none;background:#1a1614 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23ff6b4a'/%3E%3C/svg%3E") no-repeat right 6px center;color:#e8e2dc;border:1px solid #3a3430;padding-right:18px}
 select option{background:#1a1614;color:#e8e2dc}
 select:focus,button:focus-visible,input:focus-visible{outline:none;border-color:#ff6b4a;box-shadow:0 0 0 2px rgba(255,107,74,.35)}
-#tracks{flex:1 1 auto;grid-auto-rows:1fr;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;padding:8px}
-@media(min-width:860px){#tracks{grid-template-columns:repeat(3,1fr)}}
-@media(min-width:1180px){#tracks{grid-template-columns:repeat(7,1fr)}.hd{gap:5px}.tr:not(.master) .hd .t{display:none}.hd input{color:#fff;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;font-size:12px}.hd .sy{padding:1px 6px;font-size:9px;letter-spacing:.5px}.vzw{width:76px;height:76px}.kn canvas{width:36px;height:36px}}
-@media(max-width:480px){#tracks{grid-template-columns:1fr}}
+#tracks{flex:1 1 auto;grid-auto-rows:1fr;display:grid;grid-template-columns:1fr;gap:8px;padding:8px}
+@media(min-width:480px){#tracks{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:720px){#tracks{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:860px){#tracks{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1040px){#tracks{grid-template-columns:repeat(5,1fr)}}
+@media(min-width:1240px){#tracks{grid-template-columns:repeat(6,1fr)}}
+@media(min-width:1520px){#tracks{grid-template-columns:repeat(7,1fr)}.hd{gap:5px}.tr:not(.master) .hd .t{display:none}.hd input{color:#fff;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;font-size:12px}.hd .sy{padding:1px 6px;font-size:9px;letter-spacing:.5px}.vzw{width:76px;height:76px}.kn canvas{width:36px;height:36px}}
 .tr{display:flex;flex-direction:column;background:linear-gradient(180deg,#26211e 0%,#1a1715 35%,#141210 100%);border-radius:12px;padding:6px 10px 8px;border:1px solid #2e2825;box-shadow:0 8px 20px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06);position:relative;overflow:hidden;transition:opacity .15s;min-width:0}
 .tr:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.012) 0 1px,transparent 1px 3px);pointer-events:none}
 .tr.dim{opacity:.45}.tr.dim:hover{opacity:.8}
@@ -37,7 +40,8 @@ select:focus,button:focus-visible,input:focus-visible{outline:none;border-color:
 #gdice{display:flex;align-items:center;gap:5px;padding:3px 9px;font-size:10px;font-weight:700;letter-spacing:1px;color:#ff9a80}#gdice svg{width:13px;height:13px}
 #gkey{padding:3px 7px;font-size:10px;font-weight:700;letter-spacing:.5px;margin-left:-6px}
 .rt{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
-.knobs{display:flex;justify-content:space-around}
+.knobs{display:flex;justify-content:space-around;gap:2px}
+.knobs .kn{flex:1;min-width:0}
 .kn{text-align:center;user-select:none;color:#bdb5ae;font-size:10px;font-weight:700;letter-spacing:.5px}
 .kn.act{color:var(--c)}.kn canvas{width:40px;height:40px;cursor:ns-resize;touch-action:none;display:block;margin:2px auto 1px}
 .kn b{display:block;font-size:13px;color:#fff;font-weight:800;line-height:1.1}
@@ -177,6 +181,7 @@ header{gap:6px 8px;padding:4px 8px}header label{font-size:9px}#hmv,#bpm{width:64
 #masterstrip .master .knobs .kn b{font-size:9px}
 #masterstrip .master .mb{flex:none;flex-wrap:wrap;gap:4px;margin:0}
 @media(max-width:859px){#masterstrip .master .scope{width:100%;max-width:200px;height:36px}#masterstrip .master .knobs{justify-content:center}#masterstrip .master .mb{justify-content:center}}
+@media(min-width:1180px){#masterstrip .master .knobs{flex:1 1 auto;justify-content:space-around}#masterstrip .master .knobs .kn{flex:1;min-width:0}}
 .ctl select.kitp{max-width:58px;padding-right:14px}
 .ctl select.sndp{max-width:78px}
 .ctl select.held{border-color:#ffc24a;background-color:#2a2210}
@@ -204,7 +209,7 @@ const $=s=>document.querySelector(s);
 const DRUMS=['kick','snare','tight snare','wet snare','hat','open hat','clave','clap','cowbell','shaker','tom'],WAVES=['sine','triangle','sawtooth','square'],WNAME=['SIN','TRI','SAW','SQR'];
 const NOTE_NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const SCALES={Major:[0,2,4,5,7,9,11],Minor:[0,2,3,5,7,8,10],Dorian:[0,2,3,5,7,9,10],Phrygian:[0,1,3,5,7,8,10],Lydian:[0,2,4,6,7,9,11],Mixolydian:[0,2,4,5,7,9,10],'Pentatonic Maj':[0,2,4,7,9],'Pentatonic Min':[0,3,5,7,10],Blues:[0,3,5,6,7,10],'Harmonic Minor':[0,2,3,5,7,8,11]};
-const VERSION='v14.9 · 2026-11-06';
+const VERSION='v14.10 · 2026-11-06';
 const MODES=['Root','Up','Down','Ping-pong','Random','Chord','Riff','Power','Power +8','Minor riff','Chord root','Phrase'],RIFF=[0,0,4,0,3,0,5,4],PENT=[0,3,5,7,10],FMR=[.5,1,1.5,2,3,3.5,4,5,7];
 const PROGS={'I-V-vi-IV':[0,4,5,3],'i-VI-III-VII':[0,5,2,6],'ii-V-I':[1,4,0],'I-IV-V-iii':[0,3,4,2]},DEFPROG='I-IV-V-iii';
 const G={key:9,scale:'Minor',bpm:140};
