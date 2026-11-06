@@ -87,7 +87,7 @@ select:focus,button:focus-visible,input:focus-visible{outline:none;border-color:
 .seg{display:inline-flex}.seg button{border-radius:0;padding:2px 9px;font-size:10px;font-weight:700;letter-spacing:1px}
 .seg button:first-child{border-radius:6px 0 0 6px}.seg button:last-child{border-radius:0 6px 6px 0;border-left:0}
 .arr{flex:none;margin:8px 8px 0;padding:6px 8px;display:flex;flex-direction:column;gap:4px;border-radius:12px;background:linear-gradient(180deg,#26211e,#171412);border:1px solid #2e2825;box-shadow:0 8px 20px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06)}
-.sl1{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.sl1 .strip{flex:1;min-width:0}
+.sl1{display:flex;gap:6px;align-items:center;flex-wrap:wrap;width:100%}.sl1 .strip{flex:1;min-width:0}
 .sl2{display:flex;gap:6px;margin-top:2px}.sl2 .strip{flex:1}
 .strip{position:relative;display:flex;gap:3px;height:36px;padding:3px;background:#0c0b0a;border-radius:7px;box-shadow:inset 0 2px 5px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.05);border:1px solid #2a2522;overflow:hidden}
 .strip .empty{margin:auto;font-size:11px;color:#8a7f78;letter-spacing:.5px}
@@ -144,7 +144,7 @@ header{gap:6px 8px;padding:4px 8px}header label{font-size:9px}#hmv,#bpm{width:64
 }
 .newsong{display:flex;align-items:center;gap:4px;padding:2px 8px;font-size:10px;font-weight:700;letter-spacing:.5px;color:#ff9a80;flex:none}.newsong svg{width:13px;height:13px;display:block;transition:transform .45s ease}.newsong.spin svg{transform:rotate(360deg)}.newsong:hover{border-color:var(--c);color:#fff}
 .arr input.seed{width:58px;flex:none;background:#0c0b0a;border:1px solid #2e2825;border-radius:6px;color:#bdb5ae;font:700 10px/1 "Courier New",monospace;letter-spacing:1px;padding:4px 5px;text-transform:uppercase;text-align:center}.arr input.seed:focus{color:#fff}
-.arr textarea.mood{width:160px;height:36px;flex:none;background:#0c0b0a;border:1px solid #2e2825;border-radius:6px;color:#bdb5ae;font:400 10px/1.3 "Helvetica Neue",Arial,sans-serif;padding:5px 6px;resize:none}.arr textarea.mood:focus{color:#fff;border-color:#ff6b4a}.arr textarea.mood::placeholder{color:#6a615a}.arr .moodout{font-size:9px;color:#8a7f78;letter-spacing:.3px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.arr textarea.mood{flex:1 1 auto;min-width:160px;width:auto;height:36px;background:#0c0b0a;border:1px solid #2e2825;border-radius:6px;color:#bdb5ae;font:400 10px/1.3 "Helvetica Neue",Arial,sans-serif;padding:5px 6px;resize:none}.arr textarea.mood:focus{color:#fff;border-color:#ff6b4a}.arr textarea.mood::placeholder{color:#6a615a}.arr .moodout{font-size:9px;color:#8a7f78;letter-spacing:.3px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .proll{position:absolute;left:10px;right:10px;display:none;z-index:2;background:#0c0b0a;border-radius:7px;border:1px solid #2a2522;box-shadow:inset 0 2px 5px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.05);overflow:hidden}
 .tr.phr .proll{display:block}.tr.phr .bd,.tr.phr .steps{visibility:hidden}.proll canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
 .pc{position:absolute;top:2px;left:5px;right:5px;display:flex;align-items:center;gap:3px;font-size:9px;color:#8a7f78;letter-spacing:1px;font-weight:700;z-index:1}.pc .sp{flex:1}.pc b{min-width:40px;text-align:center;color:#ffb19c}.pc button{padding:0;width:17px;height:14px;font-size:10px;line-height:1;border-radius:4px;text-align:center}
