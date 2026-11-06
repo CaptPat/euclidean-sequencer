@@ -418,7 +418,7 @@ Linn:{
  cowbell:(t,v,tr)=>kCow(t,v,tr,1,560,835,1900,.18,.3),
  shaker:(t,v,tr)=>kShk(t,v,tr,1,8500,.6,.003,.045,.5),
  tom:(t,v,tr)=>{const g=kg(tr,1);kEnv(g,t,v*.68,.0007,.18);kOsc('sine',155,82,.075,t+.001,.2,g);const g2=ac.createGain();g2.gain.value=.38;g2.connect(g);kOsc('triangle',200,115,.055,t,.16,g2);const ng=ac.createGain(),f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=680;ng.gain.setValueAtTime(v*.08,t);ng.gain.exponentialRampToValueAtTime(.0008,t+.008);f.connect(ng);ng.connect(g);kNz(t,.01,f,'lowpass',680,.7);}
-};
+}};
 
 // ===== v14.4 fitted drum voices (Peaks/io-808/ChowKick architecture; no samples) =====
 const FV={};
