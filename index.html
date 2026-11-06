@@ -199,7 +199,7 @@ const $=s=>document.querySelector(s);
 const DRUMS=['kick','snare','tight snare','wet snare','hat','open hat','clave','clap','cowbell','shaker'],WAVES=['sine','triangle','sawtooth','square'],WNAME=['SIN','TRI','SAW','SQR'];
 const NOTE_NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const SCALES={Major:[0,2,4,5,7,9,11],Minor:[0,2,3,5,7,8,10],Dorian:[0,2,3,5,7,9,10],Phrygian:[0,1,3,5,7,8,10],Lydian:[0,2,4,6,7,9,11],Mixolydian:[0,2,4,5,7,9,10],'Pentatonic Maj':[0,2,4,7,9],'Pentatonic Min':[0,3,5,7,10],Blues:[0,3,5,6,7,10],'Harmonic Minor':[0,2,3,5,7,8,11]};
-const VERSION='v14.4 · 2026-11-05';
+const VERSION='v14.5 · 2026-11-05';
 const MODES=['Root','Up','Down','Ping-pong','Random','Chord','Riff','Power','Power +8','Minor riff','Chord root','Phrase'],RIFF=[0,0,4,0,3,0,5,4],PENT=[0,3,5,7,10],FMR=[.5,1,1.5,2,3,3.5,4,5,7];
 const PROGS={'I-V-vi-IV':[0,4,5,3],'i-VI-III-VII':[0,5,2,6],'ii-V-I':[1,4,0],'I-IV-V-iii':[0,3,4,2]},DEFPROG='I-IV-V-iii';
 const G={key:9,scale:'Minor',bpm:140};
@@ -218,7 +218,7 @@ clave:{st:[16,16,8,12],h:[3,5],rots:'any'},bass:{st:[16,16,16,12],h:[3,7],rots:[
 lead:{st:[16,16,12],h:[2,5],rots:[2,2,2,6,10,4]},pad:{st:[16,32,32],h:[1,2],rots:[0,0,0,8]}};
 const KEYMIN=['Minor','Minor','Phrygian','Harmonic Minor','Pentatonic Min','Blues','Dorian'],KEYSC=['Major','Minor','Dorian','Mixolydian','Lydian','Phrygian','Pentatonic Min','Pentatonic Maj','Blues','Harmonic Minor'];
 let rollKey=false,genInfo=null;
-const MDEF={vol:85,dt:3,fb:40,rev:35,duck:0,drive:0,crush:0,crate:0,noise:0,hum:15},M={...MDEF};const VOLK='grokband.vol';
+const MDEF={vol:85,dt:3,fb:40,rev:35,duck:0,drive:0,crush:0,crate:0,noise:0,hum:15,swing:50},M={...MDEF};const VOLK='grokband.vol';
 (()=>{try{let v=parseInt(localStorage.getItem(VOLK),10);if(isNaN(v)){const j=JSON.parse(localStorage.getItem('grokband.project.v1')||'null');v=parseInt(j&&j.master&&j.master.vol,10);}if(v>=0&&v<=100)M.vol=v;}catch(_){}})();
 const STEM_TRIM=.6;let TRLOG=null,REC=null,DRY=false,STEM=-1,rig=null,exporting=false,statusMsg='',minorBias=false;const STUT={want:0,on:0};
 const volDraws=[];function setVol(v){M.vol=v;try{localStorage.setItem(VOLK,String(v));}catch(_){}if(outG)outG.gain.value=v/100*.92;volDraws.forEach(d=>d());}
@@ -609,10 +609,11 @@ function trigger(tr,t,i,g,sub){if(TRLOG)TRLOG.push({id:tr.id,t,g,sub:sub|0});if(
 if(tr.drum){const hh=humHit(tr,g,sub),tt=t+hh.dt;if(tr.sound==='kick')duckAt(tt);midiNote(tr,tt,DRUMN[tr.sound]||36,60,tr.vol*(sub?.78:1)*hh.lv*127*1.1);try{if(!intOff(tr))play(tr.sound,tt,tr.vol*(sub?.78:1)*hh.lv,i,tr);}finally{humOff();}return;}
 const gs=T.gate(tr.syn.gate)*stepDur();pickNotes(tr,g).forEach(m=>{midiNote(tr,t,m,gs,tr.vol*127*1.1);if(!intOff(tr))synthNote(tr,t,m,gs);});}
 // offsets (0..1 of a step) at which a track plays on global step n: x1/x2/x3/x4 subdivisions + roll fill in the last N steps of the bar
+function swingDelay(k,ratio){if(k%2===0||ratio<2)return 0;const sw=Math.max(50,Math.min(75,(M.swing||50)))/100;return(sw-.5)*2/(ratio*2);}
 function hitOffsets(tr,n){const pat=tr.pat,hit=pat[n%pat.length];let r=1,fl=false;
 if(tr.drum){r=Math.max(1,Math.min(4,tr.ratio|0||1));if(tr.fill>0&&n%16>=16-tr.fill&&pat.some(x=>x)){fl=true;r=Math.max(2,r);}}
 if(!hit&&!fl)return null;const o=[];for(let k=0;k<r;k++)o.push(k/r);return o;}
-function triggerStep(g,t,sd){sd=sd||stepDur();tracks.forEach(tr=>{if(!audible(tr))return;if(!tr.drum&&tr.mode==='Phrase'){const ns=phraseAt(tr,g);if(ns)ns.forEach(n=>phraseNote(tr,t,n));return;}const o=hitOffsets(tr,g);if(!o)return;const i=g%tr.pat.length;for(let k=0;k<o.length;k++)trigger(tr,t+o[k]*sd,i,g,k);});}
+function triggerStep(g,t,sd){sd=sd||stepDur();tracks.forEach(tr=>{if(!audible(tr))return;if(!tr.drum&&tr.mode==='Phrase'){const ns=phraseAt(tr,g);if(ns)ns.forEach(n=>phraseNote(tr,t,n));return;}const o=hitOffsets(tr,g);if(!o)return;const i=g%tr.pat.length,ratio=tr.drum?Math.max(1,Math.min(4,tr.ratio|0||1)):1;for(let k=0;k<o.length;k++)trigger(tr,t+(o[k]+swingDelay(k,ratio))*sd,i,g,k);});}
 const arr={mode:'loop',idx:-1,rep:0,step:0,len:16,free:true,jump:null,halt:false,ending:false},view={idx:-1,rep:0,step:0,len:16,active:false,t:0};
 function enter(t,idx,rep){arr.free=false;arr.idx=idx;arr.rep=rep;arr.step=0;tracks.forEach(x=>x.hitN=0);const sec=secs[song[idx].sec];
 if(arr.mode==='song'&&rep===0){loadState(sec.state,sec.useBpm,t);updateDelay(t);}
@@ -1195,7 +1196,7 @@ function tipDemo(){const d=document.querySelector('.demo');if(d)d.title='Now: '+
 function setNow(t,f){NOW={t:t||'',f:f||t||''};const e=document.getElementById('now');if(e){e.textContent=NOW.t||'EUCLIDEAN';e.title=NOW.f||'Euclidean sequencer';}tipDemo();}
 async function demoNext(){try{const d=await demoData(),L=demoList(d);let n=parseInt(localStorage.getItem(LSD),10);if(isNaN(n))n=-1;const e=L[(n+1)%L.length];DNEXT=e.t+' · '+e.n;}catch(_){}tipDemo();}
 function status(m){statusMsg=m||'';lastRo='';updateRo();}
-function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);}
+function download(blob,name){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.style.display='none';document.body.append(a);try{a.click();setTimeout(()=>{try{URL.revokeObjectURL(url);}catch(e){}a.remove();},8000);}catch(e){console.error('Download failed:',e);try{URL.revokeObjectURL(url);}catch(_){}a.remove();throw e;}}
 async function doExport(kind){if(exporting)return null;const[fmt,scope]=kind.split('-'),useSong=scope==='song'&&song.length>0;if(playing)toggle();exporting=true;let res=null;
 try{const base='grok-band-'+new Date().toISOString().slice(0,10);
 if(fmt==='mid'){status('Building MIDI…');res={name:base+'.mid',blob:buildMidi(useSong)};}
@@ -1203,13 +1204,13 @@ else if(fmt==='wav'){status('Rendering mix…');res={name:base+'.wav',blob:new B
 else{const files=[];status('Rendering mix…');files.push({name:base+'-mix.wav',data:wavBytes(await renderAudio(useSong,-1))});
 for(let k=0;k<tracks.length;k++){status('Stem '+(k+1)+'/'+tracks.length+' · '+tracks[k].name+'…');files.push({name:base+'-stem-'+String(k+1).padStart(2,'0')+'-'+tracks[k].name.replace(/[^\w-]+/g,'_')+'.wav',data:wavBytes(await renderAudio(useSong,k))});}
 res={name:base+'-stems.zip',blob:zipStore(files)};}
-if(!window.__noDownload)download(res.blob,res.name);}
-catch(e){console.error(e);alert('Export failed: '+e.message);}
-finally{exporting=false;status('');}return res;}
+if(!window.__noDownload){status('Downloading…');download(res.blob,res.name);status('Download ready');}else status('');}
+catch(e){console.error(e);alert('Export failed: '+e.message);status('Export failed');}
+finally{exporting=false;setTimeout(()=>{if(statusMsg==='Download ready'||statusMsg==='Export failed')status('');},3000);}return res;}
 // ---------- master panel ----------
 let masterEl,scopeCv,pkEl,pkHold=0;
 function addMaster(){const el=document.createElement('div');el.className='tr master';
-el.innerHTML='<div class="hd"><span class="led"></span><span class="t">MASTER</span><span class="sub">COMPRESSOR · LIMITER · DELAY · REVERB</span><span class="e">-∞ dB</span></div><div class="bd"><canvas class="scope"></canvas><div class="knobs"></div><div class="mb"><span>STUTTER</span><button data-s="2" title="Hold: loop the last 1/8 note on the beat">1/8</button><button data-s="1" title="Hold: loop the last 1/16 note on the beat">1/16</button><span title="Per-hit seeded random variation in timing, pitch, decay, level">JITTER</span><input type="range" class="hum" min="0" max="100" step="1" aria-label="Jitter"><span class="hnv">15%</span><span class="sp"></span><span>KIT</span><select class="kit" title="Global drum kit (synthesized). Each hit can override via its own kit menu."></select><button class="rs" title="Hold: noise riser sweep">RISER</button></div></div>';
+el.innerHTML='<div class="hd"><span class="led"></span><span class="t">MASTER</span><span class="sub">COMPRESSOR · LIMITER · DELAY · REVERB</span><span class="e">-∞ dB</span></div><div class="bd"><canvas class="scope"></canvas><div class="knobs"></div><div class="mb"><span>STUTTER</span><button data-s="2" title="Hold: loop the last 1/8 note on the beat">1/8</button><button data-s="1" title="Hold: loop the last 1/16 note on the beat">1/16</button><span title="Shuffle/swing: delays off-beat 16th notes. 50%=straight, higher=more swing">SWING</span><input type="range" class="swg" min="50" max="75" step="1" aria-label="Swing"><span class="swv">50%</span><span class="sp"></span><span title="Per-hit seeded random variation in timing, pitch, decay, level">JITTER</span><input type="range" class="hum" min="0" max="100" step="1" aria-label="Jitter"><span class="hnv">15%</span><span class="sp"></span><span>KIT</span><select class="kit" title="Global drum kit (synthesized). Each hit can override via its own kit menu."></select><button class="rs" title="Hold: noise riser sweep">RISER</button></div></div>';
 (document.getElementById('masterstrip')||$('#tracks')).append(el);masterEl=el;scopeCv=el.querySelector('.scope');pkEl=el.querySelector('.e');const kn=el.querySelector('.knobs');
 const ks=[(()=>{const d=knob(kn,'VOLUME',0,100,()=>M.vol,setVol,v=>v+'%');volDraws.push(d);return d;})(),
 knob(kn,'DLY TIME',1,8,()=>M.dt,v=>{M.dt=v;updateDelay();},v=>v+'st'),
@@ -1223,7 +1224,7 @@ knob(kn,'NOISE',0,100,()=>M.noise,v=>{M.noise=v;if(rig&&rig.bedG)rig.bedG.gain.v
 const mb=el.querySelector('.mb');mb.querySelectorAll('[data-s]').forEach(b=>{const on=e=>{e.preventDefault();b.setPointerCapture&&b.setPointerCapture(e.pointerId);STUT.want=+b.dataset.s;stutBtns();if(!playing){STUT.on=STUT.want;}},off=()=>{STUT.want=0;stutBtns();if(!playing)STUT.on=0;};b.onpointerdown=on;b.onpointerup=off;b.onpointercancel=off;b.onlostpointercapture=off;});
 kitSel=mb.querySelector('.kit');KIT_UI.forEach(k=>kitSel.add(new Option(k===('·')?'· unused':k,k)));kitSel.onchange=()=>{if(KITS.includes(kitSel.value))setKit(kitSel.value);else syncKit();};syncKit();
 const rs=mb.querySelector('.rs');rs.onpointerdown=e=>{e.preventDefault();rs.setPointerCapture&&rs.setPointerCapture(e.pointerId);rs.classList.add('on');riserStart();};const rsOff=()=>{rs.classList.remove('on');riserStop();};rs.onpointerup=rsOff;rs.onpointercancel=rsOff;rs.onlostpointercapture=rsOff;
-{const hs=mb.querySelector('.hum'),hv=mb.querySelector('.hnv');hs.oninput=()=>{M.hum=+hs.value;hv.textContent=M.hum+'%';};hs.title='Per-hit seeded random variation in timing, pitch, decay, level';masterEl.draw=()=>{ks.forEach(k=>k());hs.value=M.hum;hv.textContent=M.hum+'%';};}masterEl.draw();}
+{const sw=mb.querySelector('.swg'),swv=mb.querySelector('.swv');sw.oninput=()=>{M.swing=+sw.value;swv.textContent=M.swing+'%';};const hs=mb.querySelector('.hum'),hv=mb.querySelector('.hnv');hs.oninput=()=>{M.hum=+hs.value;hv.textContent=M.hum+'%';};hs.title='Per-hit seeded random variation in timing, pitch, decay, level';masterEl.draw=()=>{ks.forEach(k=>k());sw.value=M.swing;swv.textContent=M.swing+'%';hs.value=M.hum;hv.textContent=M.hum+'%';};}masterEl.draw();}
 function drawScope(){if(!scopeCv)return;const W=scopeCv.clientWidth,H=scopeCv.clientHeight;if(!W)return;if(scopeCv.width!==Math.round(W*DPR)){scopeCv.width=Math.round(W*DPR);scopeCv.height=Math.round(H*DPR);}
 const x=scopeCv.getContext('2d');x.setTransform(DPR,0,0,DPR,0,0);x.clearRect(0,0,W,H);
 x.strokeStyle='rgba(255,255,255,.06)';x.lineWidth=1;for(let i=1;i<4;i++){x.beginPath();x.moveTo(0,H*i/4);x.lineTo(W,H*i/4);x.stroke();}
