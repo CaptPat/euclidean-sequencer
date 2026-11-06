@@ -28,6 +28,7 @@ select:focus,button:focus-visible,input:focus-visible{outline:none;border-color:
 .hd{display:flex;align-items:center;gap:7px;padding-bottom:4px;margin-bottom:5px;border-bottom:1px solid #2c2623;white-space:nowrap}
 .led{flex:none;width:9px;height:9px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px #2a1a15,0 0 0 3px #6b3a2c,0 0 9px var(--c)}
 .hd .t{font-weight:800;font-size:12px;letter-spacing:1px;color:#fff}
+.tr:not(.master) .hd .t{display:none}
 .hd input{flex:1;min-width:24px;width:40px;background:none;border:0;color:#8a7f78;font-size:11px;padding:0;color-scheme:dark;font-family:inherit}
 .hd .e{margin-left:auto;color:var(--c);font-family:"Courier New",monospace;font-size:13px;letter-spacing:.5px;text-shadow:0 0 8px rgba(255,107,74,.4)}
 .hd .sy{font-size:10px;letter-spacing:1px;padding:1px 7px;border-radius:9px;font-weight:700;color:#bdb5ae}
@@ -216,7 +217,7 @@ const $=s=>document.querySelector(s);
 const DRUMS=['kick','snare','tight snare','wet snare','hat','open hat','clave','clap','cowbell','shaker','tom'],WAVES=['sine','triangle','sawtooth','square'],WNAME=['SIN','TRI','SAW','SQR'];
 const NOTE_NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const SCALES={Major:[0,2,4,5,7,9,11],Minor:[0,2,3,5,7,8,10],Dorian:[0,2,3,5,7,9,10],Phrygian:[0,1,3,5,7,8,10],Lydian:[0,2,4,6,7,9,11],Mixolydian:[0,2,4,5,7,9,10],'Pentatonic Maj':[0,2,4,7,9],'Pentatonic Min':[0,3,5,7,10],Blues:[0,3,5,6,7,10],'Harmonic Minor':[0,2,3,5,7,8,11]};
-const VERSION='v14.13 · 2026-11-06';
+const VERSION='v14.14 · 2026-11-06';
 const MODES=['Root','Up','Down','Ping-pong','Random','Chord','Riff','Power','Power +8','Minor riff','Chord root','Phrase'],RIFF=[0,0,4,0,3,0,5,4],PENT=[0,3,5,7,10],FMR=[.5,1,1.5,2,3,3.5,4,5,7];
 const PROGS={'I-V-vi-IV':[0,4,5,3],'i-VI-III-VII':[0,5,2,6],'ii-V-I':[1,4,0],'I-IV-V-iii':[0,3,4,2]},DEFPROG='I-IV-V-iii';
 const G={key:9,scale:'Minor',bpm:140};
