@@ -14,10 +14,12 @@ input[type=range]{accent-color:var(--c)}
 select{appearance:none;-webkit-appearance:none;background:#1a1614 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23ff6b4a'/%3E%3C/svg%3E") no-repeat right 6px center;color:#e8e2dc;border:1px solid #3a3430;padding-right:18px}
 select option{background:#1a1614;color:#e8e2dc}
 select:focus,button:focus-visible,input:focus-visible{outline:none;border-color:#ff6b4a;box-shadow:0 0 0 2px rgba(255,107,74,.35)}
-#tracks{flex:1 1 auto;grid-auto-rows:1fr;display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:8px;padding:8px}
+#tracks{flex:1 1 auto;grid-auto-rows:1fr;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;padding:8px}
 @media(min-width:860px){#tracks{grid-template-columns:repeat(3,1fr)}}
-@media(min-width:1180px){#tracks{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1050px){#tracks{grid-template-columns:repeat(4,1fr)}}
 @media(min-width:1240px){#tracks{grid-template-columns:repeat(5,1fr)}.hd{gap:6px}.tr:not(.master) .hd .t{display:none}.hd input{color:#fff;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;font-size:12px}.hd .sy{padding:1px 6px;font-size:9px;letter-spacing:.5px}}
+@media(min-width:1480px){#tracks{grid-template-columns:repeat(6,1fr)}}
+@media(min-width:1720px){#tracks{grid-template-columns:repeat(7,1fr)}}
 @media(max-width:480px){#tracks{grid-template-columns:1fr}}
 .tr{display:flex;flex-direction:column;background:linear-gradient(180deg,#26211e 0%,#1a1715 35%,#141210 100%);border-radius:12px;padding:6px 10px 8px;border:1px solid #2e2825;box-shadow:0 8px 20px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06);position:relative;overflow:hidden;transition:opacity .15s;min-width:0}
 .tr:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.012) 0 1px,transparent 1px 3px);pointer-events:none}
@@ -134,7 +136,10 @@ html{-webkit-text-size-adjust:100%}button,select,input{touch-action:manipulation
 header{gap:6px 8px;padding:4px 8px}header label{font-size:9px}#hmv,#bpm{width:64px}h1{margin-right:2px}
 .arr{margin:6px 6px 0;padding:5px 6px}.sl1{flex-wrap:wrap}.sl1 .strip{flex:1 1 100%}
 .arow{flex-wrap:wrap;height:auto;row-gap:4px}.arr .ro{width:100%;order:20;text-align:left}.arr .fill{display:none}.arr .nm{width:96px}
-.strip{overflow-x:auto}.master .knobs{display:grid;grid-template-columns:repeat(5,1fr);row-gap:4px}
+.strip{overflow-x:auto}
+#masterstrip .master .scope{width:100%;max-width:200px;height:36px}
+#masterstrip .master .knobs{flex-wrap:wrap;justify-content:center}
+#masterstrip .master .mb{flex-wrap:wrap;justify-content:center}
 #tracks{padding:6px;gap:6px}.dock{margin:0 6px 6px}.dtabs{flex-wrap:wrap}.dgroups,.dgroups.r2{padding-left:6px;padding-right:6px}
 }
 .newsong{display:flex;align-items:center;gap:4px;padding:2px 8px;font-size:10px;font-weight:700;letter-spacing:.5px;color:#ff9a80;flex:none}.newsong svg{width:13px;height:13px;display:block;transition:transform .45s ease}.newsong.spin svg{transform:rotate(360deg)}.newsong:hover{border-color:var(--c);color:#fff}
@@ -175,7 +180,6 @@ header{gap:6px 8px;padding:4px 8px}header label{font-size:9px}#hmv,#bpm{width:64
 #masterstrip .master .knobs .kn canvas{width:28px;height:28px}
 #masterstrip .master .knobs .kn b{font-size:9px}
 #masterstrip .master .mb{flex:none;flex-wrap:wrap;gap:4px;margin:0}
-@media(min-width:1240px){#tracks{grid-template-columns:repeat(5,1fr)}#tracks .master{grid-column:span 2}}
 .ctl select.kitp{max-width:58px;padding-right:14px}
 .ctl select.sndp{max-width:78px}
 </style></head><body>
@@ -200,7 +204,7 @@ const $=s=>document.querySelector(s);
 const DRUMS=['kick','snare','tight snare','wet snare','hat','open hat','clave','clap','cowbell','shaker','tom'],WAVES=['sine','triangle','sawtooth','square'],WNAME=['SIN','TRI','SAW','SQR'];
 const NOTE_NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const SCALES={Major:[0,2,4,5,7,9,11],Minor:[0,2,3,5,7,8,10],Dorian:[0,2,3,5,7,9,10],Phrygian:[0,1,3,5,7,8,10],Lydian:[0,2,4,6,7,9,11],Mixolydian:[0,2,4,5,7,9,10],'Pentatonic Maj':[0,2,4,7,9],'Pentatonic Min':[0,3,5,7,10],Blues:[0,3,5,6,7,10],'Harmonic Minor':[0,2,3,5,7,8,11]};
-const VERSION='v14.8 · 2026-11-06';
+const VERSION='v14.9 · 2026-11-06';
 const MODES=['Root','Up','Down','Ping-pong','Random','Chord','Riff','Power','Power +8','Minor riff','Chord root','Phrase'],RIFF=[0,0,4,0,3,0,5,4],PENT=[0,3,5,7,10],FMR=[.5,1,1.5,2,3,3.5,4,5,7];
 const PROGS={'I-V-vi-IV':[0,4,5,3],'i-VI-III-VII':[0,5,2,6],'ii-V-I':[1,4,0],'I-IV-V-iii':[0,3,4,2]},DEFPROG='I-IV-V-iii';
 const G={key:9,scale:'Minor',bpm:140};
