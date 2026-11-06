@@ -139,6 +139,7 @@ header{gap:6px 8px;padding:4px 8px}header label{font-size:9px}#hmv,#bpm{width:64
 }
 .newsong{display:flex;align-items:center;gap:4px;padding:2px 8px;font-size:10px;font-weight:700;letter-spacing:.5px;color:#ff9a80;flex:none}.newsong svg{width:13px;height:13px;display:block;transition:transform .45s ease}.newsong.spin svg{transform:rotate(360deg)}.newsong:hover{border-color:var(--c);color:#fff}
 .arr input.seed{width:58px;flex:none;background:#0c0b0a;border:1px solid #2e2825;border-radius:6px;color:#bdb5ae;font:700 10px/1 "Courier New",monospace;letter-spacing:1px;padding:4px 5px;text-transform:uppercase;text-align:center}.arr input.seed:focus{color:#fff}
+.arr textarea.mood{width:160px;height:36px;flex:none;background:#0c0b0a;border:1px solid #2e2825;border-radius:6px;color:#bdb5ae;font:400 10px/1.3 "Helvetica Neue",Arial,sans-serif;padding:5px 6px;resize:none}.arr textarea.mood:focus{color:#fff;border-color:#ff6b4a}.arr textarea.mood::placeholder{color:#6a615a}.arr .moodout{font-size:9px;color:#8a7f78;letter-spacing:.3px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .proll{position:absolute;left:10px;right:10px;display:none;z-index:2;background:#0c0b0a;border-radius:7px;border:1px solid #2a2522;box-shadow:inset 0 2px 5px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.05);overflow:hidden}
 .tr.phr .proll{display:block}.tr.phr .bd,.tr.phr .steps{visibility:hidden}.proll canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
 .pc{position:absolute;top:2px;left:5px;right:5px;display:flex;align-items:center;gap:3px;font-size:9px;color:#8a7f78;letter-spacing:1px;font-weight:700;z-index:1}.pc .sp{flex:1}.pc b{min-width:40px;text-align:center;color:#ffb19c}.pc button{padding:0;width:17px;height:14px;font-size:10px;line-height:1;border-radius:4px;text-align:center}
@@ -199,7 +200,7 @@ const $=s=>document.querySelector(s);
 const DRUMS=['kick','snare','tight snare','wet snare','hat','open hat','clave','clap','cowbell','shaker','tom'],WAVES=['sine','triangle','sawtooth','square'],WNAME=['SIN','TRI','SAW','SQR'];
 const NOTE_NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const SCALES={Major:[0,2,4,5,7,9,11],Minor:[0,2,3,5,7,8,10],Dorian:[0,2,3,5,7,9,10],Phrygian:[0,1,3,5,7,8,10],Lydian:[0,2,4,6,7,9,11],Mixolydian:[0,2,4,5,7,9,10],'Pentatonic Maj':[0,2,4,7,9],'Pentatonic Min':[0,3,5,7,10],Blues:[0,3,5,6,7,10],'Harmonic Minor':[0,2,3,5,7,8,11]};
-const VERSION='v14.6 · 2026-11-06';
+const VERSION='v14.7 · 2026-11-06';
 const MODES=['Root','Up','Down','Ping-pong','Random','Chord','Riff','Power','Power +8','Minor riff','Chord root','Phrase'],RIFF=[0,0,4,0,3,0,5,4],PENT=[0,3,5,7,10],FMR=[.5,1,1.5,2,3,3.5,4,5,7];
 const PROGS={'I-V-vi-IV':[0,4,5,3],'i-VI-III-VII':[0,5,2,6],'ii-V-I':[1,4,0],'I-IV-V-iii':[0,3,4,2]},DEFPROG='I-IV-V-iii';
 const G={key:9,scale:'Minor',bpm:140};
@@ -921,7 +922,7 @@ txt=fBars(c.n)+' · '+c.n+' st · '+sec.toFixed(1)+'s'+(c.capped?' · capped fro
 const k=(st,u)=>JSON.stringify({...st,bpm:u?st.bpm:0});dirty=k(live,s.useBpm)!==k(s.state,s.useBpm);}
 const ro=arrEl.querySelector('.ro');if(ro.title!==txt)ro.title=txt;A.upd.classList.toggle('dirty',dirty);updateRo();}
 function buildArr(){arrEl=$('#song');
-arrEl.innerHTML='<div class="sl1"><div class="strip"></div><span class="seg"><button data-m="loop" title="Loop the selected section">LOOP</button><button data-m="song" title="Play the whole song">SONG</button></span><button class="sloop" title="Loop the song at the end">SONG LOOP</button><button class="endb" title="Finish: when this pass ends, play the outro once and stop (E). Song mode only.">END</button><button class="newsong" title="NEW SONG: generate a random, related arrangement (Shift+R). ROLL still re-rolls just the live loop. UNDO brings the previous song back.">'+DICE_SVG+' NEW SONG</button><input class="seed" maxlength="10" spellcheck="false" autocomplete="off" placeholder="seed" title="Seed of the generated song. Type one and press Enter to reproduce a song."></div><div class="arow r1"><button class="cap" title="Save the current pattern as a new section (C)">● CAPTURE</button><button class="upd needsel" title="Overwrite the selected section with the current state (U)">UPDATE</button><button class="dup needsel" title="Copy the section (independent)">DUP</button><button class="ref needsel" title="Add another reference to the same section (linked)">REF</button><button class="vary needsel" title="Copy this section with small mutations: rotate, ±1 hit, riff note / octave (V)">VARY</button><button class="del needsel" title="Remove from song (Del)">DEL</button><button class="und" title="Undo delete (Ctrl+Z)">UNDO</button><span class="sepv"></span><button class="col needsel" title="Section color"></button><input class="nm needsel" placeholder="Section name" maxlength="18"><span class="sepv"></span><button class="lpb needsel" title="Loop from here: when the song reaches the end it returns to this section instead of the start">LOOP FROM</button><button class="otb needsel" title="Outro starts here: skipped while looping, played once after END">OUTRO</button><span class="sepv"></span><button class="tempo needsel" title="Section sets its own BPM">TEMPO</button><span class="sepv"></span><span class="lbl">LENGTH</span><select class="lm needsel"><option value="bars">Bars</option><option value="track">By track</option><option value="realign">Realign</option></select><span class="lenp"></span><span class="cyc"></span><span class="fill"></span><span class="ro"></span><span class="sepv"></span><button class="imp" title="Import a MIDI file: map its parts to Lead / Bell / Pad / Bass (+ drums) as Phrase notes, into the current section or as new sections. You can also drop a .mid file on the page.">Import MIDI…</button><input type="file" class="midin" accept=".mid,.midi,audio/midi,audio/x-midi" hidden><select class="exp" title="Export MIDI / WAV mix / stems (zip). Song = every section and repeat once, in order."><option value="">Export…</option><option value="mid-song">MIDI · song</option><option value="mid-pat">MIDI · pattern</option><option value="wav-song">WAV mix · song</option><option value="wav-pat">WAV mix · pattern</option><option value="zip-song">Stems ZIP · song</option><option value="zip-pat">Stems ZIP · pattern</option></select><button class="demo">DEMO</button><button class="save" title="Download .grokband.json">SAVE</button><button class="load" title="Open a .grokband.json">LOAD</button><input type="file" accept=".json,application/json" hidden></div>';
+arrEl.innerHTML='<div class="sl1"><div class="strip"></div><span class="seg"><button data-m="loop" title="Loop the selected section">LOOP</button><button data-m="song" title="Play the whole song">SONG</button></span><button class="sloop" title="Loop the song at the end">SONG LOOP</button><button class="endb" title="Finish: when this pass ends, play the outro once and stop (E). Song mode only.">END</button><textarea class="mood" rows="2" spellcheck="false" placeholder="what\'s on your mind?" title="Type a few words about your mood or vibe. NEW SONG will match that energy (tempo, style, density). Leave empty for random."></textarea><span class="moodout"></span><button class="newsong" title="NEW SONG: generate a random, related arrangement (Shift+R). ROLL still re-rolls just the live loop. UNDO brings the previous song back.">'+DICE_SVG+' NEW SONG</button><input class="seed" maxlength="10" spellcheck="false" autocomplete="off" placeholder="seed" title="Seed of the generated song. Type one and press Enter to reproduce a song."></div><div class="arow r1"><button class="cap" title="Save the current pattern as a new section (C)">● CAPTURE</button><button class="upd needsel" title="Overwrite the selected section with the current state (U)">UPDATE</button><button class="dup needsel" title="Copy the section (independent)">DUP</button><button class="ref needsel" title="Add another reference to the same section (linked)">REF</button><button class="vary needsel" title="Copy this section with small mutations: rotate, ±1 hit, riff note / octave (V)">VARY</button><button class="del needsel" title="Remove from song (Del)">DEL</button><button class="und" title="Undo delete (Ctrl+Z)">UNDO</button><span class="sepv"></span><button class="col needsel" title="Section color"></button><input class="nm needsel" placeholder="Section name" maxlength="18"><span class="sepv"></span><button class="lpb needsel" title="Loop from here: when the song reaches the end it returns to this section instead of the start">LOOP FROM</button><button class="otb needsel" title="Outro starts here: skipped while looping, played once after END">OUTRO</button><span class="sepv"></span><button class="tempo needsel" title="Section sets its own BPM">TEMPO</button><span class="sepv"></span><span class="lbl">LENGTH</span><select class="lm needsel"><option value="bars">Bars</option><option value="track">By track</option><option value="realign">Realign</option></select><span class="lenp"></span><span class="cyc"></span><span class="fill"></span><span class="ro"></span><span class="sepv"></span><button class="imp" title="Import a MIDI file: map its parts to Lead / Bell / Pad / Bass (+ drums) as Phrase notes, into the current section or as new sections. You can also drop a .mid file on the page.">Import MIDI…</button><input type="file" class="midin" accept=".mid,.midi,audio/midi,audio/x-midi" hidden><select class="exp" title="Export MIDI / WAV mix / stems (zip). Song = every section and repeat once, in order."><option value="">Export…</option><option value="mid-song">MIDI · song</option><option value="mid-pat">MIDI · pattern</option><option value="wav-song">WAV mix · song</option><option value="wav-pat">WAV mix · pattern</option><option value="zip-song">Stems ZIP · song</option><option value="zip-pat">Stems ZIP · pattern</option></select><button class="demo">DEMO</button><button class="save" title="Download .grokband.json">SAVE</button><button class="load" title="Open a .grokband.json">LOAD</button><input type="file" accept=".json,application/json" hidden></div>';
 strip=arrEl.querySelector('.strip');const q=x=>arrEl.querySelector(x);
 A.lpb=q('.lpb');A.otb=q('.otb');A.endb=q('.endb');A.nm=q('.nm');A.col=q('.col');A.lm=q('.lm');A.tempo=q('.tempo');A.sloop=q('.sloop');A.und=q('.und');A.upd=q('.upd');
 A.rep=stp('REPEAT',1,16,()=>curEnt()?curEnt().rep:0,v=>{if(curEnt()){curEnt().rep=v;renderStrip();tick500();}});
@@ -929,8 +930,8 @@ const L=()=>curSec()?curSec().len:{bars:0,cap:0,cycles:0,track:0},lc=()=>{render
 A.pBars=stp('BARS',1,32,()=>L().bars,v=>{if(curSec()){curSec().len.bars=v;lc();}});A.pCap=stp('CAP',1,32,()=>L().cap,v=>{if(curSec()){curSec().len.cap=v;lc();}});A.pCyc=stp('CYCLES',1,8,()=>L().cycles,v=>{if(curSec()){curSec().len.cycles=v;lc();}});
 A.trSel=mkSel(tracks.map((t,i)=>t.name),tracks[0].name,()=>{});A.trSel.textContent='';tracks.forEach((t,i)=>A.trSel.add(new Option(t.name,i)));A.trSel.onchange=()=>{if(curSec()){curSec().len.track=+A.trSel.value;lc();}};
 const lp=q('.lenp');lp.append(A.pBars.el,A.trSel,A.pCap.el);q('.cyc').append(A.pCyc.el);
-q('.vary').onclick=vary;{const fi=q('.midin');q('.imp').onclick=()=>fi.click();fi.onchange=()=>{const f=fi.files&&fi.files[0];fi.value='';if(f)openImport(f);};}A.seed=q('.seed');A.ns=q('.newsong');A.ns.onclick=()=>{A.ns.classList.add('spin');setTimeout(()=>A.ns.classList.remove('spin'),460);newSong();};
-A.seed.onkeydown=e=>{e.stopPropagation();if(e.key==='Enter'){e.preventDefault();const v=A.seed.value.trim();A.seed.blur();newSong(v||undefined);}};A.seed.oninput=()=>{A.seed.value=A.seed.value.toUpperCase().replace(/[^A-Z0-9]/g,'');};A.seed.onfocus=()=>A.seed.select();syncSeed();q('.exp').onchange=e=>{const v=e.target.value;e.target.value='';if(v)doExport(v);};
+q('.vary').onclick=vary;{const fi=q('.midin');q('.imp').onclick=()=>fi.click();fi.onchange=()=>{const f=fi.files&&fi.files[0];fi.value='';if(f)openImport(f);};}A.seed=q('.seed');A.mood=q('.mood');A.moodout=q('.moodout');A.ns=q('.newsong');A.ns.onclick=()=>{A.ns.classList.add('spin');setTimeout(()=>A.ns.classList.remove('spin'),460);newSong(undefined,A.mood.value);};
+A.seed.onkeydown=e=>{e.stopPropagation();if(e.key==='Enter'){e.preventDefault();const v=A.seed.value.trim();A.seed.blur();newSong(v||undefined,A.mood.value);}};A.seed.oninput=()=>{A.seed.value=A.seed.value.toUpperCase().replace(/[^A-Z0-9]/g,'');};A.seed.onfocus=()=>A.seed.select();A.mood.onkeydown=e=>{e.stopPropagation();};syncSeed();q('.exp').onchange=e=>{const v=e.target.value;e.target.value='';if(v)doExport(v);};
 const flag=k=>()=>{const e=curEnt();if(!e)return;const on=!e[k];song.forEach(x=>{delete x[k];});if(on)e[k]=true;renderStrip();refreshArr();};A.lpb.onclick=flag('loop');A.otb.onclick=flag('outro');
 A.endb.onclick=()=>{if(!(playing&&arr.mode==='song'))return;arr.ending=!arr.ending;refreshArr();updateRo();};
 q('.cap').onclick=capture;A.upd.onclick=updateSec;q('.dup').onclick=dupSec;q('.ref').onclick=refSec;q('.del').onclick=delEntry;A.und.onclick=undo;
@@ -998,6 +999,34 @@ const GSEEDCH='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const randSeed=()=>{let x='';for(let i=0;i<6;i++)x+=GSEEDCH[Math.floor(Math.random()*32)];return x;};
 const GD={kick:{st:[16],h:[3,5],rots:[0,0,2]},snare:{st:[16],h:[2,2],rots:[4,8]},hat:{st:[16],h:[8,12],rots:[0,1]},openhat:{st:[16],h:[2,4],rots:[1,3]},clap:{st:[16],h:[2,4],rots:[4,8]},clave:{st:[16],h:[3,5],rots:'any'},tom:{st:[16],h:[2,4],rots:[0,2]},bass:{st:[16],h:[4,7],rots:[0,1,2]},bell:{st:[16],h:[3,6],rots:'any'},lead:{st:[16],h:[3,5],rots:[2,2,6,10]},pad:{st:[32],h:[1,2],rots:[0]},keys:{st:[16],h:[1,1],rots:[0]},arp:{st:[16],h:[4,8],rots:[0,2]},strings:{st:[32],h:[1,2],rots:[0]}};
 // per-style: tempo / key / scale bias, sounds, note modes, roll usage, drive + duck, groove ranges (hits are absolute, steps listed)
+function parseMood(txt){if(!txt||!txt.trim())return null;const t=txt.toLowerCase();const w=t.split(/\s+/);const sc=(kw,wt)=>{let s=0;kw.forEach(k=>{if(t.includes(k))s+=wt;});return s;};
+const fast=sc(['fast','quick','rapid','urgent','rush','hurry','speed','race','hyper','frenetic','bounce','jump','bouncing','pumped','energetic','running'],2)+sc(['drive','driving','highway','road','move','moving','sprint','dash'],1.5);
+const slow=sc(['slow','lazy','tired','sleepy','drift','float','mellow','heavy','drag','slug','crawl'],2)+sc(['late','night','2am','3am','4am','empty','alone','still','calm','quiet','peace'],1.5);
+const bright=sc(['bright','sun','sunny','happy','joy','smile','light','shine','clear','blue','sky','morning','day','saturday','windows','open','fresh'],2)+sc(['warm','golden','awake','alive','outside'],1.5);
+const dark=sc(['dark','shadow','night','black','grey','gray','dim','fog','rain','storm','cloud'],2)+sc(['underground','alley','tunnel','basement','cave'],1.5);
+const angry=sc(['angry','rage','furious','mad','pissed','hate','fight','punch','scream','destroy','break'],2.5)+sc(['tense','held','clench','jaw','tight','restrain'],1.5);
+const chill=sc(['chill','relax','easy','casual','laid','back','vibe','groove','smooth','flow','lounge'],2)+sc(['couch','coffee','tea','sunset','beach','breeze'],1.5);
+const restless=sc(['restless','anxious','nervous','worry','edge','jitter','cant','sleep','pace','wander'],2)+sc(['wait','waiting','stuck','limbo'],1.5);
+const electronic=sc(['synth','electro','digital','machine','robot','future','neon','cyber','arcade','8bit','retro'],2);
+const organic=sc(['wood','warm','acoustic','natural','earth','folk','human','live','real'],1.5);
+const latin=sc(['latin','salsa','bossa','samba','tango','cuba','brazil','dance','party','carnival'],2);
+let bpmBias=0,styleBias={},denseBias=0,driveBias=0,swingBias=0;
+if(fast>slow+2)bpmBias=Math.min(30,10+fast*3);else if(slow>fast+2)bpmBias=Math.max(-30,-10-slow*3);
+if(bright>dark+2){styleBias.house=(styleBias.house||0)+bright*.5;styleBias.dorian=(styleBias.dorian||0)+bright*.3;}
+if(dark>bright+2){styleBias.trap=(styleBias.trap||0)+dark*.4;styleBias.rage=(styleBias.rage||0)+dark*.3;styleBias.synth=(styleBias.synth||0)+dark*.2;}
+if(angry>2){styleBias.rage=(styleBias.rage||0)+angry*.6;styleBias.trap=(styleBias.trap||0)+angry*.3;driveBias=Math.min(25,angry*4);denseBias=Math.min(2,angry*.3);}
+if(chill>2){styleBias.dorian=(styleBias.dorian||0)+chill*.5;styleBias.synth=(styleBias.synth||0)+chill*.3;denseBias=Math.max(-2,-chill*.3);}
+if(restless>2){styleBias.trap=(styleBias.trap||0)+restless*.4;bpmBias+=restless*2;denseBias+=restless*.2;}
+if(electronic>2){styleBias.synth=(styleBias.synth||0)+electronic*.5;styleBias.trap=(styleBias.trap||0)+electronic*.3;}
+if(organic>2){styleBias.house=(styleBias.house||0)+organic*.4;styleBias.latin=(styleBias.latin||0)+organic*.3;}
+if(latin>2){styleBias.latin=(styleBias.latin||0)+latin*.8;swingBias=Math.max(swingBias,2);}
+const city=sc(['city','urban','street','downtown','building','traffic','crowd','metro','subway'],1.5);
+if(city>2&&(t.includes('2am')||t.includes('3am')||t.includes('late'))){styleBias.trap=(styleBias.trap||0)+city*.5;bpmBias+=5;}
+const rout=[];if(bpmBias!==0)rout.push((bpmBias>0?'+':'')+bpmBias+' bpm');
+const sk=Object.keys(styleBias);if(sk.length)rout.push(sk.map(k=>k[0].toUpperCase()+k.slice(1)).join('/'));
+if(denseBias>0)rout.push('dense');else if(denseBias<0)rout.push('sparse');
+if(driveBias>10)rout.push('driven');if(swingBias>0)rout.push('swing');
+return{bpmBias,styleBias,denseBias,driveBias,swingBias,readout:rout.join(' · ')||'neutral'};}
 const GSTY={
 rage:{label:'Rage',w:3,bpm:[140,160],keys:[1,5,6,9,8,3],sc:['Minor','Minor','Minor','Phrygian','Harmonic Minor'],rage:1,
  snd:{bass:['808 Distorted','808 Distorted','808 Sub'],bell:['Tubular Bell','Glass Bell'],lead:['Supersaw Lead'],pad:['Dark Pad']},
@@ -1035,18 +1064,25 @@ GSTY.rage.kit='808';GSTY.trap.kit='808';GSTY.trap.dsnd={clave:'cowbell'};GSTY.ho
 function rollSpec(r,c){const st=pick(r,c.st);let h=ri(r,c.h[0],c.h[1]);h=Math.max(1,Math.min(st-1,h));const rt=(!c.rots||c.rots==='any')?ri(r,0,st-1):(pick(r,c.rots)%st);return[h,st,rt];}
 // builds secs/song from a seed (no audio, no UI); returns info
 Object.values(GSTY).forEach(S=>{S.arp={snd:S.snd.lead.slice(),mode:['Up','Ping-pong']};S.strings={snd:S.snd.pad.slice(),mode:['Chord']};S.snd.lead=['Rhythm Gtr'];S.mode.lead=['Chord'];});
-function genSong(seedStr){
+function genSong(seedStr,moodBias){
 const seed=String(seedStr||'').trim().toUpperCase()||randSeed(),r=rng(hashStr('GB'+seed));
-const keys=Object.keys(GSTY),tw=keys.reduce((a,k)=>a+GSTY[k].w,0);let u=r()*tw,sk=keys[0];for(const k of keys){u-=GSTY[k].w;if(u<0){sk=k;break;}}
-const S=GSTY[sk],bpm=ri(r,S.bpm[0],S.bpm[1]),key=pick(r,S.keys),scale=pick(r,S.sc);
+const keys=Object.keys(GSTY);let tw=keys.reduce((a,k)=>a+GSTY[k].w,0);
+if(moodBias&&moodBias.styleBias){keys.forEach(k=>{if(moodBias.styleBias[k])tw+=moodBias.styleBias[k];});}
+let u=r()*tw,sk=keys[0];for(const k of keys){let w=GSTY[k].w+(moodBias&&moodBias.styleBias&&moodBias.styleBias[k]||0);u-=w;if(u<0){sk=k;break;}}
+const S=GSTY[sk];let bpm=ri(r,S.bpm[0],S.bpm[1]);if(moodBias&&moodBias.bpmBias)bpm=Math.max(10,Math.min(240,bpm+moodBias.bpmBias));
+const key=pick(r,S.keys),scale=pick(r,S.sc);
 const IDS=tracks.map(t=>t.id),ix={};IDS.forEach((id,i)=>ix[id]=i);
 const g=IDS.map(id=>({id,v:rollSpec(r,{...GD[id],...(S.roll[id]||{})})}));
+if(moodBias&&moodBias.denseBias){const db=Math.round(moodBias.denseBias);g.forEach(x=>{if(['kick','snare','hat','openhat','clap','clave','tom','bass','bell','lead','arp'].includes(x.id)){x.v[0]=Math.max(1,Math.min(x.v[1]-1,x.v[0]+db));}});}
 const hasClave=r()<S.clave,hasBell=r()<S.bell,bellMain=r()<S.bellMain;
 const t=g.map(x=>(x.id==='clave'&&!hasClave)||(x.id==='bell'&&!hasBell)||x.id==='keys'?[0,16,0]:x.v);
 const sound={},mode={},prog={},pa=pick(r,S.prog);['bass','bell','lead','pad'].forEach(id=>{sound[id]=pick(r,S.snd[id]);mode[id]=pick(r,S.mode[id]);prog[id]=pa;});
 const alts=Object.keys(PROGS).filter(k=>k!==pa),alt=pick(r,alts);
-const rg=S.mst,mst={drive:ri(r,rg.drive[0],rg.drive[1]),duck:ri(r,rg.duck[0],rg.duck[1]),noise:ri(r,rg.noise[0],rg.noise[1])};
-const hr=ri(r,S.ratio[0],S.ratio[1]),hf=ri(r,S.fill[0],S.fill[1]),sf=ri(r,S.snFill[0],S.snFill[1]);
+const rg=S.mst;let drv=ri(r,rg.drive[0],rg.drive[1]);if(moodBias&&moodBias.driveBias)drv=Math.max(0,Math.min(100,drv+moodBias.driveBias));
+const mst={drive:drv,duck:ri(r,rg.duck[0],rg.duck[1]),noise:ri(r,rg.noise[0],rg.noise[1])};
+if(moodBias&&moodBias.swingBias)mst.swing=Math.max(50,Math.min(75,50+moodBias.swingBias*2));
+let hr=ri(r,S.ratio[0],S.ratio[1]),hf=ri(r,S.fill[0],S.fill[1]),sf=ri(r,S.snFill[0],S.snFill[1]);
+if(moodBias&&moodBias.denseBias){const db=moodBias.denseBias;if(db>0){hf=Math.min(4,hf+Math.round(db));sf=Math.min(2,sf+Math.round(db*.5));}else if(db<0){hf=Math.max(0,hf+Math.round(db));sf=Math.max(0,sf+Math.round(db*.5));}}
 const p={bpm,key,scale,rage:S.rage,kit:S.kit,dsnd:S.dsnd,t,sound,mode,prog,syn:S.syn,ratio:{hat:hr},fill:{hat:hf,snare:sf},master:mst,vol:S.vol};
 tracks.forEach(t=>{t.vol=t.defVol;});applyP(p);
 // one motif for the whole song: lead plays it, bell echoes it, bass keeps its root-heavy skeleton
@@ -1076,11 +1112,11 @@ secs={};song=[];const lb=bpm>=130?8:4;
 const sI=mk('Intro',3,pick(r,[2,2,4]),intro),sM=mk('Main',0,lb,main),sC=mk('Chorus',2,lb,ch),sB=mk('Break',1,pick(r,[2,2,4]),br),sM2=mk('Main 2',6,lb,m2),sO=mk('Outro',4,pick(r,[4,4,2]),ou);
 song=[{sec:sI.id,rep:1},{sec:sM.id,rep:2,loop:true},{sec:sC.id,rep:1},{sec:sB.id,rep:1},{sec:sM2.id,rep:1}];if(r()<.5)song.push({sec:sC.id,rep:1});song.push({sec:sO.id,rep:1,outro:true});
 return{seed,style:sk,label:S.label,bpm,key,scale,prog:pa,alt};}
-function syncSeed(){const el=arrEl&&arrEl.querySelector('.seed');if(!el)return;if(document.activeElement!==el)el.value=genInfo?genInfo.seed:'';el.title=genInfo?('Seed '+genInfo.seed+' · '+genInfo.label+' · '+genInfo.bpm+' BPM · '+NOTE_NAMES[genInfo.key]+' '+genInfo.scale+' · Enter reproduces it'):'Seed of the generated song. Type one and press Enter to reproduce a song.';}
-function newSong(seedStr){if(exporting)return null;
+function syncSeed(){const el=arrEl&&arrEl.querySelector('.seed');if(!el)return;if(document.activeElement!==el)el.value=genInfo?genInfo.seed:'';el.title=genInfo?('Seed '+genInfo.seed+' · '+genInfo.label+' · '+genInfo.bpm+' BPM · '+NOTE_NAMES[genInfo.key]+' '+genInfo.scale+' · Enter reproduces it'):'Seed of the generated song. Type one and press Enter to reproduce a song.';const mo=arrEl&&arrEl.querySelector('.mood');if(mo&&document.activeElement!==mo&&genInfo)mo.value=genInfo.mood||'';const moo=arrEl&&arrEl.querySelector('.moodout');if(moo)moo.textContent=genInfo&&genInfo.moodReadout?genInfo.moodReadout:'';}
+function newSong(seedStr,moodText){if(exporting)return null;
 const before=JSON.stringify(project());undoStack.push({whole:before});if(undoStack.length>30)undoStack.shift();
-let info;try{info=genSong(seedStr);}catch(e){console.error(e);const keep=undoStack;undoStack.pop();restore(JSON.parse(before));undoStack=keep;return null;}
-genInfo={seed:info.seed,style:info.style,label:info.label,bpm:info.bpm,key:info.key,scale:info.scale};setNow('NEW · '+info.seed+' · '+info.label,'NEW SONG · seed '+info.seed+' · '+info.label+' · '+info.bpm+' BPM');
+const moodBias=parseMood(moodText);let info;try{info=genSong(seedStr,moodBias);}catch(e){console.error(e);const keep=undoStack;undoStack.pop();restore(JSON.parse(before));undoStack=keep;return null;}
+genInfo={seed:info.seed,style:info.style,label:info.label,bpm:info.bpm,key:info.key,scale:info.scale,mood:moodText||'',moodReadout:moodBias?moodBias.readout:''};setNow('NEW · '+info.seed+' · '+info.label,'NEW SONG · seed '+info.seed+' · '+info.label+' · '+info.bpm+' BPM');
 selIdx=0;arr.mode='song';songLoop=true;arr.ending=false;
 if(playing)arr.jump=0;else loadState(secs[song[0].sec].state,true);
 syncSeed();renderStrip();refreshArr();dockDraw();
@@ -1311,7 +1347,7 @@ if(e.ctrlKey||e.metaKey){if(e.key==='z'||e.key==='Z'){e.preventDefault();undo();
 const k=e.key;if(e.altKey)return;
 if(k==='c'||k==='C'){capture();}else if(k==='u'||k==='U'){updateSec();}else if(k==='Delete'||k==='Backspace'){e.preventDefault();delEntry();}
 else if(k==='['){selectEntry(selIdx-1);}else if(k===']'){selectEntry(selIdx+1);}
-else if(k==='R'&&e.shiftKey){newSong();}else if(k==='r'||k==='R'){rollAll();}else if(k==='v'||k==='V'){vary();}else if(k==='e'||k==='E'){A.endb.click();}
+else if(k==='R'&&e.shiftKey){const m=A.mood&&A.mood.value;newSong(undefined,m);}else if(k==='r'||k==='R'){rollAll();}else if(k==='v'||k==='V'){vary();}else if(k==='e'||k==='E'){A.endb.click();}
 else if((k==='ArrowUp'||k==='ArrowDown')&&curEnt()){e.preventDefault();setRep(selIdx,curEnt().rep+(k==='ArrowUp'?1:-1));}};
 const DEFS=[['Kick','kick',.8,[4,16,0]],['Snare','snare',.8,[2,16,4]],['Hat','hat',.7,[8,16,1]],['Open Hat','openhat',.65,[0,16,0],'open hat'],['Clap','clap',.7,[0,16,0]],['Clave','clave',.8,[0,16,0]],['Tom','tom',.7,[0,16,0]]];
 DEFS.forEach(d=>addTrack({name:d[0],id:d[1],drum:true,sound:d[4]||d[1],vol:d[2]}).set(...d[3]));
