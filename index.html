@@ -200,7 +200,7 @@ const $=s=>document.querySelector(s);
 const DRUMS=['kick','snare','tight snare','wet snare','hat','open hat','clave','clap','cowbell','shaker','tom'],WAVES=['sine','triangle','sawtooth','square'],WNAME=['SIN','TRI','SAW','SQR'];
 const NOTE_NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const SCALES={Major:[0,2,4,5,7,9,11],Minor:[0,2,3,5,7,8,10],Dorian:[0,2,3,5,7,9,10],Phrygian:[0,1,3,5,7,8,10],Lydian:[0,2,4,6,7,9,11],Mixolydian:[0,2,4,5,7,9,10],'Pentatonic Maj':[0,2,4,7,9],'Pentatonic Min':[0,3,5,7,10],Blues:[0,3,5,6,7,10],'Harmonic Minor':[0,2,3,5,7,8,11]};
-const VERSION='v14.7 · 2026-11-06';
+const VERSION='v14.8 · 2026-11-06';
 const MODES=['Root','Up','Down','Ping-pong','Random','Chord','Riff','Power','Power +8','Minor riff','Chord root','Phrase'],RIFF=[0,0,4,0,3,0,5,4],PENT=[0,3,5,7,10],FMR=[.5,1,1.5,2,3,3.5,4,5,7];
 const PROGS={'I-V-vi-IV':[0,4,5,3],'i-VI-III-VII':[0,5,2,6],'ii-V-I':[1,4,0],'I-IV-V-iii':[0,3,4,2]},DEFPROG='I-IV-V-iii';
 const G={key:9,scale:'Minor',bpm:140};
@@ -628,7 +628,7 @@ if(!hit&&!fl)return null;const o=[];for(let k=0;k<r;k++)o.push(k/r);return o;}
 function triggerStep(g,t,sd){sd=sd||stepDur();tracks.forEach(tr=>{if(!audible(tr))return;if(!tr.drum&&tr.mode==='Phrase'){const ns=phraseAt(tr,g);if(ns)ns.forEach(n=>phraseNote(tr,t,n));return;}const o=hitOffsets(tr,g);if(!o)return;const i=g%tr.pat.length,ratio=tr.drum?Math.max(1,Math.min(4,tr.ratio|0||1)):1;for(let k=0;k<o.length;k++)trigger(tr,t+(o[k]+swingDelay(k,ratio))*sd,i,g,k);});}
 const arr={mode:'loop',idx:-1,rep:0,step:0,len:16,free:true,jump:null,halt:false,ending:false},view={idx:-1,rep:0,step:0,len:16,active:false,t:0};
 function enter(t,idx,rep){arr.free=false;arr.idx=idx;arr.rep=rep;arr.step=0;tracks.forEach(x=>x.hitN=0);const sec=secs[song[idx].sec];
-if(arr.mode==='song'&&rep===0){loadState(sec.state,sec.useBpm,t);updateDelay(t);}
+if(arr.mode==='song'&&rep===0){const pm=tracks.map(x=>({mute:x.mute,solo:x.solo}));loadState(sec.state,sec.useBpm,t);tracks.forEach((x,i)=>{x.mute=pm[i].mute;x.solo=pm[i].solo;x.syncAll();});refreshAudible(t);updateDelay(t);}
 arr.len=secCalc(sec,arr.mode==='song'?sec.state:snapshot()).n;}
 function beginTransport(t){gstep=0;arr.halt=false;arr.ending=false;arr.jump=null;tracks.forEach(x=>x.hitN=0);arr.free=true;
 if(arr.mode==='song'&&song.length){if(selIdx<0)selIdx=0;enter(t,selIdx,0);}else if(song[selIdx])enter(t,selIdx,0);}
