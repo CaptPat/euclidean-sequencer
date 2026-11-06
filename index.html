@@ -103,8 +103,8 @@ select:focus,button:focus-visible,input:focus-visible{outline:none;border-color:
 .blk.dl{box-shadow:inset 3px 0 0 #fff}.blk.dr{box-shadow:inset -3px 0 0 #fff}
 .blk.lp:before{content:"↻";position:absolute;left:3px;top:1px;font-size:13px;font-weight:800;color:rgba(255,255,255,.85);text-shadow:0 0 4px rgba(255,255,255,.6),0 1px 2px #000}
 .ph2{position:absolute;top:2px;bottom:2px;width:2px;margin-left:-1px;background:#fff;border-radius:2px;box-shadow:0 0 6px var(--c),0 0 12px var(--c);pointer-events:none;display:none;z-index:2}
-.arow{display:flex;align-items:center;gap:5px;white-space:nowrap;height:22px}
-.arr button{padding:2px 8px;font-size:10px;font-weight:700;letter-spacing:.5px}
+.arow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;height:auto;min-height:22px;row-gap:4px;overflow:visible}
+.arr button{padding:2px 8px;font-size:10px;font-weight:700;letter-spacing:.5px;white-space:nowrap}
 .arr .cap{color:var(--c)}.arr button.on{background:var(--c);color:#1a0d08}
 .arr .upd.dirty{border-color:#ffc24a;color:#ffc24a;box-shadow:0 0 8px rgba(255,194,74,.5)}
 .arr.none .needsel{opacity:.4;pointer-events:none}
@@ -134,11 +134,10 @@ header{gap:8px}#pre{width:112px}.ro{width:128px}.arr .nm{width:72px}
 .arr select.exp{max-width:78px}
 #sub{display:flex!important;width:128px;gap:6px;letter-spacing:.3px!important}#now{flex:1 1 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:default}#ver{flex:none;font-size:8px;letter-spacing:.3px;opacity:.85;cursor:default}
 html{-webkit-text-size-adjust:100%}button,select,input{touch-action:manipulation}
-@media(max-width:1279px){.arow{flex-wrap:wrap;height:auto;row-gap:4px}}
 @media(max-width:700px){
 header{gap:6px 8px;padding:4px 8px}header label{font-size:9px}#hmv,#bpm{width:64px}h1{margin-right:2px}
 .arr{margin:6px 6px 0;padding:5px 6px}
-.arow{flex-wrap:wrap;height:auto;row-gap:4px}.arr .ro{width:100%;order:20;text-align:left}.arr .fill{display:none}.arr .nm{width:96px}
+.arr .ro{width:100%;order:20;text-align:left}.arr .fill{display:none}.arr .nm{width:96px}
 .strip{overflow-x:auto}
 #tracks{padding:6px;gap:6px}.dock{margin:0 6px 6px}.dtabs{flex-wrap:wrap}.dgroups,.dgroups.r2{padding-left:6px;padding-right:6px}
 }
