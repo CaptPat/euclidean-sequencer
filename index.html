@@ -690,7 +690,7 @@ if(arr.rendering){releaseViews(t);if(arr.mode==='song'&&rep===0){const pm=tracks
 if(arr.mode!=='song'||editing){releaseViews(t);punchEditorSends(t);tracks.forEach(x=>x.hitN=0);arr.len=secCalc(sec,snapshot()).n;armClock(sec,t);return;}
 playViews=buildPlayViews(sec);armClock(sec,t);arr.len=secCalc(sec,audibleState(sec)).n;}
 function ensurePlaySource(t){if(arr.rendering||arr.free||arr.mode!=='song')return;const ent=song[arr.idx],sec=ent&&secs[ent.sec];if(!sec)return;const editing=!!(curSec()&&curSec().id===sec.id);
-if(editing){if(playViews){releaseViews(t);punchEditorSends(t);armClock(sec,t);}return;}if(!playViews){playViews=buildPlayViews(sec);armClock(sec,t);}}
+if(editing){if(playViews){releaseViews(t);punchEditorSends(t);}armClock(sec,t);return;}if(!playViews){playViews=buildPlayViews(sec);armClock(sec,t);}}
 function beginTransport(t){gstep=0;arr.halt=false;arr.ending=false;arr.jump=null;tracks.forEach(x=>x.hitN=0);arr.free=true;releaseViews(t);
 if(arr.mode==='song')arr.baseBpm=G.bpm;else arr.baseBpm=null;
 if(arr.mode==='song'&&song.length){if(selIdx<0)selIdx=0;enter(t,selIdx,0);}else if(song[selIdx])enter(t,selIdx,0);}
@@ -1042,7 +1042,8 @@ q('.cap').onclick=capture;A.upd.onclick=updateSec;A.rev.onclick=revertEdits;A.cl
 A.col.onclick=()=>{const s=curSec();if(!s)return;s.color=SCOL[(SCOL.indexOf(s.color)+1)%SCOL.length];renderStrip();refreshArr();};
 A.nm.oninput=()=>{const s=curSec();if(!s)return;s.name=A.nm.value;const b=strip.querySelectorAll('.blk');song.forEach((e,i)=>{if(e.sec===s.id&&b[i])b[i].firstChild.textContent=s.name;});updateRo();};
 A.lm.onchange=()=>{const s=curSec();if(!s)return;s.len.mode=A.lm.value;refreshArr();renderStrip();};
-A.tempo.onclick=()=>{const s=curSec();if(!s)return;s.useBpm=!s.useBpm;if(s.useBpm){s.state.bpm=G.bpm;if(s.draft)s.draft.bpm=G.bpm;}renderStrip();refreshArr();};
+A.tempo.onclick=()=>{const s=curSec();if(!s)return;s.useBpm=!s.useBpm;if(s.useBpm){s.state.bpm=G.bpm;if(s.draft)s.draft.bpm=G.bpm;}renderStrip();refreshArr();
+if(playing&&!arr.free&&!arr.rendering){const heard=song[arr.idx]&&secs[song[arr.idx].sec];if(heard&&heard.id===s.id)armClock(heard,ac?ac.currentTime:undefined);}};
 A.sloop.onclick=()=>{songLoop=!songLoop;refreshArr();};
 function writeHold(q,t){const h=HOLDS[t.id];if(!h||!q)return;if(h.sound!==undefined)q.sound=h.sound;if(h.kit!==undefined)q.kit=h.kit;if(h.patch!==undefined)q.patch=h.patch;if(h.syn!==undefined)q.syn={...h.syn};if(h.prog!==undefined)q.prog=h.prog;if(h.rate!==undefined)q.rate=h.rate;if(h.riff!==undefined)q.riff=h.riff.slice();if(h.riffSeed!==undefined)q.riffSeed=h.riffSeed;if(h.mode!==undefined)q.mode=h.mode;}
 function applyHolds(){if(!Object.keys(HOLDS).length)return;Object.values(secs).forEach(s=>{tracks.forEach((t,i)=>{writeHold(s.state.tracks[i],t);if(s.draft)writeHold(s.draft.tracks[i],t);});});Object.keys(HOLDS).forEach(k=>delete HOLDS[k]);syncHolds();status('Applied holds to all sections');}
