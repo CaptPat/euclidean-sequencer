@@ -305,7 +305,6 @@ ok('reloaded draft stays on the section', gb.secsRef()[gb.songRef()[gb.selRef()]
 
 bass().phrase.notes[0].p = 77;
 bass().phrase.notes[0].sl = 1;
-gb.stashEdit();
 const heard = [];
 const editorCut = bass().syn.cut;
 gb.walkPlan(true, { now: () => 0, step: (s) => {
@@ -327,6 +326,143 @@ ok('midi contains drafted pitch 77', note77);
 const wav = gb.wavBytes(await gb.renderAudio(false, -1));
 ok('pattern wav header', wav[0] === 82 && wav[1] === 73 && wav[2] === 70 && wav[3] === 70 && wav.length > 1000, String(wav.length));
 ok('record control still present', typeof gb.startLiveRec === 'function' && !!document.querySelector('.rec') && typeof MediaRecorder === 'function');
+
+// --- review blockers: real handlers, no manual stash and no wait ---
+gb.clearTimeline();
+gb.setBpm(120);
+const bA = bass();
+gb.setTrMode(bA, 'Phrase');
+bA.phrase = gb.cleanPhrase({ len: 1, notes: [{ s: 0, l: 4, p: 40, v: 100, sl: 1 }] });
+bA.syn.cut = 30; bA.syn.dly = 0; bA.syn.rev = 0;
+document.querySelector('#song .cap').click();
+gb.secsRef()[gb.songRef()[0].sec].name = 'A';
+gb.secsRef()[gb.songRef()[0].sec].len.bars = 1;
+document.querySelector('#song .tempo').click();
+gb.setBpm(100);
+bA.phrase = gb.cleanPhrase({ len: 1, notes: [{ s: 0, l: 4, p: 48, v: 90, sl: 0 }] });
+bA.syn.cut = 50; bA.syn.dly = 100;
+document.querySelector('#song .cap').click();
+gb.secsRef()[gb.songRef()[gb.selRef()].sec].len.bars = 1;
+gb.secsRef()[gb.songRef()[gb.selRef()].sec].name = 'B';
+bA.phrase = gb.cleanPhrase({ len: 1, notes: [{ s: 0, l: 4, p: 52, v: 80, sl: 0 }] });
+bA.syn.cut = 60; bA.syn.dly = 0;
+document.querySelector('#song .cap').click();
+gb.secsRef()[gb.songRef()[gb.selRef()].sec].len.bars = 1;
+gb.secsRef()[gb.songRef()[gb.selRef()].sec].name = 'C';
+const idOf = nm => gb.songRef().find(e => gb.secsRef()[e.sec].name === nm).sec;
+const idxOf = nm => gb.songRef().findIndex(e => gb.secsRef()[e.sec].name === nm);
+ok('tempo button armed A only', gb.secsRef()[idOf('A')].useBpm && gb.secsRef()[idOf('A')].state.bpm === 120 && !gb.secsRef()[idOf('B')].useBpm && gb.G.bpm === 100, String(gb.G.bpm));
+
+// 4 + 5. while C is open, export immediately and compare live tempos. Do not select A (that would adopt A's BPM).
+bass().phrase.notes[0].p = 79;
+bass().phrase.notes[0].sl = 1;
+const exp = document.querySelector('#song .exp');
+let exportJob = null;
+const prevExp = exp.onchange;
+exp.onchange = (e) => { const v = e.target.value; e.target.value = ''; if (v) exportJob = gb.doExport(v); };
+exp.value = 'mid-song';
+exp.dispatchEvent(new Event('change'));
+const exported = await exportJob;
+exp.onchange = prevExp;
+const midBytes = new Uint8Array(await exported.blob.arrayBuffer());
+let saw79 = false;
+for (let i = 0; i < midBytes.length - 1; i++) if ((midBytes[i] & 0xF0) === 0x90 && midBytes[i + 1] === 79) saw79 = true;
+ok('export handler contains the unstashed pitch', saw79);
+ok('export restored the editor and the song tempo', bass().phrase.notes[0].p === 79 && gb.G.bpm === 100, String(gb.G.bpm));
+const tempos = [];
+for (let i = 0; i < midBytes.length - 5; i++) if (midBytes[i] === 0xFF && midBytes[i + 1] === 0x51 && midBytes[i + 2] === 0x03) tempos.push(Math.round(60000000 / ((midBytes[i + 3] << 16) | (midBytes[i + 4] << 8) | midBytes[i + 5])));
+ok('export tempos are A then the song tempo', tempos[0] === 120 && tempos.includes(100) && tempos[tempos.length - 1] === 100, tempos.join(','));
+gb.arr.mode = 'song';
+gb.enter(0, idxOf('A'), 0);
+ok('live A uses its own tempo', gb.playMetaRef() && gb.playMetaRef().bpm === 120 && Math.abs(gb.stepDur() - 60 / 120 / 4) < 1e-9, JSON.stringify(gb.playMetaRef()));
+gb.enter(0, idxOf('B'), 0);
+ok('live B stays on the song tempo', (!gb.playMetaRef() || !gb.playMetaRef().bpm) && Math.abs(gb.stepDur() - 60 / 100 / 4) < 1e-9 && gb.G.bpm === 100, JSON.stringify(gb.playMetaRef()));
+
+// 1. drag an unselected block; edit focus stays, and that block does not absorb the open edit
+gb.selectEntry(idxOf('A'));
+bass().phrase.notes[0].p = 41;
+bass().syn.cut = 17;
+const blocks = () => [...document.querySelectorAll('#song .blk')];
+const dragFrom = blocks()[idxOf('B')];
+dragFrom.ondragstart({ dataTransfer: { setData(){}, effectAllowed: '' } });
+const onto = blocks()[idxOf('C')];
+const rect = onto.getBoundingClientRect();
+onto.ondrop({ preventDefault(){}, clientX: rect.right - 1 });
+ok('drag keeps the outlined section', gb.secsRef()[gb.songRef()[gb.selRef()].sec].name === 'A', gb.secsRef()[gb.songRef()[gb.selRef()].sec].name);
+ok('drag moved the unselected block', gb.songRef().map(e => gb.secsRef()[e.sec].name).join(',') === 'A,C,B', gb.songRef().map(e => gb.secsRef()[e.sec].name).join(','));
+ok('open edit still in the editor after drag', bass().phrase.notes[0].p === 41 && bass().syn.cut === 17);
+const dragA = blocks()[idxOf('A')];
+dragA.ondragstart({ dataTransfer: { setData(){}, effectAllowed: '' } });
+const land = blocks()[gb.songRef().length - 1];
+const landRect = land.getBoundingClientRect();
+land.ondrop({ preventDefault(){}, clientX: landRect.right - 1 });
+ok('dragging the outlined block keeps that edit', gb.secsRef()[gb.songRef()[gb.selRef()].sec].name === 'A' && bass().phrase.notes[0].p === 41 && bass().syn.cut === 17);
+const bDraft = gb.secsRef()[idOf('B')].draft;
+ok('dragged section did not take the open edit', (!bDraft || bDraft.tracks.find(t => t.id === 'bass').phrase.notes[0].p !== 41) && gb.secsRef()[idOf('B')].state.tracks.find(t => t.id === 'bass').phrase.notes[0].p === 48);
+
+// 2. edit the section left open by delete, then Undo immediately
+document.querySelector('#song .del').click();
+const neighbor = gb.secsRef()[gb.songRef()[gb.selRef()].sec].name;
+ok('delete left a neighbor open', neighbor !== 'A', neighbor);
+bass().phrase.notes[0].p = 66;
+bass().phrase.notes[0].sl = 1;
+document.querySelector('#song .und').click();
+const back = gb.secsRef()[idOf(neighbor)];
+ok('undo kept the neighbor edit', back.draft && back.draft.tracks.find(t => t.id === 'bass').phrase.notes[0].p === 66 && back.draft.tracks.find(t => t.id === 'bass').phrase.notes[0].sl === 1, neighbor);
+blocks().find(el => el.textContent.startsWith(neighbor)).click();
+ok('clicking the neighbor shows that edit', bass().phrase.notes[0].p === 66 && bass().phrase.notes[0].sl === 1);
+
+// 3. MIDI import into a dirty section replaces the working pattern and keeps an unrelated knob
+blocks().find(el => el.textContent.startsWith('A')).click();
+bass().syn.cut = 19;
+bass().phrase.notes[0].p = 42;
+gb.showImport({ fname: 't.mid', fmt: 0, ppqn: 480, bars: 1, bpm: 100, tempoAt: () => 100, stepTicks: 120, ts: '4/4', tempoChanges: 1, parts: [{ id: 0, name: 'bass', ch: 0, drum: false, notes: [{ s: 0, l: 4, p: 61, v: 90 }], count: 1, lo: 61, hi: 61, mean: 61, target: 'bass' }] });
+const radios = [...document.querySelectorAll('#impd input[type=radio]')];
+radios[1].click();
+document.querySelector('#impd .go').click();
+ok('import is what you hear', bass().phrase && bass().phrase.notes[0].p === 61, bass().phrase && String(bass().phrase.notes[0].p));
+ok('import kept the uncommitted cutoff', bass().syn.cut === 19, String(bass().syn.cut));
+ok('stale draft does not mask the import', gb.audibleState(gb.secsRef()[idOf('A')]).tracks.find(t => t.id === 'bass').phrase.notes[0].p === 61);
+document.querySelector('#song .und').click();
+ok('undo import restores the earlier phrase', bass().phrase.notes[0].p === 42 && bass().syn.cut === 19);
+
+// 6. shared delay node follows each section, including a return to zero
+['B', 'C'].forEach(nm => { const s = gb.secsRef()[idOf(nm)]; const st = s.draft || s.state; st.tracks.find(t => t.id === 'bass').syn.dly = nm === 'B' ? 100 : 0; });
+if (!gb.ac()) gb.build(new AudioContext());
+const node = bass().dS.gain;
+const sent = [];
+const origSet = node.setValueAtTime.bind(node);
+node.setValueAtTime = (v, t) => { sent.push(Math.round(v * 1000) / 1000); return origSet(v, t); };
+bass().syn.dly = 0; bass()._dly = 0;
+gb.selectEntry(idxOf('A'));
+gb.arr.mode = 'song';
+gb.enter(gb.ac().currentTime, idxOf('B'), 0);
+gb.stepPlay(gb.ac().currentTime);
+gb.enter(gb.ac().currentTime, idxOf('C'), 0);
+gb.stepPlay(gb.ac().currentTime + 0.05);
+node.setValueAtTime = origSet;
+ok('later section sets its own send', sent.includes(0.8) && sent.includes(0), sent.join(','));
+
+// 7. clear holds is a no-op with nothing held, and does not drop phrase or hat edits when a hold exists
+document.querySelector('#song .hclr').click();
+gb.selectEntry(idxOf('A'));
+const kick = gb.tracks().find(t => t.id === 'kick');
+const patBit = kick.pat[0] ? 0 : 1;
+kick.pat[0] = patBit;
+bass().phrase.notes[0].p = 63;
+bass().phrase.notes[0].sl = 1;
+hat().pitch = 4;
+bass().syn.cut = 21;
+document.querySelector('#song .hclr').click();
+ok('clear with no holds keeps working edits', bass().phrase.notes[0].p === 63 && bass().phrase.notes[0].sl === 1 && hat().pitch === 4 && bass().syn.cut === 21 && kick.pat[0] === patBit);
+const modeBefore = bass().mode;
+gb.setTrMode(bass(), 'Riff');
+ok('mode hold is on', bass().mode === 'Riff' && modeBefore !== 'Riff');
+bass().phrase = gb.cleanPhrase({ len: 1, notes: [{ s: 0, l: 4, p: 64, v: 100, sl: 1 }] });
+hat().pitch = -3;
+document.querySelector('#song .hclr').click();
+ok('clear holds keeps phrase slide hat tune pattern and cutoff', bass().phrase.notes[0].p === 64 && bass().phrase.notes[0].sl === 1 && hat().pitch === -3 && kick.pat[0] === patBit && bass().syn.cut === 21);
+ok('clear holds releases the mode lock', bass().mode === modeBefore);
 
 const info = gb.genSong('ABCD12');
 ok('generation still builds a song', info && info.seed === 'ABCD12' && gb.songRef().length >= 4, info && (info.seed + ' n=' + gb.songRef().length));
