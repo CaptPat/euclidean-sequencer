@@ -109,6 +109,13 @@ Empty **keys** and **arp** lanes stay empty. Kick, hat, and bass stay in the gro
 
 Presets that were scale drills (Synthwave lead, Dorian Dream bell/lead, Futuristic lead, and the arp lanes on Dreamy, Dark, and Futuristic) now use riff or chord modes, with lower bell/lead cutoff and level on those presets only. DEMO songs get the same role caps on bell, lead, arp, and keys. Phrase pitches are not transposed.
 
+## v14.24 — wider and taller phrase editors
+
+Each synth phrase roll has **W 1 / 2 / 3** and **H 1 / 2** in its top bar. Both start at 1×. The choice stays on that instrument while you change sections, follow the playhead, or keep editing. It is not part of the song, so save, load, and export sound the same.
+
+- **Width** spans that many columns of the existing track grid. 2× and 3× give the notes more pixels per step. On a phone (one column) the roll stays one column wide; the 2× or 3× choice is remembered and comes back when the screen has the columns. A requested width that does not fit is clamped, then restored when the window grows. The other cards wrap in the same order.
+- **Height** adds a second copy of the roll’s vertical room and opens the pitch window to at least two octaves, so the extra space shows more pitches. The same notes keep their pitch, length, velocity, and 808 slide. Height 2× works on a phone.
+
 ## v14.23 — Follow playhead, and A–B that gets out of the way
 
 **Follow** sits next to Song. It starts **off**, which is the v14.22 editor: the outlined section stays put while Song plays.
