@@ -1,4 +1,4 @@
-// Repeatable regression for v14.23 in-song composing.
+// Repeatable regression for v14.24 in-song composing.
 // Usage: node tests/compose-regression.mjs
 // Headless Chrome drives index.html. Assertions use scheduler state, drafts,
 // and MIDI bytes. This does not listen to the audio.
@@ -786,7 +786,7 @@ const info = gb.genSong('ABCD12');
 ok('generation still builds a song', info && info.seed === 'ABCD12' && gb.songRef().length >= 4, info && (info.seed + ' n=' + gb.songRef().length));
 const css = document.querySelector('style').textContent;
 ok('7-col breakpoint stays 3200', css.includes('@media(min-width:3200px)') && css.includes('repeat(7,1fr)'));
-ok('version is v14.23', gb.VERSION.startsWith('v14.23'), gb.VERSION);
+ok('version is v14.24', gb.VERSION.startsWith('v14.24'), gb.VERSION);
 ok('compose controls exist', !!document.querySelector('.clr') && !!document.querySelector('.rev') && !!document.querySelector('.rngb') && !!document.querySelector('.upd'));
 return { fails, version: gb.VERSION, heard: heard.length, alerts: window.__alerts || [] };
 `);
@@ -871,6 +871,169 @@ if (clicked.length) {
   try { server.close(); } catch {}
   process.exit(1);
 }
+
+async function settle() {
+  await ev(`await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));`);
+}
+async function view(w, h) {
+  await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: w < 500 }, sessionId);
+  await ev(`window.dispatchEvent(new Event('resize'));`);
+  await settle();
+}
+const phrase = await ev(`
+const gb = window.__gb;
+const fails = [];
+const ok = (n, c, x) => { if (!c) fails.push(n + (x ? ' :: ' + x : '')); };
+const bass = () => gb.tracks().find(t => t.id === 'bass');
+const play = document.getElementById('play');
+if (play.classList.contains('on')) play.click();
+document.querySelector('#song .clr').click();
+document.querySelector('#song .hclr').click();
+const b = bass();
+b.mode = 'Phrase';
+b.phrase = gb.cleanPhrase({ len: 2, notes: [{ s: 6, l: 2, p: 67, v: 80, sl: 0 }] });
+b.phraseW = 1; b.phraseH = 1; b.sync();
+document.querySelector('#song .cap').click();
+const note0 = JSON.stringify(b.phrase.notes[0]);
+ok('width and height default to 1', b.el.dataset.rollw === '1' && b.el.dataset.rolleff === '1' && b.el.dataset.rollh === '1' && b.el.querySelector('.szw button[data-w="1"]').getAttribute('aria-pressed') === 'true');
+const cv = b.el.querySelector('.proll canvas');
+const w1 = cv.clientWidth, h1 = cv.clientHeight, span1 = b.rollBox.span, row1 = b.rollBox.rh * w1 / b.rollBox.W;
+const aim = (s, p) => {
+  const box = b.rollBox, r = cv.getBoundingClientRect();
+  const lx = box.x0 + (s + 0.5) / box.L * box.gw;
+  const ly = box.y0 + (box.span - (p - box.lo) - 0.5) * box.rh;
+  return { x: r.left + lx / box.W * r.width, y: r.top + ly / box.H * r.height };
+};
+const ptr = (type, x, y, extra) => cv.dispatchEvent(new PointerEvent(type, Object.assign({ bubbles: true, cancelable: true, clientX: x, clientY: y, pointerId: 4, pointerType: 'mouse', buttons: type === 'pointerup' ? 0 : 1 }, extra || {})));
+const hit = aim(6, 67);
+ptr('pointerdown', hit.x, hit.y, { altKey: true });
+ptr('pointerup', hit.x, hit.y, { altKey: true });
+ok('1× click maps onto the existing note', b.phrase.notes.length === 1 && b.phrase.notes[0].sl === 1 && b.phrase.notes[0].p === 67 && b.phrase.notes[0].s === 6 && b.phrase.notes[0].v === 80, JSON.stringify(b.phrase.notes));
+b.el.querySelector('.szw button[data-w="3"]').click();
+b.el.querySelector('.szh button[data-h="2"]').click();
+ok('3×2 keeps the note', JSON.stringify(b.phrase.notes[0]) === JSON.stringify({ s: 6, l: 2, p: 67, v: 80, sl: 1 }));
+const row2 = b.rollBox.rh * cv.clientWidth / b.rollBox.W;
+ok('3×2 is wider, taller, and shows more pitches', cv.clientWidth > w1 * 2.4 && cv.clientHeight > h1 * 1.7 && b.rollBox.span >= 24 && b.rollBox.span > span1 && row2 > row1 * 0.85 && b.rollBox.lo <= 67 && 67 <= b.rollBox.lo + b.rollBox.span - 1, JSON.stringify({ w: cv.clientWidth, h: cv.clientHeight, span: b.rollBox.span, row2, row1, w1, h1, span1 }));
+const fresh = aim(6, 67);
+ptr('pointerdown', fresh.x, fresh.y);
+ptr('pointerup', fresh.x, fresh.y);
+ok('3×2 click still hits that pitch', b.phrase.notes.length === 0, JSON.stringify(b.phrase.notes));
+const pNew = b.rollBox.lo + 4;
+const a0 = aim(3, pNew);
+ptr('pointerdown', a0.x, a0.y);
+const a1 = aim(8, pNew);
+ptr('pointermove', a1.x, a1.y);
+ptr('pointerup', a1.x, a1.y);
+const added = b.phrase.notes.find(n => n.s === 3);
+ok('drag length follows the step under the pointer', !!added && added.p === pNew && added.l === 6 && added.v === 100 && added.sl === 0, JSON.stringify(b.phrase.notes));
+const kept = JSON.stringify(b.phrase);
+b.el.querySelector('.szw button[data-w="2"]').click();
+ok('width change does not rewrite notes', JSON.stringify(b.phrase) === kept && b.phraseW === 2 && b.el.dataset.rollw === '2');
+b.phrase.notes.push({ s: 1, l: 1, p: 70, v: 90, sl: 1 });
+document.querySelector('#song .cap').click();
+document.querySelector('#song .blk').click();
+ok('section change keeps the size and the draft', b.phraseW === 2 && b.phraseH === 2 && b.phrase.notes.some(n => n.p === 70 && n.v === 90 && n.sl === 1) && gb.selRef() === 0);
+b.el.querySelector('.szw button[data-w="3"]').click();
+const ids = gb.tracks().map(t => t.id);
+const dom = [...document.querySelectorAll('#tracks > .tr')].map(el => { const t = gb.tracks().find(x => x.el === el); return t ? t.id : 'master'; });
+ok('card order stays put', dom.join(',') === ids.join(','), dom.join(',') + ' vs ' + ids.join(','));
+const rects = [...document.querySelectorAll('#tracks > .tr')].map(el => el.getBoundingClientRect());
+let overlap = '';
+for (let i = 0; i < rects.length; i++) for (let j = i + 1; j < rects.length; j++) {
+  const a = rects[i], c = rects[j];
+  const iw = Math.min(a.right, c.right) - Math.max(a.left, c.left);
+  const ih = Math.min(a.bottom, c.bottom) - Math.max(a.top, c.top);
+  if (iw > 2 && ih > 2) overlap = i + 'x' + j + ' ' + Math.round(iw) + 'x' + Math.round(ih);
+}
+const host = document.querySelector('#tracks').getBoundingClientRect();
+ok('cards do not overlap', !overlap, overlap);
+ok('cards stay inside the grid', rects.every(r => r.left >= host.left - 1 && r.right <= host.right + 1), JSON.stringify({ hostR: Math.round(host.right), maxR: Math.round(Math.max(...rects.map(r => r.right))) }));
+const proj = JSON.stringify(gb.project());
+ok('size is not stored in the song', !proj.includes('phraseW') && !proj.includes('rollw'));
+document.querySelector('#song .seg button[data-m=song]').click();
+b.el.querySelector('.szw button[data-w="3"]').click();
+if (!document.querySelector('#song .fol').classList.contains('on')) document.querySelector('#song .fol').click();
+play.click();
+const from = gb.arr.idx, rep = gb.arr.rep, t0 = gb.ac().currentTime + 0.25, sd = gb.stepDur();
+for (let i = 0; i < 80 && gb.arr.idx === from && gb.arr.rep === rep; i++) gb.stepPlay(t0 + i * sd);
+ok('follow still moves and the size stays', gb.selRef() !== 0 && b.phraseW === 3 && b.phraseH === 2);
+if (play.classList.contains('on')) play.click();
+if (document.querySelector('#song .fol').classList.contains('on')) document.querySelector('#song .fol').click();
+document.querySelectorAll('#song .blk')[0].click();
+b.el.scrollIntoView({ block: 'center' });
+return { fails, w1, h1, w: cv.clientWidth, h: cv.clientHeight, eff: b.el.dataset.rolleff, span: b.rollBox.span };
+`);
+if (phrase.fails.length) {
+  console.error(JSON.stringify({ phraseFails: phrase.fails }, null, 2));
+  try { chrome.kill(); } catch {}
+  try { server.close(); } catch {}
+  process.exit(1);
+}
+await shot('phrase-1280-3x2.png');
+await view(1920, 1080);
+await ev(`document.querySelector('#tracks .tr.phr').scrollIntoView({ block: 'center' });`);
+await shot('phrase-desktop-3wide.png');
+const wide = await ev(`const b = window.__gb.tracks().find(t => t.id === 'bass'); return { eff: b.el.dataset.rolleff, w: b.el.querySelector('.proll canvas').clientWidth, cols: matchMedia('(min-width:1240px)').matches ? 6 : 0 };`);
+await view(768, 1024);
+const tablet = await ev(`
+const b = window.__gb.tracks().find(t => t.id === 'bass');
+b.layoutRoll(); b.drawRoll();
+const cv = b.el.querySelector('.proll canvas');
+const box = b.rollBox, r = cv.getBoundingClientRect();
+const s = 6, p = 67;
+const lx = box.x0 + (s + 0.5) / box.L * box.gw;
+const ly = box.y0 + (box.span - (p - box.lo) - 0.5) * box.rh;
+const x = r.left + lx / box.W * r.width, y = r.top + ly / box.H * r.height;
+cv.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, clientX: x, clientY: y, pointerId: 5, pointerType: 'mouse', buttons: 1, altKey: true }));
+cv.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, clientX: x, clientY: y, pointerId: 5, pointerType: 'mouse', altKey: true }));
+const n = b.phrase.notes.find(q => q.s === 6 && q.p === 67);
+return { eff: b.el.dataset.rolleff, h: b.el.dataset.rollh, sl: n && n.sl, n: b.phrase.notes.length, w: cv.clientWidth };
+`);
+await ev(`document.querySelector('#tracks .tr.phr').scrollIntoView({ block: 'center' });`);
+await shot('phrase-tablet.png');
+await view(640, 900);
+const clamp2 = await ev(`const b = window.__gb.tracks().find(t => t.id === 'bass'); return { eff: b.el.dataset.rolleff, want: b.el.dataset.rollw, clamp: b.el.querySelector('.szw button.on').classList.contains('clamp') };`);
+await view(390, 844);
+const phone = await ev(`
+const b = window.__gb.tracks().find(t => t.id === 'bass');
+b.layoutRoll(); b.drawRoll();
+const cv = b.el.querySelector('.proll canvas');
+const h2 = cv.clientHeight;
+b.phraseH = 1; b.layoutRoll(); b.drawRoll();
+const h1 = cv.clientHeight;
+b.phraseH = 2; b.layoutRoll(); b.drawRoll();
+const box = b.rollBox, r = cv.getBoundingClientRect();
+const s = 4, p = box.lo + 6;
+const lx = box.x0 + (s + 0.5) / box.L * box.gw;
+const ly = box.y0 + (box.span - (p - box.lo) - 0.5) * box.rh;
+const x = r.left + lx / box.W * r.width, y = r.top + ly / box.H * r.height;
+const before = b.phrase.notes.length;
+cv.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, clientX: x, clientY: y, pointerId: 6, pointerType: 'mouse', buttons: 1 }));
+const mv = box.x0 + (s + 3.5) / box.L * box.gw;
+const mx = r.left + mv / box.W * r.width;
+cv.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, cancelable: true, clientX: mx, clientY: y, pointerId: 6, pointerType: 'mouse', buttons: 1 }));
+cv.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, clientX: mx, clientY: y, pointerId: 6, pointerType: 'mouse' }));
+const added = b.phrase.notes.find(q => q.s === s && q.p === p);
+return { eff: b.el.dataset.rolleff, want: b.el.dataset.rollw, h: b.el.dataset.rollh, span: b.rollBox.span, h2, h1, p, added: added && { l: added.l, p: added.p, v: added.v }, before, notes: b.phrase.notes.length };
+`);
+await ev(`document.querySelector('#tracks .tr.phr').scrollIntoView({ block: 'center' });`);
+await shot('phrase-phone-h2.png');
+await view(1280, 720);
+const back = await ev(`const b = window.__gb.tracks().find(t => t.id === 'bass'); return { eff: b.el.dataset.rolleff, want: b.phraseW, h: b.phraseH, span: b.rollBox && b.rollBox.span };`);
+const sizeFails = [];
+const check = (n, c, x) => { if (!c) sizeFails.push(n + (x ? ' :: ' + JSON.stringify(x) : '')); };
+check('desktop keeps 3×', wide.eff === '3' && wide.w > phrase.w1 * 2.4, wide);
+check('tablet maps the same note', tablet.eff === '3' && tablet.h === '2' && tablet.sl === 0 && tablet.n >= 1, tablet);
+check('two columns clamp 3× to 2×', clamp2.eff === '2' && clamp2.want === '3' && clamp2.clamp === true, clamp2);
+check('phone width stays 1× and height stays useful', phone.eff === '1' && phone.want === '3' && phone.h === '2' && phone.span >= 24 && phone.h2 > phone.h1 * 1.7 && phone.added && phone.added.p === phone.p && phone.added.l === 4 && phone.added.v === 100, phone);
+check('growing the window restores 3×', back.eff === '3' && back.want === 3 && back.h === 2 && back.span >= 24, back);
+if (sizeFails.length) {
+  console.error(JSON.stringify({ sizeFails }, null, 2));
+  try { chrome.kill(); } catch {}
+  try { server.close(); } catch {}
+  process.exit(1);
+}
+await view(1280, 720);
 
 const out = { fails: report.fails, version: report.version, heard: report.heard, alerts: report.alerts, shots };
 console.log(JSON.stringify(out, null, 2));
